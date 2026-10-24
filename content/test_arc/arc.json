@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 1,
+  "id": "joseph-test",
+  "title": "La Tunique et le Trône (arc de test — 2 chapitres)",
+  "version": "0.1.0",
+  "minEngineVersion": 1,
+  "defaultBible": "LSG1910",
+  "bibles": {
+    "LSG1910": {
+      "name": "Louis Segond 1910",
+      "license": "domaine public"
+    }
+  },
+  "verses": {
+    "LSG1910": {
+      "GEN.39.9": "Il n'est pas plus grand que moi dans cette maison, et il ne m'a rien interdit, excepté toi, parce que tu es sa femme. Comment ferais-je un aussi grand mal et pécherais-je contre Dieu?",
+      "PRO.3.5": "Confie-toi en l'Éternel de tout ton cœur, Et ne t'appuie pas sur ta sagesse;",
+      "ROM.8.28": "Nous savons, du reste, que toutes choses concourent au bien de ceux qui aiment Dieu, de ceux qui sont appelés selon son dessein.",
+      "GEN.50.20": "Vous aviez médité de me faire du mal: Dieu l'a changé en bien, pour accomplir ce qui arrive aujourd'hui, pour sauver la vie à un peuple nombreux."
+    }
+  },
+  "chapters": [
+    {
+      "id": "ch1-potiphar",
+      "title": "Dans la maison de Potiphar",
+      "theme": "Intégrité",
+      "start": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "type": "dialogue",
+          "scene": "Le matin",
+          "text": "Tu t'éveilles dans une maison d'Égypte. Tu es un jeune serviteur, parmi d'autres. Tout le monde parle d'un esclave hébreu, Joseph, à qui tout réussit.",
+          "next": "n2"
+        },
+        {
+          "id": "n2",
+          "type": "choice",
+          "scene": "Le matin",
+          "prompt": "À l'heure du repas, l'intendant te questionne sur Joseph. Que réponds-tu ?",
+          "options": [
+            {
+              "id": "defend",
+              "text": "« Il est honnête dans tout ce qu'il fait. »",
+              "effects": { "traits": { "integrity": 1, "courage": 1 }, "setFlags": ["defended_joseph"] },
+              "next": "n3"
+            },
+            {
+              "id": "silent",
+              "text": "Tu hausses les épaules et tu changes de sujet.",
+              "effects": { "traits": { "humility": 1 } },
+              "next": "n3"
+            },
+            {
+              "id": "warn",
+              "text": "Tu prends l'intendant à part pour l'avertir d'un danger qui guette Joseph.",
+              "requires": { "traits": { "courage": { "min": 1 } } },
+              "effects": { "traits": { "compassion": 1, "wisdom": 1 }, "setFlags": ["warned_joseph"] },
+              "next": "n3"
+            }
+          ]
+        },
+        {
+          "id": "n3",
+          "type": "discernment",
+          "scene": "Le soir",
+          "speaker": "Un intendant",
+          "quote": "Tu sais, il faut rester pragmatique : la Bible elle-même dit que « Dieu aide ceux qui s'aident ».",
+          "claimedRef": "Proverbes 3:5",
+          "anomaly": "misattributed",
+          "correctRef": "PRO.3.5",
+          "explanation": "Cette phrase est un proverbe populaire : elle ne figure nulle part dans la Bible. Le texte de Proverbes 3:5 dit presque l'inverse : ne pas s'appuyer sur sa propre sagesse, mais se confier en l'Éternel.",
+          "refs": ["PRO.3.5"],
+          "next": "n4"
+        },
+        {
+          "id": "n4",
+          "type": "door",
+          "scene": "La porte",
+          "prompt": "La porte de la chambre est close. Une parole retenue peut seule te permettre de passer sans honte.",
+          "verse": "GEN.39.9",
+          "refs": ["GEN.39.9"],
+          "next": "n5"
+        },
+        {
+          "id": "n5",
+          "type": "debrief",
+          "teaching": "Joseph refuse le mal parce qu'il craint Dieu, pas seulement parce qu'on le regarde. L'intégrité est une fidélité devant Dieu, même quand personne ne voit.",
+          "verses": ["GEN.39.9", "PRO.3.5"],
+          "next": "n6"
+        },
+        { "id": "n6", "type": "end" }
+      ]
+    },
+    {
+      "id": "ch2-egypte",
+      "title": "Le pardon",
+      "theme": "Pardon et souveraineté de Dieu",
+      "start": "m1",
+      "nodes": [
+        {
+          "id": "m1",
+          "type": "dialogue",
+          "scene": "Le palais",
+          "text": "Des années ont passé. Tu es maintenant au service du palais, et tu vois entrer des hommes affamés, venus de Canaan.",
+          "next": [
+            { "if": { "flags": ["warned_joseph"] }, "to": "m1b" },
+            { "to": "m2" }
+          ]
+        },
+        {
+          "id": "m1b",
+          "type": "dialogue",
+          "scene": "Le palais",
+          "speaker": "Joseph",
+          "text": "Joseph se souvient de ton avertissement d'autrefois et incline la tête vers toi, brièvement.",
+          "next": "m2"
+        },
+        {
+          "id": "m2",
+          "type": "choice",
+          "scene": "Le palais",
+          "prompt": "Joseph reconnaît ses frères. Il te demande conseil devant eux. Que lui dis-tu ?",
+          "options": [
+            {
+              "id": "forgive",
+              "text": "« Pardonne-leur : tu as vu ce que Dieu a fait de ce mal. »",
+              "effects": { "traits": { "compassion": 1, "faith": 1 } },
+              "next": "m2b"
+            },
+            {
+              "id": "justice",
+              "text": "« Ils doivent d'abord reconnaître leur faute. »",
+              "effects": { "traits": { "integrity": 1, "wisdom": 1 } },
+              "next": "m2b"
+            }
+          ]
+        },
+        {
+          "id": "m2b",
+          "type": "discernment",
+          "scene": "Le palais",
+          "speaker": "Un des frères",
+          "quote": "Tu vois bien : « toutes choses concourent au bien ». Alors le mal que nous avons fait n'a finalement pas d'importance.",
+          "claimedRef": "Romains 8:28",
+          "anomaly": "out_of_context",
+          "correctRef": "ROM.8.28",
+          "explanation": "Romains 8:28 est une promesse faite à ceux qui aiment Dieu : elle n'excuse jamais le mal. Joseph lui-même dit à ses frères : « Vous aviez médité de me faire du mal ». Le mal reste le mal, même si Dieu peut le retourner en bien.",
+          "refs": ["ROM.8.28"],
+          "next": "m3"
+        },
+        {
+          "id": "m3",
+          "type": "door",
+          "scene": "La porte",
+          "prompt": "Pour entrer dans la salle du trône, tu dois prononcer la parole qui résume tout.",
+          "verse": "GEN.50.20",
+          "refs": ["GEN.50.20"],
+          "next": "m4"
+        },
+        {
+          "id": "m4",
+          "type": "debrief",
+          "teaching": "Dieu n'est jamais pris de court par le mal qu'on nous fait : il peut le retourner en bien sans l'excuser. Le pardon de Joseph naît de ce regard.",
+          "verses": ["GEN.50.20"],
+          "next": "m5"
+        },
+        { "id": "m5", "type": "end" }
+      ]
+    }
+  ]
+}

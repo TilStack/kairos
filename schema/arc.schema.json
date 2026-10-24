@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kairos.app/schema/arc.schema.json",
+  "title": "KAIROS — paquet d'arc (schemaVersion 1)",
+  "description": "Schema d'edition (autocompletion). La validation de reference est faite par kairos_validate, qui verifie en plus le graphe et les references bibliques.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "title", "version", "minEngineVersion", "defaultBible", "bibles", "verses", "chapters"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "id": { "$ref": "#/$defs/id" },
+    "title": { "$ref": "#/$defs/text" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "minEngineVersion": { "type": "integer", "minimum": 1 },
+    "defaultBible": { "type": "string", "minLength": 1 },
+    "bibles": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "license"],
+        "properties": {
+          "name": { "$ref": "#/$defs/text" },
+          "license": { "$ref": "#/$defs/text" },
+          "attribution": { "$ref": "#/$defs/text" }
+        }
+      }
+    },
+    "verses": {
+      "description": "verses[versionBiblique][identifiantVerset] = texte exact. Identifiant : GEN.39.9 ou 1SA.17.45-47.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "propertyNames": { "pattern": "^[1-3]?[A-Z]{2,3}\\.\\d{1,3}\\.\\d{1,3}(-\\d{1,3})?$" },
+        "additionalProperties": { "$ref": "#/$defs/text" }
+      }
+    },
+    "chapters": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/chapter" }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$" },
+    "text": { "type": "string", "minLength": 1, "pattern": "\\S" },
+    "verseId": { "type": "string", "pattern": "^[1-3]?[A-Z]{2,3}\\.\\d{1,3}\\.\\d{1,3}(-\\d{1,3})?$" },
+    "trait": { "enum": ["faith", "courage", "integrity", "compassion", "humility", "wisdom"] },
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "traits": {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/trait" },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "minProperties": 1,
+            "properties": { "min": { "type": "integer" }, "max": { "type": "integer" } }
+          }
+        },
+        "keys": { "type": "array", "items": { "$ref": "#/$defs/verseId" } },
+        "flags": { "type": "array", "items": { "$ref": "#/$defs/text" } },
+        "notFlags": { "type": "array", "items": { "$ref": "#/$defs/text" } }
+      }
+    },
+    "effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "traits": {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/trait" },
+          "additionalProperties": { "type": "integer" }
+        },
+        "setFlags": { "type": "array", "items": { "$ref": "#/$defs/text" } },
+        "clearFlags": { "type": "array", "items": { "$ref": "#/$defs/text" } }
+      }
+    },
+    "next": {
+      "description": "Identifiant de noeud, ou liste de transitions evaluees dans l'ordre (la derniere doit etre sans condition).",
+      "oneOf": [
+        { "$ref": "#/$defs/text" },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["to"],
+            "properties": { "to": { "$ref": "#/$defs/text" }, "if": { "$ref": "#/$defs/condition" } }
+          }
+        }
+      ]
+    },
+    "node": {
+      "type": "object",
+      "required": ["id", "type"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "scene": { "$ref": "#/$defs/text" },
+        "refs": { "type": "array", "items": { "$ref": "#/$defs/verseId" } },
+        "effects": { "$ref": "#/$defs/effects" }
+      },
+      "oneOf": [
+        {
+          "properties": { "type": { "const": "dialogue" }, "speaker": { "$ref": "#/$defs/text" }, "text": { "$ref": "#/$defs/text" }, "next": { "$ref": "#/$defs/next" } },
+          "required": ["text", "next"]
+        },
+        {
+          "properties": {
+            "type": { "const": "choice" },
+            "prompt": { "$ref": "#/$defs/text" },
+            "options": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["id", "text", "next"],
+                "properties": {
+                  "id": { "$ref": "#/$defs/id" },
+                  "text": { "$ref": "#/$defs/text" },
+                  "requires": { "$ref": "#/$defs/condition" },
+                  "effects": { "$ref": "#/$defs/effects" },
+                  "next": { "$ref": "#/$defs/next" }
+                }
+              }
+            }
+          },
+          "required": ["prompt", "options"]
+        },
+        {
+          "properties": { "type": { "const": "door" }, "prompt": { "$ref": "#/$defs/text" }, "verse": { "$ref": "#/$defs/verseId" }, "next": { "$ref": "#/$defs/next" } },
+          "required": ["prompt", "verse", "next"]
+        },
+        {
+          "properties": {
+            "type": { "const": "discernment" },
+            "speaker": { "$ref": "#/$defs/text" },
+            "quote": { "$ref": "#/$defs/text" },
+            "claimedRef": { "$ref": "#/$defs/text" },
+            "anomaly": { "enum": ["distorted", "truncated", "out_of_context", "misattributed"] },
+            "correctRef": { "$ref": "#/$defs/verseId" },
+            "explanation": { "$ref": "#/$defs/text" },
+            "next": { "$ref": "#/$defs/next" }
+          },
+          "required": ["quote", "anomaly", "explanation", "next"]
+        },
+        {
+          "properties": {
+            "type": { "const": "debrief" },
+            "teaching": { "$ref": "#/$defs/text" },
+            "verses": { "type": "array", "items": { "$ref": "#/$defs/verseId" } },
+            "next": { "$ref": "#/$defs/next" }
+          },
+          "required": ["teaching", "verses", "next"]
+        },
+        { "properties": { "type": { "const": "end" } } }
+      ]
+    },
+    "chapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "start", "nodes"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "title": { "$ref": "#/$defs/text" },
+        "theme": { "$ref": "#/$defs/text" },
+        "start": { "$ref": "#/$defs/text" },
+        "nodes": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/node" } }
+      }
+    }
+  }
+}
