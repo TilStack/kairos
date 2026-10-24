@@ -338,11 +338,44 @@ class _Parser {
     );
   }
 
+  List<Meditation> _meditations(Map<String, Object?> m, String path) {
+    final raw = _list(m, 'meditations', path, required: false);
+    final out = <Meditation>[];
+    final seen = <String>{};
+    for (var i = 0; i < (raw?.length ?? 0); i++) {
+      final p = '$path.meditations[$i]';
+      final mm = _obj(raw![i], p, {
+        'id', 'passage', 'reflectionPrompt', 'question', 'options', 'answerIndex',
+      });
+      if (mm == null) continue;
+      final id = _str(mm, 'id', p);
+      final passage = _str(mm, 'passage', p);
+      final prompt = _str(mm, 'reflectionPrompt', p);
+      final question = _str(mm, 'question', p);
+      final answerIndex = _int(mm, 'answerIndex', p);
+      final options = _strList(mm, 'options', p);
+      if (options.length < 2) _err('$p.options', 'au moins deux options attendues');
+      if (answerIndex != null && (answerIndex < 0 || answerIndex >= options.length)) {
+        _err('$p.answerIndex', 'indice hors des options');
+      }
+      if (id != null && !seen.add(id)) _err(p, 'identifiant de meditation en double "$id"');
+      if (id == null || passage == null || prompt == null || question == null ||
+          answerIndex == null) {
+        continue;
+      }
+      out.add(Meditation(
+        id: id, passage: passage, reflectionPrompt: prompt, question: question,
+        options: options, answerIndex: answerIndex,
+      ));
+    }
+    return out;
+  }
+
   Arc? arc(Object? json) {
     const path = r'$';
     final m = _obj(json, path, {
       'schemaVersion', 'id', 'title', 'version', 'minEngineVersion',
-      'defaultBible', 'bibles', 'verses', 'chapters',
+      'defaultBible', 'bibles', 'verses', 'chapters', 'meditations',
     });
     if (m == null) return null;
 
@@ -435,7 +468,7 @@ class _Parser {
     return Arc(
       schemaVersion: schemaVersion, id: id, title: title, version: version,
       minEngineVersion: minEngine, defaultBible: defaultBible, bibles: bibles,
-      verses: verses, chapters: chapters,
+      verses: verses, chapters: chapters, meditations: _meditations(m, path),
     );
   }
 }

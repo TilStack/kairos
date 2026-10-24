@@ -189,6 +189,13 @@ ValidationReport validateArc(Arc arc) {
     }
   }
 
+  for (final med in arc.meditations) {
+    checkVerse('meditation ${med.id}.passage', med.passage);
+  }
+  if (arc.meditations.isEmpty) {
+    warn('meditations', 'aucun passage de meditation (UC-04 : Huile)');
+  }
+
   for (final e in readFlags.entries) {
     if (!setFlags.contains(e.key)) {
       warn(e.value, 'drapeau "${e.key}" lu mais jamais pose (faute de frappe ?)');

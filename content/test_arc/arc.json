@@ -19,6 +19,32 @@
       "GEN.50.20": "Vous aviez médité de me faire du mal: Dieu l'a changé en bien, pour accomplir ce qui arrive aujourd'hui, pour sauver la vie à un peuple nombreux."
     }
   },
+  "meditations": [
+    {
+      "id": "med-1",
+      "passage": "PRO.3.5",
+      "reflectionPrompt": "Dans quel domaine de ta vie t'appuies-tu surtout sur ta propre sagesse ? Que changerait le fait de te confier en l'Éternel ?",
+      "question": "En qui ce verset invite-t-il à se confier de tout son cœur ?",
+      "options": ["En soi-même", "En l'Éternel", "En ses amis"],
+      "answerIndex": 1
+    },
+    {
+      "id": "med-2",
+      "passage": "GEN.39.9",
+      "reflectionPrompt": "Joseph voit le mal comme un péché contre Dieu. Quelle tentation as-tu à refuser cette semaine, même si personne ne le saurait ?",
+      "question": "Contre qui Joseph dit-il qu'il pécherait en faisant ce mal ?",
+      "options": ["Contre Potiphar", "Contre lui-même", "Contre Dieu"],
+      "answerIndex": 2
+    },
+    {
+      "id": "med-3",
+      "passage": "ROM.8.28",
+      "reflectionPrompt": "Y a-t-il une épreuve que tu traverses et que tu peux remettre à Dieu en confiance ? Écris ta prière.",
+      "question": "À qui cette promesse est-elle adressée ?",
+      "options": ["À tout le monde sans condition", "À ceux qui aiment Dieu", "Aux plus riches"],
+      "answerIndex": 1
+    }
+  ],
   "chapters": [
     {
       "id": "ch1-potiphar",

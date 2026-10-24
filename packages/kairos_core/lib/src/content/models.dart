@@ -264,6 +264,31 @@ class BibleVersionInfo {
   final String? attribution;
 }
 
+/// Passage de meditation quotidienne lie a l'arc (UC-04).
+class Meditation {
+  const Meditation({
+    required this.id,
+    required this.passage,
+    required this.reflectionPrompt,
+    required this.question,
+    required this.options,
+    required this.answerIndex,
+  });
+
+  final String id;
+
+  /// Identifiant du verset (ou de la plage) a lire.
+  final String passage;
+
+  /// Question de reflexion personnelle (reponse libre).
+  final String reflectionPrompt;
+
+  /// Question de comprehension douce.
+  final String question;
+  final List<String> options;
+  final int answerIndex;
+}
+
 class Arc {
   const Arc({
     required this.schemaVersion,
@@ -275,6 +300,7 @@ class Arc {
     required this.bibles,
     required this.verses,
     required this.chapters,
+    this.meditations = const [],
   });
 
   final int schemaVersion;
@@ -288,6 +314,7 @@ class Arc {
   /// `verses[bibleId][verseId]` = texte exact.
   final Map<String, Map<String, String>> verses;
   final List<Chapter> chapters;
+  final List<Meditation> meditations;
 
   Chapter? chapter(String id) {
     for (final c in chapters) {

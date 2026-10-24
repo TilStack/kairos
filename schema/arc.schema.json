@@ -36,6 +36,23 @@
         "additionalProperties": { "$ref": "#/$defs/text" }
       }
     },
+    "meditations": {
+      "description": "Passages de meditation quotidienne (Huile). Choisis par jour, dans l'ordre.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "passage", "reflectionPrompt", "question", "options", "answerIndex"],
+        "properties": {
+          "id": { "$ref": "#/$defs/id" },
+          "passage": { "$ref": "#/$defs/verseId" },
+          "reflectionPrompt": { "$ref": "#/$defs/text" },
+          "question": { "$ref": "#/$defs/text" },
+          "options": { "type": "array", "minItems": 2, "items": { "$ref": "#/$defs/text" } },
+          "answerIndex": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
     "chapters": {
       "type": "array",
       "minItems": 1,
