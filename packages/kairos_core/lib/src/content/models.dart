@@ -10,6 +10,17 @@ const engineVersion = 1;
 /// Version du format de contenu comprise par ce code.
 const supportedSchemaVersion = 1;
 
+/// Humeurs, actions, coiffes et accessoires admis pour les personnages.
+/// Ce sont des noms stables du format de contenu : l'application les relie
+/// a ses animations. Ajouter un nom ici suppose de l'implementer cote app.
+const characterMoods = {'happy', 'neutral', 'wow', 'sad', 'think', 'sly'};
+const characterActions = {'idle', 'wave', 'cheer', 'think', 'sad', 'point', 'walk', 'talk'};
+const characterHeadwear = {'none', 'headband', 'turban', 'nemes', 'hood'};
+const characterProps = {'none', 'staff', 'scroll'};
+
+/// Lieux de mise en scene (decor choisi par l'application).
+const sceneSettings = {'desert', 'house', 'palace', 'memory'};
+
 /// Les six traits du coeur.
 enum Trait { faith, courage, integrity, compassion, humility, wisdom }
 
@@ -101,6 +112,10 @@ sealed class Node {
     this.scene,
     this.refs = const [],
     this.effects = Effects.none,
+    this.character,
+    this.mood,
+    this.action,
+    this.setting,
   });
 
   final String id;
@@ -113,6 +128,15 @@ sealed class Node {
 
   /// Effets appliques a l'entree dans le noeud.
   final Effects effects;
+
+  /// Personnage mis en scene (identifiant dans `Arc.characters`), son humeur
+  /// et son action. Purement visuels : sans effet sur le moteur.
+  final String? character;
+  final String? mood;
+  final String? action;
+
+  /// Lieu de la scene (voir [sceneSettings]) ; null : decor du noeud precedent.
+  final String? setting;
 
   /// Aretes sortantes, vide pour les noeuds terminaux.
   Iterable<Transition> get outgoing;
@@ -127,6 +151,10 @@ class DialogueNode extends Node {
     super.scene,
     super.refs,
     super.effects,
+    super.character,
+    super.mood,
+    super.action,
+    super.setting,
   });
 
   final String? speaker;
@@ -145,6 +173,10 @@ class ChoiceNode extends Node {
     super.scene,
     super.refs,
     super.effects,
+    super.character,
+    super.mood,
+    super.action,
+    super.setting,
   });
 
   final String prompt;
@@ -164,6 +196,10 @@ class DoorNode extends Node {
     super.scene,
     super.refs,
     super.effects,
+    super.character,
+    super.mood,
+    super.action,
+    super.setting,
   });
 
   final String prompt;
@@ -190,6 +226,10 @@ class DiscernmentNode extends Node {
     super.scene,
     super.refs,
     super.effects,
+    super.character,
+    super.mood,
+    super.action,
+    super.setting,
   });
 
   final String? speaker;
@@ -218,6 +258,10 @@ class DebriefNode extends Node {
     super.scene,
     super.refs,
     super.effects,
+    super.character,
+    super.mood,
+    super.action,
+    super.setting,
   });
 
   final String teaching;
@@ -230,10 +274,54 @@ class DebriefNode extends Node {
 
 /// Fin de chapitre.
 class EndNode extends Node {
-  const EndNode({required super.id, super.scene, super.refs, super.effects});
+  const EndNode({
+    required super.id,
+    super.scene,
+    super.refs,
+    super.effects,
+    super.character,
+    super.mood,
+    super.action,
+    super.setting,
+  });
 
   @override
   Iterable<Transition> get outgoing => const [];
+}
+
+/// Fiche d'apparence d'un personnage (couleurs en `#RRGGBB`).
+class CharacterDef {
+  const CharacterDef({
+    required this.id,
+    required this.name,
+    required this.skin,
+    required this.outfit,
+    this.outfitAccent,
+    this.stripes = const [],
+    this.hair,
+    this.beard,
+    this.headwear = 'none',
+    this.headwearColor,
+    this.prop = 'none',
+    this.flameHead = false,
+    this.glowingEyes = false,
+    this.scale = 1.0,
+  });
+
+  final String id;
+  final String name;
+  final String skin;
+  final String outfit;
+  final String? outfitAccent;
+  final List<String> stripes;
+  final String? hair;
+  final String? beard;
+  final String headwear;
+  final String? headwearColor;
+  final String prop;
+  final bool flameHead;
+  final bool glowingEyes;
+  final double scale;
 }
 
 class Chapter {
@@ -301,6 +389,7 @@ class Arc {
     required this.verses,
     required this.chapters,
     this.meditations = const [],
+    this.characters = const {},
   });
 
   final int schemaVersion;
@@ -315,6 +404,9 @@ class Arc {
   final Map<String, Map<String, String>> verses;
   final List<Chapter> chapters;
   final List<Meditation> meditations;
+
+  /// Distribution : identifiant -> apparence.
+  final Map<String, CharacterDef> characters;
 
   Chapter? chapter(String id) {
     for (final c in chapters) {

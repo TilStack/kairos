@@ -113,6 +113,77 @@ class _Parser {
     return out;
   }
 
+  /// Texte optionnel limite a une liste de valeurs.
+  String? _choice(Map<String, Object?> m, String key, String path, Set<String> allowed) {
+    final v = _str(m, key, path, required: false);
+    if (v != null && !allowed.contains(v)) {
+      _err('$path.$key', 'valeur inconnue "$v" (attendu : ${(allowed.toList()..sort()).join(', ')})');
+      return null;
+    }
+    return v;
+  }
+
+  static final _hex = RegExp(r'^#[0-9A-Fa-f]{6}$');
+
+  String? _color(Map<String, Object?> m, String key, String path, {bool required = false}) {
+    final v = _str(m, key, path, required: required);
+    if (v != null && !_hex.hasMatch(v)) {
+      _err('$path.$key', 'couleur invalide "$v" (attendu : #RRGGBB)');
+      return null;
+    }
+    return v;
+  }
+
+  List<CharacterDef> _characters(Map<String, Object?> m, String path) {
+    final raw = _list(m, 'characters', path, required: false);
+    final out = <CharacterDef>[];
+    final seen = <String>{};
+    for (var i = 0; i < (raw?.length ?? 0); i++) {
+      final p = '$path.characters[$i]';
+      final cm = _obj(raw![i], p, {
+        'id', 'name', 'skin', 'outfit', 'outfitAccent', 'stripes', 'hair', 'beard',
+        'headwear', 'headwearColor', 'prop', 'flameHead', 'glowingEyes', 'scale',
+      });
+      if (cm == null) continue;
+      final id = _str(cm, 'id', p);
+      if (id != null && !_idPattern.hasMatch(id)) _err('$p.id', 'identifiant invalide "$id"');
+      if (id != null && !seen.add(id)) _err(p, 'identifiant de personnage en double "$id"');
+      final name = _str(cm, 'name', p);
+      final skin = _color(cm, 'skin', p, required: true);
+      final outfit = _color(cm, 'outfit', p, required: true);
+      final stripes = <String>[];
+      for (final c in _strList(cm, 'stripes', p)) {
+        if (_hex.hasMatch(c)) {
+          stripes.add(c);
+        } else {
+          _err('$p.stripes', 'couleur invalide "$c" (attendu : #RRGGBB)');
+        }
+      }
+      final flame = cm['flameHead'];
+      final glow = cm['glowingEyes'];
+      if (flame != null && flame is! bool) _err('$p.flameHead', 'booleen attendu');
+      if (glow != null && glow is! bool) _err('$p.glowingEyes', 'booleen attendu');
+      final scaleRaw = cm['scale'];
+      final scaleOk = scaleRaw is num && scaleRaw > 0 && scaleRaw <= 1.5;
+      if (scaleRaw != null && !scaleOk) _err('$p.scale', 'nombre entre 0 (exclu) et 1.5 attendu');
+      final headwear = _choice(cm, 'headwear', p, characterHeadwear) ?? 'none';
+      final prop = _choice(cm, 'prop', p, characterProps) ?? 'none';
+      final accent = _color(cm, 'outfitAccent', p);
+      final hair = _color(cm, 'hair', p);
+      final beard = _color(cm, 'beard', p);
+      final headColor = _color(cm, 'headwearColor', p);
+      if (id == null || name == null || skin == null || outfit == null) continue;
+      out.add(CharacterDef(
+        id: id, name: name, skin: skin, outfit: outfit,
+        outfitAccent: accent, stripes: stripes, hair: hair, beard: beard,
+        headwear: headwear, headwearColor: headColor, prop: prop,
+        flameHead: flame == true, glowingEyes: glow == true,
+        scale: scaleRaw is num && scaleOk ? scaleRaw.toDouble() : 1.0,
+      ));
+    }
+    return out;
+  }
+
   Trait? _trait(String name, String path) {
     for (final t in Trait.values) {
       if (t.name == name) return t;
@@ -205,7 +276,9 @@ class _Parser {
     return out;
   }
 
-  static const _commonKeys = {'id', 'type', 'scene', 'refs', 'effects'};
+  static const _commonKeys = {
+    'id', 'type', 'scene', 'refs', 'effects', 'character', 'mood', 'action', 'setting',
+  };
 
   Node? _node(Object? v, String path) {
     if (v is! Map<String, Object?>) {
@@ -238,6 +311,10 @@ class _Parser {
     final scene = _str(m, 'scene', path, required: false);
     final refs = _strList(m, 'refs', path);
     final effects = _effects(m['effects'], '$path.effects');
+    final character = _str(m, 'character', path, required: false);
+    final mood = _choice(m, 'mood', path, characterMoods);
+    final action = _choice(m, 'action', path, characterActions);
+    final setting = _choice(m, 'setting', path, sceneSettings);
     if (id == null) return null;
     final nodePath = '$path($id)';
 
@@ -248,7 +325,7 @@ class _Parser {
         if (text == null) return null;
         return DialogueNode(
           id: id, text: text, next: next, scene: scene, refs: refs,
-          effects: effects, speaker: _str(m, 'speaker', nodePath, required: false),
+          effects: effects, character: character, mood: mood, action: action, setting: setting, speaker: _str(m, 'speaker', nodePath, required: false),
         );
       case 'choice':
         final prompt = _str(m, 'prompt', nodePath);
@@ -271,7 +348,7 @@ class _Parser {
         if (prompt == null) return null;
         return ChoiceNode(
           id: id, prompt: prompt, options: options, scene: scene, refs: refs,
-          effects: effects,
+          effects: effects, character: character, mood: mood, action: action, setting: setting,
         );
       case 'door':
         final prompt = _str(m, 'prompt', nodePath);
@@ -280,7 +357,7 @@ class _Parser {
         if (prompt == null || verse == null) return null;
         return DoorNode(
           id: id, prompt: prompt, verse: verse, next: next, scene: scene,
-          refs: refs, effects: effects,
+          refs: refs, effects: effects, character: character, mood: mood, action: action, setting: setting,
         );
       case 'discernment':
         final quote = _str(m, 'quote', nodePath);
@@ -295,7 +372,7 @@ class _Parser {
         if (quote == null || anomaly == null || explanation == null) return null;
         return DiscernmentNode(
           id: id, quote: quote, anomaly: anomaly, explanation: explanation,
-          next: next, scene: scene, refs: refs, effects: effects,
+          next: next, scene: scene, refs: refs, effects: effects, character: character, mood: mood, action: action, setting: setting,
           speaker: _str(m, 'speaker', nodePath, required: false),
           claimedRef: _str(m, 'claimedRef', nodePath, required: false),
           correctRef: _str(m, 'correctRef', nodePath, required: false),
@@ -307,10 +384,10 @@ class _Parser {
         if (teaching == null) return null;
         return DebriefNode(
           id: id, teaching: teaching, verses: verses, next: next, scene: scene,
-          refs: refs, effects: effects,
+          refs: refs, effects: effects, character: character, mood: mood, action: action, setting: setting,
         );
       default:
-        return EndNode(id: id, scene: scene, refs: refs, effects: effects);
+        return EndNode(id: id, scene: scene, refs: refs, effects: effects, character: character, mood: mood, action: action, setting: setting);
     }
   }
 
@@ -375,7 +452,7 @@ class _Parser {
     const path = r'$';
     final m = _obj(json, path, {
       'schemaVersion', 'id', 'title', 'version', 'minEngineVersion',
-      'defaultBible', 'bibles', 'verses', 'chapters', 'meditations',
+      'defaultBible', 'bibles', 'verses', 'chapters', 'meditations', 'characters',
     });
     if (m == null) return null;
 
@@ -469,6 +546,7 @@ class _Parser {
       schemaVersion: schemaVersion, id: id, title: title, version: version,
       minEngineVersion: minEngine, defaultBible: defaultBible, bibles: bibles,
       verses: verses, chapters: chapters, meditations: _meditations(m, path),
+      characters: {for (final c in _characters(m, path)) c.id: c},
     );
   }
 }

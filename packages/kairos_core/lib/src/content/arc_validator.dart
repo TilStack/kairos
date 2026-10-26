@@ -62,6 +62,7 @@ ValidationReport validateArc(Arc arc) {
     }
   }
 
+  final usedCharacters = <String>{};
   final setFlags = <String>{};
   final readFlags = <String, String>{};
 
@@ -90,6 +91,13 @@ ValidationReport validateArc(Arc arc) {
       setFlags.addAll(node.effects.setFlags);
       for (final r in node.refs) {
         checkVerse('$where.refs', r);
+      }
+      final who = node.character;
+      if (who != null) {
+        usedCharacters.add(who);
+        if (!arc.characters.containsKey(who)) {
+          error(where, 'personnage "$who" absent de "characters"');
+        }
       }
 
       void checkTransitions(String owner, List<Transition> list) {
@@ -186,6 +194,12 @@ ValidationReport validateArc(Arc arc) {
     }
     if (!nodes.values.any((n) => n is DiscernmentNode)) {
       warn(at, 'aucun defi de discernement (MVP : 1 par chapitre)');
+    }
+  }
+
+  for (final id in arc.characters.keys) {
+    if (!usedCharacters.contains(id)) {
+      warn('characters.$id', 'personnage jamais mis en scene');
     }
   }
 

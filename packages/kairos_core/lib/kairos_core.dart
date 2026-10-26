@@ -4,6 +4,7 @@ library;
 export 'src/content/arc_parser.dart';
 export 'src/content/arc_validator.dart';
 export 'src/content/models.dart';
+export 'src/content/scene_settings.dart';
 export 'src/engine/game_state.dart';
 export 'src/engine/narrative_engine.dart';
 export 'src/journal/journal_entry.dart';

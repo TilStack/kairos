@@ -15,11 +15,20 @@ void main() {
     engine = NarrativeEngine(arc);
   });
 
+  /// Passe les dialogues jusqu'au prochain noeud interactif (choix, defi...).
+  GameState skip(GameState s) {
+    var cur = s;
+    while (engine.view(cur) is DialogueStep) {
+      cur = engine.advance(cur);
+    }
+    return cur;
+  }
+
   /// Joue le chapitre 1 jusqu'a la Porte avec l'option choisie.
   GameState toDoor(String option) {
     var s = engine.start('ch1-potiphar');
-    s = engine.advance(s); // n1 -> n2 (choix)
-    s = engine.choose(s, option);
+    s = skip(s); // dialogues -> choix
+    s = skip(engine.choose(s, option)); // reaction -> defi
     s = engine.answerDiscernment(s, AnomalyType.misattributed).state;
     expect(engine.view(s), isA<DoorStep>());
     return s;
@@ -34,7 +43,7 @@ void main() {
 
   test('un choix applique ses effets et se consigne', () {
     var s = engine.start('ch1-potiphar');
-    s = engine.advance(s);
+    s = skip(s);
     s = engine.choose(s, 'defend');
     expect(s.trait(Trait.integrity), 1);
     expect(s.trait(Trait.courage), 1);
@@ -44,20 +53,20 @@ void main() {
 
   test('option conditionnelle masquee sans le trait, visible avec', () {
     var s = engine.start('ch1-potiphar');
-    s = engine.advance(s);
+    s = skip(s);
     var choice = engine.view(s) as ChoiceStep;
     expect(choice.options.map((o) => o.id), ['defend', 'silent']);
     expect(() => engine.choose(s, 'warn'), throwsA(isA<EngineException>()));
 
     s = engine.start('ch1-potiphar', traits: {Trait.courage: 1});
-    s = engine.advance(s);
+    s = skip(s);
     choice = engine.view(s) as ChoiceStep;
     expect(choice.options.map((o) => o.id), contains('warn'));
   });
 
   test('discernement : bonne et mauvaise reponse, toutes deux consignees', () {
     var s = engine.start('ch1-potiphar');
-    s = engine.choose(engine.advance(s), 'defend');
+    s = skip(engine.choose(skip(s), 'defend'));
     final wrong = engine.answerDiscernment(s, AnomalyType.truncated);
     expect(wrong.correct, isFalse);
     expect(wrong.state.discernments.single.correct, isFalse);
@@ -79,7 +88,7 @@ void main() {
 
   test('Porte deja forgee : revision express signalee', () {
     var s = engine.start('ch1-potiphar', keys: {'GEN.39.9'});
-    s = engine.choose(engine.advance(s), 'defend');
+    s = skip(engine.choose(skip(s), 'defend'));
     s = engine.answerDiscernment(s, AnomalyType.misattributed).state;
     expect((engine.view(s) as DoorStep).alreadyForged, isTrue);
   });
@@ -96,7 +105,7 @@ void main() {
 
   test('transition conditionnelle selon un drapeau pose plus tot', () {
     var s = engine.start('ch1-potiphar', traits: {Trait.courage: 1});
-    s = engine.choose(engine.advance(s), 'warn');
+    s = skip(engine.choose(skip(s), 'warn'));
     s = engine.answerDiscernment(s, AnomalyType.misattributed).state;
     s = engine.resolveDoor(s, forged: true);
     s = engine.advance(s);
@@ -104,15 +113,15 @@ void main() {
 
     final withFlag = engine.start('ch2-egypte', flags: s.flags, keys: s.keys);
     expect(withFlag.nodeId, 'm1');
-    expect(engine.advance(withFlag).nodeId, 'm1b');
+    expect(engine.advance(withFlag).nodeId, 'm1b'); // scene reservee a ce profil
 
     final without = engine.start('ch2-egypte');
-    expect(engine.advance(without).nodeId, 'm2');
+    expect(engine.advance(without).nodeId, 'm1c'); // sans le drapeau : scene sautee
   });
 
   test('traits bornes entre 0 et traitMax', () {
     var s = engine.start('ch1-potiphar', traits: {Trait.integrity: traitMax});
-    s = engine.choose(engine.advance(s), 'defend');
+    s = engine.choose(skip(s), 'defend');
     expect(s.trait(Trait.integrity), traitMax);
   });
 
@@ -126,7 +135,7 @@ void main() {
   });
 
   test('l etat est immuable : l ancien etat reste valide (annulation, reprise)', () {
-    final s0 = engine.advance(engine.start('ch1-potiphar'));
+    final s0 = skip(engine.start('ch1-potiphar'));
     final s1 = engine.choose(s0, 'defend');
     expect(s0.nodeId, 'n2');
     expect(s0.trait(Trait.integrity), 0);
@@ -134,7 +143,7 @@ void main() {
   });
 
   test('sauvegarde : aller-retour JSON et reprise exacte', () {
-    final s = engine.choose(engine.advance(engine.start('ch1-potiphar')), 'defend');
+    final s = skip(engine.choose(skip(engine.start('ch1-potiphar')), 'defend'));
     final json = jsonEncode(s.toJson());
     final restored = GameState.fromJson(jsonDecode(json) as Map<String, Object?>);
     expect(jsonEncode(restored.toJson()), json);
@@ -148,7 +157,7 @@ void main() {
   test('determinisme : meme parcours, memes etats', () {
     String run() {
       var s = engine.start('ch1-potiphar');
-      s = engine.choose(engine.advance(s), 'silent');
+      s = skip(engine.choose(skip(s), 'silent'));
       s = engine.answerDiscernment(s, AnomalyType.misattributed).state;
       s = engine.resolveDoor(s, forged: true);
       return jsonEncode(engine.advance(s).toJson());
@@ -169,15 +178,15 @@ void main() {
 
   test('parcours complet des deux chapitres jusqu a la fin', () {
     var s = engine.start('ch1-potiphar');
-    s = engine.choose(engine.advance(s), 'defend');
+    s = skip(engine.choose(skip(s), 'defend'));
     s = engine.answerDiscernment(s, AnomalyType.misattributed).state;
     s = engine.advance(engine.resolveDoor(s, forged: true));
     expect(s.finished, isTrue);
 
     s = engine.start('ch2-egypte', keys: s.keys, traits: s.traits, flags: s.flags);
-    s = engine.advance(s);
-    s = engine.choose(s, 'forgive');
-    s = engine.answerDiscernment(s, AnomalyType.outOfContext).state;
+    s = skip(s);
+    s = skip(engine.choose(s, 'forgive'));
+    s = skip(engine.answerDiscernment(s, AnomalyType.outOfContext).state);
     s = engine.resolveDoor(s, forged: true);
     s = engine.advance(s);
     expect(s.finished, isTrue);

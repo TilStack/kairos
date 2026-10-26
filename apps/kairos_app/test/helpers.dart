@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kairos_app/app/kairos_app.dart';
@@ -62,3 +63,16 @@ Widget testApp({
 }
 
 MemoryRepository newRepo() => MemoryRepository();
+
+/// Charge les polices : sans cela, flutter_test dessine le texte en blocs.
+Future<void> loadFonts() async {
+  final nunito = FontLoader('Nunito')..addFont(rootBundle.load('assets/fonts/Nunito.ttf'));
+  await nunito.load();
+  final sdk = Platform.environment['FLUTTER_ROOT'] ?? 'C:/src/flutter_stable';
+  final icons = File('$sdk/bin/cache/artifacts/material_fonts/materialicons-regular.otf');
+  if (icons.existsSync()) {
+    final loader = FontLoader('MaterialIcons')
+      ..addFont(Future.value(ByteData.sublistView(icons.readAsBytesSync())));
+    await loader.load();
+  }
+}

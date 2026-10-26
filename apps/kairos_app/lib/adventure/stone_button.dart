@@ -156,6 +156,58 @@ Widget _outlined(String text, StoneStyle s, double size) {
   );
 }
 
+/// Reponse a un choix : tablette de pierre dont la hauteur suit le texte
+/// (les phrases de choix sont longues, contrairement aux libelles de bouton).
+class StoneOption extends StatelessWidget {
+  const StoneOption({super.key, required this.text, required this.onPressed});
+
+  final String text;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    const s = StoneStyle.sand;
+    return Semantics(
+      button: true,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [s.top, s.bottom],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: s.edge, width: 3),
+            boxShadow: [BoxShadow(color: s.edge, offset: const Offset(0, 4))],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: onPressed,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 56),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      text,
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF5B3A1A), height: 1.25),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// Petit bouton carre (musique, reglages...) : un bloc de pierre avec icone.
 class StoneIconButton extends StatelessWidget {
   const StoneIconButton({

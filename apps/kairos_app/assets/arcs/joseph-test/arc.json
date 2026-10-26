@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "joseph-test",
   "title": "La Tunique et le Trône (arc de test — 2 chapitres)",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "minEngineVersion": 1,
   "defaultBible": "LSG1910",
   "bibles": {
@@ -11,6 +11,23 @@
       "license": "domaine public"
     }
   },
+  "characters": [
+    { "id": "lumo", "name": "Lumo", "skin": "#FFC93C", "outfit": "#3B4A9C", "outfitAccent": "#FFC93C", "flameHead": true },
+    { "id": "joseph", "name": "Joseph", "skin": "#D9A066", "outfit": "#E8452E", "outfitAccent": "#F2B632", "hair": "#3A2418",
+      "stripes": ["#E8452E", "#F2B632", "#3FA86B", "#3F8FD9", "#8C5BC8"] },
+    { "id": "potiphar", "name": "Potiphar", "skin": "#A9703F", "outfit": "#F1EBDD", "outfitAccent": "#D9A62E", "hair": "#1F1612",
+      "headwear": "turban", "headwearColor": "#F1EBDD" },
+    { "id": "intendant", "name": "L'intendant", "skin": "#B98558", "outfit": "#7A8B5A", "outfitAccent": "#4E5A35", "hair": "#2A1B12",
+      "headwear": "headband", "headwearColor": "#D8C7A0", "prop": "scroll" },
+    { "id": "murmure", "name": "Le Murmure", "skin": "#120D1E", "outfit": "#3A2D5C", "outfitAccent": "#7D5FD0",
+      "headwear": "hood", "glowingEyes": true },
+    { "id": "frere", "name": "Un frère de Joseph", "skin": "#CB9560", "outfit": "#8E7A55", "outfitAccent": "#5E4B32", "hair": "#2B1A12", "beard": "#2B1A12",
+      "headwear": "headband", "headwearColor": "#D8C7A0", "prop": "staff" },
+    { "id": "benjamin", "name": "Benjamin", "skin": "#D2A06B", "outfit": "#4F8FB8", "outfitAccent": "#F2E3B5", "hair": "#2B1A12", "scale": 0.8 },
+    { "id": "pharaon", "name": "Pharaon", "skin": "#B87A48", "outfit": "#2E6FBF", "outfitAccent": "#E8B930", "headwear": "nemes" },
+    { "id": "jacob", "name": "Jacob", "skin": "#C98E58", "outfit": "#8A6A4F", "outfitAccent": "#D8C7A0", "hair": "#E6E2D6", "beard": "#E6E2D6",
+      "headwear": "headband", "headwearColor": "#B04A3A", "prop": "staff" }
+  ],
   "verses": {
     "LSG1910": {
       "GEN.39.9": "Il n'est pas plus grand que moi dans cette maison, et il ne m'a rien interdit, excepté toi, parce que tu es sa femme. Comment ferais-je un aussi grand mal et pécherais-je contre Dieu?",
@@ -54,43 +71,78 @@
       "nodes": [
         {
           "id": "n1",
+          "setting": "desert",
           "type": "dialogue",
           "scene": "Le matin",
-          "text": "Tu t'éveilles dans une maison d'Égypte. Tu es un jeune serviteur, parmi d'autres. Tout le monde parle d'un esclave hébreu, Joseph, à qui tout réussit.",
+          "character": "lumo",
+          "mood": "happy",
+          "action": "wave",
+          "speaker": "Lumo",
+          "text": "Bienvenue, témoin ! Cette nuit, tu as été emporté en Égypte. Tu es un jeune serviteur dans la maison de Potiphar. Tout le monde parle d'un esclave hébreu à qui tout réussit.",
+          "next": "n1b"
+        },
+        {
+          "id": "n1b",
+          "type": "dialogue",
+          "scene": "Le matin",
+          "character": "joseph",
+          "mood": "happy",
+          "action": "talk",
+          "speaker": "Joseph",
+          "text": "Bonjour ! Je m'appelle Joseph. Je viens de loin, mais je crois que Dieu est avec moi, même ici. Tu veux bien m'aider à porter ces jarres ?",
           "next": "n2"
         },
         {
           "id": "n2",
           "type": "choice",
-          "scene": "Le matin",
+          "scene": "Le midi",
+          "character": "intendant",
+          "mood": "think",
+          "action": "point",
           "prompt": "À l'heure du repas, l'intendant te questionne sur Joseph. Que réponds-tu ?",
           "options": [
             {
               "id": "defend",
               "text": "« Il est honnête dans tout ce qu'il fait. »",
               "effects": { "traits": { "integrity": 1, "courage": 1 }, "setFlags": ["defended_joseph"] },
-              "next": "n3"
+              "next": "n2a"
             },
             {
               "id": "silent",
               "text": "Tu hausses les épaules et tu changes de sujet.",
               "effects": { "traits": { "humility": 1 } },
-              "next": "n3"
+              "next": "n2a"
             },
             {
               "id": "warn",
               "text": "Tu prends l'intendant à part pour l'avertir d'un danger qui guette Joseph.",
               "requires": { "traits": { "courage": { "min": 1 } } },
               "effects": { "traits": { "compassion": 1, "wisdom": 1 }, "setFlags": ["warned_joseph"] },
-              "next": "n3"
+              "next": "n2a"
             }
           ]
         },
         {
+          "id": "n2a",
+          "setting": "house",
+          "type": "dialogue",
+          "scene": "Le midi",
+          "character": "potiphar",
+          "mood": "neutral",
+          "action": "point",
+          "speaker": "Potiphar",
+          "text": "Ma maison prospère depuis que Joseph y travaille. Je lui ai tout confié, et il n'a jamais trahi ma confiance. Voilà un homme sur qui l'on peut compter.",
+          "next": "n3"
+        },
+        {
           "id": "n3",
+          "setting": "house",
           "type": "discernment",
           "scene": "Le soir",
-          "speaker": "Un intendant",
+          "character": "murmure",
+          "mood": "sly",
+          "action": "talk",
+          "speaker": "Le Murmure",
           "quote": "Tu sais, il faut rester pragmatique : la Bible elle-même dit que « Dieu aide ceux qui s'aident ».",
           "claimedRef": "Proverbes 3:5",
           "anomaly": "misattributed",
@@ -101,8 +153,12 @@
         },
         {
           "id": "n4",
+          "setting": "house",
           "type": "door",
           "scene": "La porte",
+          "character": "lumo",
+          "mood": "think",
+          "action": "point",
           "prompt": "La porte de la chambre est close. Une parole retenue peut seule te permettre de passer sans honte.",
           "verse": "GEN.39.9",
           "refs": ["GEN.39.9"],
@@ -111,6 +167,9 @@
         {
           "id": "n5",
           "type": "debrief",
+          "character": "lumo",
+          "mood": "happy",
+          "action": "cheer",
           "teaching": "Joseph refuse le mal parce qu'il craint Dieu, pas seulement parce qu'on le regarde. L'intégrité est une fidélité devant Dieu, même quand personne ne voit.",
           "verses": ["GEN.39.9", "PRO.3.5"],
           "next": "n6"
@@ -126,26 +185,72 @@
       "nodes": [
         {
           "id": "m1",
+          "setting": "palace",
           "type": "dialogue",
           "scene": "Le palais",
-          "text": "Des années ont passé. Tu es maintenant au service du palais, et tu vois entrer des hommes affamés, venus de Canaan.",
+          "character": "lumo",
+          "mood": "neutral",
+          "action": "walk",
+          "speaker": "Lumo",
+          "text": "Des années ont passé. Tu sers maintenant au palais, et Joseph est devenu l'un des plus puissants d'Égypte. Aujourd'hui, des hommes affamés, venus de Canaan, se présentent devant lui.",
           "next": [
             { "if": { "flags": ["warned_joseph"] }, "to": "m1b" },
-            { "to": "m2" }
+            { "to": "m1c" }
           ]
         },
         {
           "id": "m1b",
           "type": "dialogue",
           "scene": "Le palais",
+          "character": "joseph",
+          "mood": "happy",
+          "action": "wave",
           "speaker": "Joseph",
           "text": "Joseph se souvient de ton avertissement d'autrefois et incline la tête vers toi, brièvement.",
+          "next": "m1c"
+        },
+        {
+          "id": "m1c",
+          "type": "dialogue",
+          "scene": "Le palais",
+          "character": "frere",
+          "mood": "sad",
+          "action": "sad",
+          "speaker": "Un frère de Joseph",
+          "text": "Seigneur, nous venons d'un pays où la famine est grande. Nous voudrions acheter du blé pour nos familles. Nous sommes des hommes honnêtes.",
+          "next": "m1d"
+        },
+        {
+          "id": "m1d",
+          "type": "dialogue",
+          "scene": "Le palais",
+          "character": "benjamin",
+          "mood": "wow",
+          "action": "idle",
+          "speaker": "Benjamin",
+          "text": "Moi, je suis Benjamin, le plus jeune. Papa a voulu que je reste à la maison, mais mes frères m'ont emmené. Le palais est immense !",
+          "next": "m1e"
+        },
+        {
+          "id": "m1e",
+          "setting": "memory",
+          "type": "dialogue",
+          "scene": "Un souvenir",
+          "character": "jacob",
+          "mood": "sad",
+          "action": "sad",
+          "speaker": "Jacob (dans le souvenir de Joseph)",
+          "text": "Joseph se rappelle son père, des années plus tôt, pleurant la perte de son fils préféré. Il serre les poings pour retenir ses larmes.",
           "next": "m2"
         },
         {
           "id": "m2",
+          "setting": "palace",
           "type": "choice",
           "scene": "Le palais",
+          "character": "joseph",
+          "mood": "think",
+          "action": "think",
           "prompt": "Joseph reconnaît ses frères. Il te demande conseil devant eux. Que lui dis-tu ?",
           "options": [
             {
@@ -166,19 +271,36 @@
           "id": "m2b",
           "type": "discernment",
           "scene": "Le palais",
-          "speaker": "Un des frères",
+          "character": "murmure",
+          "mood": "sly",
+          "action": "talk",
+          "speaker": "Le Murmure",
           "quote": "Tu vois bien : « toutes choses concourent au bien ». Alors le mal que nous avons fait n'a finalement pas d'importance.",
           "claimedRef": "Romains 8:28",
           "anomaly": "out_of_context",
           "correctRef": "ROM.8.28",
           "explanation": "Romains 8:28 est une promesse faite à ceux qui aiment Dieu : elle n'excuse jamais le mal. Joseph lui-même dit à ses frères : « Vous aviez médité de me faire du mal ». Le mal reste le mal, même si Dieu peut le retourner en bien.",
           "refs": ["ROM.8.28"],
+          "next": "m2d"
+        },
+        {
+          "id": "m2d",
+          "type": "dialogue",
+          "scene": "La salle du trône",
+          "character": "pharaon",
+          "mood": "neutral",
+          "action": "point",
+          "speaker": "Pharaon",
+          "text": "Joseph a sauvé mon peuple de la famine par sa sagesse. Que ceux qui entrent ici sachent : celui qui vit dans la vérité n'a rien à craindre.",
           "next": "m3"
         },
         {
           "id": "m3",
           "type": "door",
           "scene": "La porte",
+          "character": "lumo",
+          "mood": "think",
+          "action": "point",
           "prompt": "Pour entrer dans la salle du trône, tu dois prononcer la parole qui résume tout.",
           "verse": "GEN.50.20",
           "refs": ["GEN.50.20"],
@@ -187,6 +309,9 @@
         {
           "id": "m4",
           "type": "debrief",
+          "character": "lumo",
+          "mood": "happy",
+          "action": "cheer",
           "teaching": "Dieu n'est jamais pris de court par le mal qu'on nous fait : il peut le retourner en bien sans l'excuser. Le pardon de Joseph naît de ce regard.",
           "verses": ["GEN.50.20"],
           "next": "m5"

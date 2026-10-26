@@ -17,6 +17,14 @@ Future<void> tapText(WidgetTester tester, String text) async {
   await tester.pumpAndSettle();
 }
 
+/// Appuie sur CONTINUER tant qu'une scene de dialogue est affichee.
+Future<void> skipDialogues(WidgetTester tester) async {
+  while (find.byKey(const ValueKey('continue')).evaluate().isNotEmpty) {
+    await tester.tap(find.byKey(const ValueKey('continue')));
+    await tester.pumpAndSettle();
+  }
+}
+
 /// Remet le verset du niveau 1 en ordre en touchant les mots.
 Future<void> solveOrder(WidgetTester tester, String verse) async {
   for (final word in verse.split(' ')) {
@@ -55,15 +63,24 @@ void main() {
     expect(find.byIcon(Icons.lock_outline), findsOneWidget);
 
     await tapKey(tester, 'chapter-ch1-potiphar');
-    expect(find.textContaining('maison d\'Égypte'), findsOneWidget);
-    await tapText(tester, 'Continuer');
+    expect(find.textContaining('Bienvenue, témoin'), findsOneWidget);
+    expect(find.text('Lumo'), findsOneWidget); // plaque du personnage
+    await tapKey(tester, 'continue');
+    expect(find.text('Joseph'), findsOneWidget); // un autre acteur prend la parole
+    await tapKey(tester, 'continue');
 
     // Choix : l'option reservee au courage est masquee.
     expect(find.byKey(const ValueKey('option-warn')), findsNothing);
     await tapKey(tester, 'option-defend');
 
+    // Reaction d'un autre personnage avant le defi.
+    expect(find.text('Potiphar'), findsOneWidget);
+    await tapKey(tester, 'continue');
+
     // Discernement : mauvaise reponse d'abord -> explication, sans honte.
     await tapKey(tester, 'anomaly-truncated');
+    expect(find.text('Le Murmure'), findsNothing); // l'explication est donnee par Lumo
+    expect(find.text('Lumo'), findsOneWidget);
     expect(find.textContaining('Pas tout à fait'), findsOneWidget);
     expect(find.textContaining('ne figure nulle part dans la Bible'), findsOneWidget);
     await tapKey(tester, 'feedback-continue');
@@ -105,7 +122,7 @@ void main() {
     await tester.pumpAndSettle();
     await tapKey(tester, 'play');
     await tapKey(tester, 'chapter-ch1-potiphar');
-    await tapText(tester, 'Continuer'); // arrive au choix
+    await skipDialogues(tester); // arrive au choix
     expect(find.byKey(const ValueKey('option-defend')), findsOneWidget);
 
     // L'application est detruite (nouvel arbre de widgets, memes donnees).
@@ -116,7 +133,7 @@ void main() {
     await tapKey(tester, 'chapter-ch1-potiphar');
 
     expect(find.byKey(const ValueKey('option-defend')), findsOneWidget);
-    expect(find.textContaining('maison d\'Égypte'), findsNothing);
+    expect(find.textContaining('Bienvenue, témoin'), findsNothing);
   });
 
   testWidgets('une Porte deja forgee reprend au niveau de maitrise', (tester) async {
@@ -128,10 +145,11 @@ void main() {
     await tester.pumpAndSettle();
     await tapKey(tester, 'play');
     await tapKey(tester, 'chapter-ch1-potiphar');
-    await tapText(tester, 'Continuer');
+    await skipDialogues(tester);
     await tapKey(tester, 'option-defend');
+    await skipDialogues(tester);
     await tapKey(tester, 'anomaly-misattributed');
-    expect(find.text('Bien vu.'), findsOneWidget);
+    expect(find.text('Bien vu !'), findsOneWidget);
     await tapKey(tester, 'feedback-continue');
     expect(find.text('Niveau 3 · De mémoire'), findsOneWidget);
   });

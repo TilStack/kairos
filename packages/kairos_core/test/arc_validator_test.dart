@@ -207,7 +207,7 @@ void main() {
       final nodes = nodesOf(json, 1);
       node(json, 1, 'm2b');
       for (final o in (node(json, 1, 'm2')['options']! as List<Object?>).cast<Map<String, Object?>>()) {
-        o['next'] = 'm3';
+        o['next'] = 'm2d';
       }
       nodes.removeWhere((n) => n['id'] == 'm2b');
       final report = validate(json);
@@ -230,6 +230,124 @@ void main() {
       final options = (node(json, 0, 'n2')['options']! as List<Object?>).cast<Map<String, Object?>>();
       options[1]['id'] = options[0]['id'];
       expect(validate(json).errors.any((i) => i.message.contains('en double')), isTrue);
+    });
+  });
+
+  group('personnages', () {
+    List<Map<String, Object?>> chars(Map<String, Object?> json) =>
+        (json['characters']! as List<Object?>).cast<Map<String, Object?>>();
+
+    test('la distribution est lue : neuf acteurs, apparence complete', () {
+      final arc = parseArc(baseJson());
+      expect(arc.characters.keys, hasLength(9));
+      final lumo = arc.characters['lumo']!;
+      expect(lumo.flameHead, isTrue);
+      expect(arc.characters['joseph']!.stripes, hasLength(5));
+      expect(arc.characters['benjamin']!.scale, 0.8);
+      expect(arc.characters['murmure']!.glowingEyes, isTrue);
+      expect(arc.characters['pharaon']!.headwear, 'nemes');
+    });
+
+    test('noeuds : personnage, humeur et action lus', () {
+      final arc = parseArc(baseJson());
+      final n = arc.chapters.first.nodes['n1']!;
+      expect((n.character, n.mood, n.action), ('lumo', 'happy', 'wave'));
+    });
+
+    test('personnage mis en scene mais absent de la distribution : erreur', () {
+      final json = baseJson();
+      node(json, 0, 'n1')['character'] = 'fantome';
+      final report = validate(json);
+      expect(report.errors.any((i) => i.message.contains('"fantome"')), isTrue);
+    });
+
+    test('personnage declare mais jamais utilise : avertissement non bloquant', () {
+      final json = baseJson();
+      chars(json).add({'id': 'figurant', 'name': 'Figurant', 'skin': '#AA8866', 'outfit': '#445566'});
+      final report = validate(json);
+      expect(report.ok, isTrue);
+      expect(report.warnings.any((i) => i.location.contains('figurant')), isTrue);
+    });
+
+    test('couleur invalide refusee avec son chemin', () {
+      final json = baseJson();
+      chars(json).first['skin'] = 'jaune';
+      expect(parseErrors(json).any((e) => e.contains('characters[0].skin') && e.contains('#RRGGBB')), isTrue);
+    });
+
+    test('humeur, action, coiffe et accessoire hors liste refuses', () {
+      final json = baseJson();
+      node(json, 0, 'n1')['mood'] = 'furieux';
+      node(json, 0, 'n1b')['action'] = 'voler';
+      chars(json)[1]['headwear'] = 'couronne';
+      chars(json)[1]['prop'] = 'epee';
+      final errors = parseErrors(json);
+      expect(errors.where((e) => e.contains('valeur inconnue')).length, 4);
+    });
+
+    test('identifiant de personnage en double', () {
+      final json = baseJson();
+      chars(json)[1]['id'] = 'lumo';
+      expect(parseErrors(json).any((e) => e.contains('en double')), isTrue);
+    });
+
+    test('echelle hors bornes et booleen invalide', () {
+      final json = baseJson();
+      chars(json)[0]['scale'] = 4;
+      chars(json)[0]['flameHead'] = 'oui';
+      final errors = parseErrors(json);
+      expect(errors.any((e) => e.contains('scale')), isTrue);
+      expect(errors.any((e) => e.contains('flameHead')), isTrue);
+    });
+
+    test('cle inconnue dans une fiche de personnage (faute de frappe)', () {
+      final json = baseJson();
+      chars(json).first['couleurPeau'] = '#000000';
+      expect(parseErrors(json).any((e) => e.contains('couleurPeau')), isTrue);
+    });
+
+    test('arc sans distribution : toujours valide (personnages optionnels)', () {
+      final json = baseJson()..remove('characters');
+      for (final c in [0, 1]) {
+        for (final n in nodesOf(json, c)) {
+          n.remove('character');
+        }
+      }
+      expect(validate(json).ok, isTrue);
+    });
+  });
+
+  group('lieux des scenes', () {
+    test('un noeud sans lieu herite du precedent, y compris apres un choix', () {
+      final arc = parseArc(baseJson());
+      final ch1 = resolveSettings(arc.chapters[0]);
+      expect(ch1['n1'], 'desert');
+      expect(ch1['n1b'], 'desert'); // herite
+      expect(ch1['n2'], 'desert');
+      expect(ch1['n2a'], 'house'); // declare
+      expect(ch1['n5'], 'house'); // herite de la maison jusqu'a la fin
+      final ch2 = resolveSettings(arc.chapters[1]);
+      expect(ch2['m1c'], 'palace');
+      expect(ch2['m1e'], 'memory');
+      expect(ch2['m2'], 'palace'); // retour au palais declare
+      expect(ch2['m3'], 'palace');
+    });
+
+    test('aucun lieu declare : repli fourni', () {
+      final json = baseJson();
+      for (final c in [0, 1]) {
+        for (final n in nodesOf(json, c)) {
+          n.remove('setting');
+        }
+      }
+      final arc = parseArc(json);
+      expect(resolveSettings(arc.chapters[0], fallback: 'house').values.toSet(), {'house'});
+    });
+
+    test('lieu inconnu refuse', () {
+      final json = baseJson();
+      node(json, 0, 'n1')['setting'] = 'lune';
+      expect(parseErrors(json).any((e) => e.contains('valeur inconnue') && e.contains('setting')), isTrue);
     });
   });
 }

@@ -2,13 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kairos_core/kairos_core.dart';
 
+import '../../adventure/scene_frame.dart';
+import '../../adventure/stone_button.dart';
 import '../../app/controllers.dart';
 import '../../app/providers.dart';
 import '../../app/widgets.dart';
+import '../../characters/cast.dart';
+import '../../characters/character_spec.dart';
+import '../../characters/pose.dart';
+import '../../characters/spec_from_def.dart';
 import '../keys/door_view.dart';
 
 /// Lecteur narratif d'un chapitre. Chaque action est persistee avant d'etre
 /// affichee : une fermeture brutale reprend exactement au dernier noeud.
+/// Chaque noeud est joue dans une scene : decor du lieu, personnage anime,
+/// et panneau de texte.
 class ReaderScreen extends ConsumerStatefulWidget {
   const ReaderScreen({super.key, required this.chapterId});
 
@@ -19,9 +27,13 @@ class ReaderScreen extends ConsumerStatefulWidget {
 }
 
 class _ReaderScreenState extends ConsumerState<ReaderScreen> {
+  late final Map<String, String> _settings;
+
   @override
   void initState() {
     super.initState();
+    final chapter = ref.read(arcProvider).chapter(widget.chapterId);
+    _settings = chapter == null ? const {} : resolveSettings(chapter);
     Future.microtask(() => ref.read(readerProvider.notifier).open(widget.chapterId));
   }
 
@@ -32,7 +44,38 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
     final title = arc.chapter(widget.chapterId)?.title ?? '';
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: SafeArea(child: _body(reader)),
+      body: _body(reader),
+    );
+  }
+
+  /// Personnage d'un noeud : celui qu'il declare, sinon [fallbackId].
+  CharacterSpec _cast(Node node, {String fallbackId = 'lumo'}) {
+    final cast = ref.read(castProvider);
+    return cast[node.character] ?? cast[fallbackId] ?? Cast.lumo;
+  }
+
+  SceneFrame _scene(
+    Node node, {
+    required Widget child,
+    CharacterAction defaultAction = CharacterAction.idle,
+    Mood defaultMood = Mood.happy,
+    bool talking = false,
+    String? speakerName,
+    bool scrollable = true,
+    double panelFraction = 0.55,
+  }) {
+    final who = _cast(node);
+    return SceneFrame(
+      setting: _settings[node.id] ?? 'desert',
+      character: who,
+      action: actionOf(node.action, defaultAction),
+      mood: moodOf(node.mood, defaultMood),
+      talking: talking,
+      speakerName: speakerName,
+      animated: ref.watch(animationsProvider),
+      scrollable: scrollable,
+      panelFraction: panelFraction,
+      child: child,
     );
   }
 
@@ -53,58 +96,102 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
       return const Center(child: CircularProgressIndicator());
     }
     final feedback = reader.feedback;
-    if (feedback != null) return _FeedbackView(feedback: feedback);
+    if (feedback != null) return _feedbackScene(feedback);
 
     final engine = ref.read(engineProvider);
     final step = engine.view(game);
     final controller = ref.read(readerProvider.notifier);
+    final Widget scene = switch (step) {
+      DialogueStep(:final node) => _scene(
+          node,
+          talking: true,
+          speakerName: node.speaker ?? _cast(node).name,
+          panelFraction: 0.42,
+          child: _DialogueText(text: node.text, onNext: controller.advance),
+        ),
+      ChoiceStep(:final node, :final options) => _scene(
+          node,
+          talking: true,
+          defaultAction: CharacterAction.think,
+          speakerName: node.character == null ? null : _cast(node).name,
+          panelFraction: 0.56,
+          child: _ChoiceText(prompt: node.prompt, options: options, onChoose: controller.choose),
+        ),
+      DiscernmentStep(:final node) => _scene(
+          node,
+          talking: true,
+          defaultAction: CharacterAction.talk,
+          defaultMood: Mood.sly,
+          speakerName: node.speaker ?? _cast(node, fallbackId: 'murmure').name,
+          panelFraction: 0.64,
+          child: _DiscernmentText(node: node, onAnswer: controller.answerDiscernment),
+        ),
+      DoorStep(:final node) => _scene(
+          node,
+          defaultAction: CharacterAction.point,
+          defaultMood: Mood.think,
+          scrollable: false,
+          panelFraction: 0.64,
+          child: _DoorHost(node: node, key: ValueKey('door-${node.id}')),
+        ),
+      DebriefStep(:final node, :final verses, :final traits) => _scene(
+          node,
+          defaultAction: CharacterAction.cheer,
+          panelFraction: 0.62,
+          child: _DebriefText(teaching: node.teaching, verses: verses, traits: traits, onNext: controller.advance),
+        ),
+      EndStep(:final node) => _scene(
+          node,
+          defaultAction: CharacterAction.cheer,
+          panelFraction: 0.36,
+          child: const _EndText(),
+        ),
+    };
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 200),
-      child: KeyedSubtree(
-        key: ValueKey('${game.chapterId}/${game.nodeId}'),
-        child: switch (step) {
-          DialogueStep(:final node) => _DialogueView(node: node, onNext: controller.advance),
-          ChoiceStep(:final node, :final options) =>
-            _ChoiceView(prompt: node.prompt, options: options, onChoose: controller.choose),
-          DiscernmentStep(:final node) =>
-            _DiscernmentView(node: node, onAnswer: controller.answerDiscernment),
-          DoorStep(:final node) => _DoorHost(node: node, key: ValueKey('door-${node.id}')),
-          DebriefStep(:final node, :final verses, :final traits) =>
-            _DebriefView(teaching: node.teaching, verses: verses, traits: traits, onNext: controller.advance),
-          EndStep() => const _EndView(),
-        },
-      ),
+      child: KeyedSubtree(key: ValueKey('${game.chapterId}/${game.nodeId}'), child: scene),
+    );
+  }
+
+  /// Explication apres un defi de discernement : Lumo la donne avec bienveillance.
+  Widget _feedbackScene(DiscernmentFeedback feedback) {
+    return SceneFrame(
+      setting: _settings[feedback.node.id] ?? 'desert',
+      character: ref.read(castProvider)['lumo'] ?? Cast.lumo,
+      action: feedback.correct ? CharacterAction.cheer : CharacterAction.talk,
+      mood: feedback.correct ? Mood.happy : Mood.neutral,
+      talking: !feedback.correct,
+      speakerName: 'Lumo',
+      panelFraction: 0.64,
+      animated: ref.watch(animationsProvider),
+      child: _FeedbackText(feedback: feedback),
     );
   }
 }
 
-class _DialogueView extends StatelessWidget {
-  const _DialogueView({required this.node, required this.onNext});
+const _bodyStyle = TextStyle(fontSize: 18, height: 1.5, color: Color(0xFF3A2A1A), fontWeight: FontWeight.w600);
 
-  final DialogueNode node;
+class _DialogueText extends StatelessWidget {
+  const _DialogueText({required this.text, required this.onNext});
+
+  final String text;
   final VoidCallback onNext;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return ListView(
-      padding: const EdgeInsets.all(20),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (node.speaker != null)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Text(node.speaker!, style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.secondary)),
-          ),
-        Text(node.text, style: theme.textTheme.bodyLarge?.copyWith(height: 1.55)),
-        const SizedBox(height: 24),
-        FilledButton(onPressed: onNext, child: const Text('Continuer')),
+        Text(text, style: _bodyStyle),
+        const SizedBox(height: 18),
+        StoneButton(key: const ValueKey('continue'), label: 'CONTINUER', fontSize: 20, height: 58, onPressed: onNext),
       ],
     );
   }
 }
 
-class _ChoiceView extends StatelessWidget {
-  const _ChoiceView({required this.prompt, required this.options, required this.onChoose});
+class _ChoiceText extends StatelessWidget {
+  const _ChoiceText({required this.prompt, required this.options, required this.onChoose});
 
   final String prompt;
   final List<ChoiceOption> options;
@@ -112,67 +199,57 @@ class _ChoiceView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(20),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(prompt, style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 16),
+        Text(prompt, style: _bodyStyle.copyWith(fontWeight: FontWeight.w800)),
+        const SizedBox(height: 14),
         for (final o in options)
-          Card(
-            key: ValueKey('option-${o.id}'),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(14),
-              onTap: () => onChoose(o.id),
-              child: Padding(padding: const EdgeInsets.all(16), child: Text(o.text)),
-            ),
-          ),
+          StoneOption(key: ValueKey('option-${o.id}'), text: o.text, onPressed: () => onChoose(o.id)),
       ],
     );
   }
 }
 
-class _DiscernmentView extends StatelessWidget {
-  const _DiscernmentView({required this.node, required this.onAnswer});
+class _DiscernmentText extends StatelessWidget {
+  const _DiscernmentText({required this.node, required this.onAnswer});
 
   final DiscernmentNode node;
   final void Function(AnomalyType) onAnswer;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return ListView(
-      padding: const EdgeInsets.all(20),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(node.speaker ?? 'Une voix', style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.secondary)),
-        const SizedBox(height: 8),
-        Card(
-          color: theme.colorScheme.errorContainer.withValues(alpha: 0.35),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: const Color(0x22B03A2E),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0x66B03A2E), width: 2),
+          ),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(14),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(node.quote, style: theme.textTheme.bodyLarge?.copyWith(fontStyle: FontStyle.italic)),
+                Text(node.quote, style: _bodyStyle.copyWith(fontStyle: FontStyle.italic)),
                 if (node.claimedRef != null) ...[
-                  const SizedBox(height: 8),
-                  Text('Cité comme : ${node.claimedRef}', style: theme.textTheme.labelLarge),
+                  const SizedBox(height: 6),
+                  Text('Cité comme : ${node.claimedRef}', style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF7A2D1F))),
                 ],
               ],
             ),
           ),
         ),
-        const SizedBox(height: 16),
-        Text('Quelle est l\'anomalie ?', style: theme.textTheme.titleMedium),
+        const SizedBox(height: 14),
+        const Text('Quelle est l\'anomalie ?', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900, color: Color(0xFF3A2A1A))),
         const SizedBox(height: 8),
         for (final type in AnomalyType.values)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: OutlinedButton(
-              key: ValueKey('anomaly-${type.id}'),
-              style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
-              onPressed: () => onAnswer(type),
-              child: Text(anomalyLabels[type]!),
-            ),
+          StoneOption(
+            key: ValueKey('anomaly-${type.id}'),
+            text: anomalyLabels[type]!,
+            onPressed: () => onAnswer(type),
           ),
       ],
     );
@@ -181,8 +258,8 @@ class _DiscernmentView extends StatelessWidget {
 
 /// Explication pedagogique apres un defi de discernement : toujours donnee,
 /// sans honte en cas d'erreur (CDC §4.4).
-class _FeedbackView extends ConsumerWidget {
-  const _FeedbackView({required this.feedback});
+class _FeedbackText extends ConsumerWidget {
+  const _FeedbackText({required this.feedback});
 
   final DiscernmentFeedback feedback;
 
@@ -191,27 +268,26 @@ class _FeedbackView extends ConsumerWidget {
     final arc = ref.watch(arcProvider);
     final node = feedback.node;
     final ref0 = node.correctRef;
-    return ListView(
-      padding: const EdgeInsets.all(20),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          feedback.correct ? 'Bien vu.' : 'Pas tout à fait — voici pourquoi.',
-          style: Theme.of(context).textTheme.titleLarge,
+          feedback.correct ? 'Bien vu !' : 'Pas tout à fait — voici pourquoi.',
+          style: _bodyStyle.copyWith(fontWeight: FontWeight.w900, fontSize: 22),
         ),
         const SizedBox(height: 8),
-        Text('Il s\'agissait d\'un verset : ${anomalyLabels[node.anomaly]!.toLowerCase()}.'),
+        Text('Il s\'agissait d\'un verset : ${anomalyLabels[node.anomaly]!.toLowerCase()}.', style: _bodyStyle),
         const SizedBox(height: 8),
-        Text(node.explanation),
+        Text(node.explanation, style: _bodyStyle),
         if (ref0 != null)
-          ScriptureBlock(
-            reference: BibleRef.tryParse(ref0)?.label ?? ref0,
-            text: arc.verseText(ref0),
-          ),
-        const SizedBox(height: 16),
-        FilledButton(
+          ScriptureBlock(reference: BibleRef.tryParse(ref0)?.label ?? ref0, text: arc.verseText(ref0)),
+        const SizedBox(height: 14),
+        StoneButton(
           key: const ValueKey('feedback-continue'),
+          label: 'CONTINUER',
+          fontSize: 20,
+          height: 58,
           onPressed: ref.read(readerProvider.notifier).dismissFeedback,
-          child: const Text('Continuer'),
         ),
       ],
     );
@@ -264,8 +340,8 @@ class _DoorHostState extends ConsumerState<_DoorHost> {
   }
 }
 
-class _DebriefView extends StatelessWidget {
-  const _DebriefView({required this.teaching, required this.verses, required this.traits, required this.onNext});
+class _DebriefText extends StatelessWidget {
+  const _DebriefText({required this.teaching, required this.verses, required this.traits, required this.onNext});
 
   final String teaching;
   final List<VerseText> verses;
@@ -274,17 +350,16 @@ class _DebriefView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return ListView(
-      padding: const EdgeInsets.all(20),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text('À la lumière de l\'Écriture', style: theme.textTheme.titleLarge),
-        const SizedBox(height: 12),
-        for (final v in verses) ScriptureBlock(reference: v.label, text: v.text),
+        Text('À la lumière de l\'Écriture', style: _bodyStyle.copyWith(fontWeight: FontWeight.w900, fontSize: 22)),
         const SizedBox(height: 8),
-        Text(teaching, style: theme.textTheme.bodyLarge?.copyWith(height: 1.5)),
+        for (final v in verses) ScriptureBlock(reference: v.label, text: v.text),
+        const SizedBox(height: 6),
+        Text(teaching, style: _bodyStyle),
         const SizedBox(height: 16),
-        Text('Ton cœur, révélé par tes choix', style: theme.textTheme.titleMedium),
+        Text('Ton cœur, révélé par tes choix', style: _bodyStyle.copyWith(fontWeight: FontWeight.w900)),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -294,37 +369,39 @@ class _DebriefView extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
-        const Text('Aucun trait n\'est mauvais : l\'Écriture est un miroir, pas un tribunal.'),
-        const SizedBox(height: 24),
-        FilledButton(key: const ValueKey('debrief-continue'), onPressed: onNext, child: const Text('Terminer le chapitre')),
+        const Text('Aucun trait n\'est mauvais : l\'Écriture est un miroir, pas un tribunal.', style: TextStyle(color: Color(0xFF5B4630))),
+        const SizedBox(height: 18),
+        StoneButton(
+          key: const ValueKey('debrief-continue'),
+          label: 'TERMINER LE CHAPITRE',
+          fontSize: 18,
+          height: 58,
+          style: StoneStyle.moss,
+          onPressed: onNext,
+        ),
       ],
     );
   }
 }
 
-class _EndView extends StatelessWidget {
-  const _EndView();
+class _EndText extends StatelessWidget {
+  const _EndText();
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.auto_stories, size: 56),
-            const SizedBox(height: 12),
-            Text('Chapitre terminé', style: Theme.of(context).textTheme.headlineSmall),
-            const SizedBox(height: 24),
-            FilledButton(
-              key: const ValueKey('end-back'),
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Retour à l\'aventure'),
-            ),
-          ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('Chapitre terminé', textAlign: TextAlign.center, style: _bodyStyle.copyWith(fontWeight: FontWeight.w900, fontSize: 26)),
+        const SizedBox(height: 18),
+        StoneButton(
+          key: const ValueKey('end-back'),
+          label: 'RETOUR À L\'AVENTURE',
+          fontSize: 18,
+          height: 58,
+          onPressed: () => Navigator.of(context).pop(),
         ),
-      ),
+      ],
     );
   }
 }
