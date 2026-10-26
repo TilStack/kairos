@@ -101,6 +101,12 @@ class DriftRepository implements KairosRepository {
   Future<void> saveLamp(LampState lamp) => _setKv(_lampKey, jsonEncode(lamp.toJson()));
 
   @override
+  Future<String?> getSetting(String key) => _getKv('setting:$key');
+
+  @override
+  Future<void> setSetting(String key, String value) => _setKv('setting:$key', value);
+
+  @override
   Future<void> addJournalEntry(JournalEntry entry) => _db.into(_db.journalRows).insertOnConflictUpdate(
         JournalRowsCompanion.insert(
           id: entry.id,

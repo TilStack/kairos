@@ -11,6 +11,8 @@ ThemeData buildTheme(Brightness brightness) {
   );
   return ThemeData(
     useMaterial3: true,
+    fontFamily: 'Nunito',
+    scaffoldBackgroundColor: brightness == Brightness.light ? const Color(0xFFFBF1DA) : null,
     colorScheme: scheme,
     appBarTheme: const AppBarTheme(centerTitle: false),
     cardTheme: CardThemeData(

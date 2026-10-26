@@ -8,10 +8,13 @@ environment:
 
 dependencies:
   drift: ^2.35.3
+  flame: ^1.38.2
+  flame_audio: ^2.12.2
   flutter:
     sdk: flutter
   flutter_riverpod: ^3.4.3
   flutter_secure_storage: ^11.2.0
+  flutter_svg: ^2.3.0
   kairos_core:
     path: ../../packages/kairos_core
   path: ^1.9.1
@@ -27,8 +30,13 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/Nunito.ttf
   assets:
     - assets/arcs/joseph-test/arc.json
+    - assets/audio/theme.wav
 
 # Chiffrement au repos : SQLCipher a la place de SQLite (sqlite3 >= 3.x).
 hooks:

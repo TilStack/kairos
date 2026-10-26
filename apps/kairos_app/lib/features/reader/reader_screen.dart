@@ -256,6 +256,7 @@ class _DoorHostState extends ConsumerState<_DoorHost> {
           challenge: challenge,
           prompt: widget.node.prompt,
           reference: BibleRef.tryParse(widget.node.verse)?.label ?? widget.node.verse,
+          celebrate: ref.watch(animationsProvider),
           onFinished: () => ref.read(readerProvider.notifier).finishDoor(challenge, mastery),
         );
       },

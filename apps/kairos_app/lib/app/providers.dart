@@ -23,3 +23,7 @@ final idProvider = Provider<String Function()>((ref) => const Uuid().v4);
 final engineProvider = Provider<NarrativeEngine>(
   (ref) => NarrativeEngine(ref.watch(arcProvider)),
 );
+
+/// Animations d'ambiance (decor, personnages) et de fete (scene Flame).
+/// Desactivables : tests, et plus tard mode economie de batterie.
+final animationsProvider = Provider<bool>((ref) => true);

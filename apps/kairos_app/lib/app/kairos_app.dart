@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../features/home/home_shell.dart';
+import '../adventure/title_screen.dart';
 import 'theme.dart';
 
 class KairosApp extends StatelessWidget {
@@ -13,7 +13,7 @@ class KairosApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: buildTheme(Brightness.light),
       darkTheme: buildTheme(Brightness.dark),
-      home: const HomeShell(),
+      home: const TitleScreen(),
     );
   }
 }

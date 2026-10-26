@@ -1,8 +1,10 @@
+import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:kairos_core/kairos_core.dart';
 
 import '../../app/theme.dart';
 import '../../app/widgets.dart';
+import '../../game/key_forge_game.dart';
 
 /// Graine stable (FNV-1a 32 bits) : `String.hashCode` varie d'une execution a
 /// l'autre, or le melange d'une Porte doit rester identique a la reprise.
@@ -23,6 +25,7 @@ class DoorView extends StatefulWidget {
     required this.prompt,
     required this.reference,
     required this.onFinished,
+    this.celebrate = false,
   });
 
   final DoorChallenge challenge;
@@ -31,6 +34,9 @@ class DoorView extends StatefulWidget {
   /// Libelle de la reference, ex. `Genèse 39:9`.
   final String reference;
   final VoidCallback onFinished;
+
+  /// Joue la scene Flame quand la Cle est forgee.
+  final bool celebrate;
 
   @override
   State<DoorView> createState() => _DoorViewState();
@@ -46,6 +52,7 @@ class _DoorViewState extends State<DoorView> {
   final _refField = TextEditingController();
 
   AttemptResult? _last;
+  late final KeyForgeGame _game = KeyForgeGame();
 
   DoorChallenge get _c => widget.challenge;
 
@@ -222,12 +229,23 @@ class _DoorViewState extends State<DoorView> {
   Widget _feedback(ThemeData theme) {
     final r = _last!;
     if (r.correct) {
-      return Card(
+      final card = Card(
         child: ListTile(
           leading: const Icon(Icons.vpn_key, color: lampGold),
           title: const Text('La Clé est forgée.'),
           subtitle: Text(_c.hintsUsed == 0 ? 'Sans aucun indice : bravo.' : 'Elle est rangée dans ton coffre.'),
         ),
+      );
+      if (!widget.celebrate) return card;
+      return Column(
+        children: [
+          SizedBox(
+            key: const ValueKey('key-forge-scene'),
+            height: 230,
+            child: GameWidget(game: _game),
+          ),
+          card,
+        ],
       );
     }
     if (r.status == DoorStatus.exhausted) {

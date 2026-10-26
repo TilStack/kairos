@@ -11,6 +11,7 @@ class MemoryRepository implements KairosRepository {
   final _progress = <String, String>{};
   final _masteries = <String, String>{};
   final _journal = <String, String>{};
+  final _settings = <String, String>{};
   String? _lamp;
   String? _profileId;
 
@@ -69,6 +70,12 @@ class MemoryRepository implements KairosRepository {
 
   @override
   Future<void> saveLamp(LampState lamp) async => _lamp = jsonEncode(lamp.toJson());
+
+  @override
+  Future<String?> getSetting(String key) async => _settings[key];
+
+  @override
+  Future<void> setSetting(String key, String value) async => _settings[key] = value;
 
   @override
   Future<void> addJournalEntry(JournalEntry entry) async =>

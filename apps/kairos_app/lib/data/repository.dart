@@ -58,6 +58,10 @@ abstract class KairosRepository {
   Future<LampState> loadLamp();
   Future<void> saveLamp(LampState lamp);
 
+  /// Petits reglages (musique, etc.), en texte.
+  Future<String?> getSetting(String key);
+  Future<void> setSetting(String key, String value);
+
   Future<void> addJournalEntry(JournalEntry entry);
   Future<List<JournalEntry>> journalEntries();
 }

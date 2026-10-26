@@ -49,6 +49,7 @@ void main() {
     final clock = FakeClock(start);
     await tester.pumpWidget(testApp(repo: repo, clock: clock));
     await tester.pumpAndSettle();
+    await tapKey(tester, 'play');
 
     // Le chapitre 2 est verrouille tant que le 1 n'est pas termine.
     expect(find.byIcon(Icons.lock_outline), findsOneWidget);
@@ -102,6 +103,7 @@ void main() {
     final clock = FakeClock(start);
     await tester.pumpWidget(testApp(repo: repo, clock: clock));
     await tester.pumpAndSettle();
+    await tapKey(tester, 'play');
     await tapKey(tester, 'chapter-ch1-potiphar');
     await tapText(tester, 'Continuer'); // arrive au choix
     expect(find.byKey(const ValueKey('option-defend')), findsOneWidget);
@@ -110,6 +112,7 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await tester.pumpWidget(testApp(repo: repo, clock: clock));
     await tester.pumpAndSettle();
+    await tapKey(tester, 'play');
     await tapKey(tester, 'chapter-ch1-potiphar');
 
     expect(find.byKey(const ValueKey('option-defend')), findsOneWidget);
@@ -123,6 +126,7 @@ void main() {
     await repo.saveMastery(KeyMastery.fresh('GEN.39.9', start).copyWith(level: 3, forged: true));
     await tester.pumpWidget(testApp(repo: repo, clock: clock));
     await tester.pumpAndSettle();
+    await tapKey(tester, 'play');
     await tapKey(tester, 'chapter-ch1-potiphar');
     await tapText(tester, 'Continuer');
     await tapKey(tester, 'option-defend');

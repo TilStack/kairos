@@ -3,49 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/controllers.dart';
 import '../../app/providers.dart';
-import '../journal/journal_screen.dart';
-import '../meditation/meditation_screen.dart';
 import '../reader/reader_screen.dart';
-
-/// Navigation principale : Aventure, Huile (meditation), Journal.
-/// Seul l'onglet visible est construit : l'ecran du Journal (captures
-/// interdites) n'est donc actif que lorsqu'il est affiche.
-class HomeShell extends StatefulWidget {
-  const HomeShell({super.key});
-
-  @override
-  State<HomeShell> createState() => _HomeShellState();
-}
-
-class _HomeShellState extends State<HomeShell> {
-  int _index = 0;
-
-  static const _tabs = <Widget Function()>[
-    AdventureScreen.new,
-    MeditationScreen.new,
-    JournalScreen.new,
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: _tabs[_index](),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _index,
-        onDestinationSelected: (i) => setState(() => _index = i),
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.map_outlined), selectedIcon: Icon(Icons.map), label: 'Aventure'),
-          NavigationDestination(
-            icon: Icon(Icons.local_fire_department_outlined),
-            selectedIcon: Icon(Icons.local_fire_department),
-            label: 'Lampe',
-          ),
-          NavigationDestination(icon: Icon(Icons.menu_book_outlined), selectedIcon: Icon(Icons.menu_book), label: 'Journal'),
-        ],
-      ),
-    );
-  }
-}
 
 /// Carte de l'arc : chapitres a debloquer dans l'ordre.
 class AdventureScreen extends ConsumerWidget {

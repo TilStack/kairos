@@ -9,8 +9,10 @@ void main() {
   final start = DateTime(2026, 11, 1, 8);
   final today = meditationForDay(arc, dayNumber(start))!;
 
+  // Depuis l'ecran-titre : 'Lampe' et 'Journal' ouvrent l'ecran correspondant.
   Future<void> openTab(WidgetTester tester, String label) async {
-    await tester.tap(find.text(label));
+    final key = label == 'Lampe' ? 'lamp' : 'journal';
+    await tester.tap(find.byKey(ValueKey(key)));
     await tester.pumpAndSettle();
   }
 
