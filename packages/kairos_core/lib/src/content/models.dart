@@ -16,7 +16,7 @@ const supportedSchemaVersion = 1;
 const characterMoods = {'happy', 'neutral', 'wow', 'sad', 'think', 'sly'};
 const characterActions = {'idle', 'wave', 'cheer', 'think', 'sad', 'point', 'walk', 'talk'};
 const characterHeadwear = {'none', 'headband', 'turban', 'nemes', 'hood'};
-const characterProps = {'none', 'staff', 'scroll'};
+const characterProps = {'none', 'staff', 'scroll', 'lamp'};
 
 /// Lieux de mise en scene (decor choisi par l'application).
 const sceneSettings = {'desert', 'house', 'palace', 'memory'};
@@ -305,6 +305,7 @@ class CharacterDef {
     this.prop = 'none',
     this.flameHead = false,
     this.glowingEyes = false,
+    this.glasses = false,
     this.scale = 1.0,
   });
 
@@ -321,6 +322,7 @@ class CharacterDef {
   final String prop;
   final bool flameHead;
   final bool glowingEyes;
+  final bool glasses;
   final double scale;
 }
 

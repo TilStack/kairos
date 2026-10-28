@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../app/palette.dart';
 import 'backdrop.dart';
 
 const _outline = Color(0xFF4A3322);
@@ -50,7 +51,7 @@ class _HousePainter extends CustomPainter {
         ..shader = const LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFFEBCB9C), Color(0xFFD9A873)],
+          colors: houseWall,
         ).createShader(Rect.fromLTWH(0, 0, w, floorY)),
     );
     // Briques d'argile.
@@ -150,16 +151,18 @@ class _PalacePainter extends CustomPainter {
         ..shader = const LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFF284A8C), Color(0xFF1B2F63)],
+          colors: palaceWall,
         ).createShader(Rect.fromLTWH(0, 0, w, floorY)),
     );
-    // Bandeau d'or.
-    canvas.drawRect(Rect.fromLTWH(0, h * 0.06, w, h * 0.03), _fill(const Color(0xFFE8B930)));
-    canvas.drawRect(Rect.fromLTWH(0, h * 0.1, w, h * 0.012), _fill(const Color(0xFFF7DD86)));
+    // Frise bleu lapis bordee d'or.
+    canvas.drawRect(Rect.fromLTWH(0, h * 0.05, w, h * 0.05), _fill(const Color(0xFF2E5FA8)));
+    canvas.drawRect(Rect.fromLTWH(0, h * 0.1, w, h * 0.012), _fill(const Color(0xFFE8B930)));
+    canvas.drawRect(Rect.fromLTWH(0, h * 0.05 - 3, w, 3), _fill(const Color(0xFFE8B930)));
 
     // Disque solaire central, ailes ouvertes.
     final sun = Offset(w / 2, h * 0.3);
-    canvas.drawCircle(sun, w * 0.2, _fill(const Color(0x33F7DD86)));
+    canvas.drawCircle(sun, w * 0.2, _fill(const Color(0x55F7DD86)));
+    canvas.drawCircle(sun, w * 0.13, _fill(const Color(0xFF2E5FA8)));
     for (var i = 0; i < 14; i++) {
       final a = math.pi + i * math.pi / 13;
       canvas.drawLine(
@@ -193,9 +196,9 @@ class _PalacePainter extends CustomPainter {
 
   void _column(Canvas canvas, double cx, double floorY, double h) {
     final shaft = Rect.fromLTRB(cx - 26, h * 0.13, cx + 26, floorY);
-    canvas.drawRect(shaft, _fill(const Color(0xFFE9D6A6)));
+    canvas.drawRect(shaft, _fill(const Color(0xFF3F70B8)));
     for (var i = -1; i <= 1; i++) {
-      canvas.drawLine(Offset(cx + i * 14, shaft.top), Offset(cx + i * 14, shaft.bottom), _line(2, const Color(0x44402010)));
+      canvas.drawLine(Offset(cx + i * 14, shaft.top), Offset(cx + i * 14, shaft.bottom), _line(2, const Color(0x55FFFFFF)));
     }
     canvas.drawRect(shaft, _line(4, _outline));
     for (final r in [Rect.fromLTRB(cx - 36, h * 0.11, cx + 36, h * 0.145), Rect.fromLTRB(cx - 34, floorY - 18, cx + 34, floorY)]) {
@@ -224,10 +227,10 @@ class _MemoryPainter extends CustomPainter {
     canvas.drawRect(
       Offset.zero & size,
       Paint()
-        ..shader = const LinearGradient(
+        ..shader = LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFFEBD9B4), Color(0xFFC9A877), Color(0xFF9C7A4C)],
+          colors: [memoryTone[0], memoryTone[1], Color(0xFF9C7A4C)],
         ).createShader(Offset.zero & size),
     );
     final rng = math.Random(12);

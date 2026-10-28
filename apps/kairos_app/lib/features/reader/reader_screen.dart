@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kairos_core/kairos_core.dart';
 
+import '../../adventure/game_page.dart';
 import '../../adventure/scene_frame.dart';
 import '../../adventure/stone_button.dart';
 import '../../app/controllers.dart';
+import '../../app/palette.dart';
 import '../../app/providers.dart';
 import '../../app/widgets.dart';
 import '../../characters/cast.dart';
@@ -43,8 +45,13 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
     final reader = ref.watch(readerProvider);
     final title = arc.chapter(widget.chapterId)?.title ?? '';
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: _body(reader),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          _body(reader),
+          Positioned(top: 0, left: 0, right: 0, child: GameHeader(title: title)),
+        ],
+      ),
     );
   }
 
@@ -63,6 +70,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
     String? speakerName,
     bool scrollable = true,
     double panelFraction = 0.55,
+    Widget? footer,
   }) {
     final who = _cast(node);
     return SceneFrame(
@@ -75,6 +83,8 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
       animated: ref.watch(animationsProvider),
       scrollable: scrollable,
       panelFraction: panelFraction,
+      topInset: MediaQuery.paddingOf(context).top + gameHeaderHeight,
+      footer: footer,
       child: child,
     );
   }
@@ -107,7 +117,8 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
           talking: true,
           speakerName: node.speaker ?? _cast(node).name,
           panelFraction: 0.42,
-          child: _DialogueText(text: node.text, onNext: controller.advance),
+          footer: _ContinueButton(key: const ValueKey('continue'), onPressed: controller.advance),
+          child: Text(node.text, style: _bodyStyle),
         ),
       ChoiceStep(:final node, :final options) => _scene(
           node,
@@ -138,12 +149,25 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
           node,
           defaultAction: CharacterAction.cheer,
           panelFraction: 0.62,
-          child: _DebriefText(teaching: node.teaching, verses: verses, traits: traits, onNext: controller.advance),
+          footer: _ContinueButton(
+            key: const ValueKey('debrief-continue'),
+            label: 'TERMINER LE CHAPITRE',
+            style: StoneStyle.moss,
+            onPressed: controller.advance,
+          ),
+          child: _DebriefText(teaching: node.teaching, verses: verses, traits: traits),
         ),
       EndStep(:final node) => _scene(
           node,
           defaultAction: CharacterAction.cheer,
           panelFraction: 0.36,
+          footer: Builder(
+            builder: (context) => _ContinueButton(
+              key: const ValueKey('end-back'),
+              label: 'RETOUR À L\'AVENTURE',
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ),
           child: const _EndText(),
         ),
     };
@@ -163,31 +187,30 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
       talking: !feedback.correct,
       speakerName: 'Lumo',
       panelFraction: 0.64,
+      topInset: MediaQuery.paddingOf(context).top + gameHeaderHeight,
       animated: ref.watch(animationsProvider),
+      footer: _ContinueButton(
+        key: const ValueKey('feedback-continue'),
+        onPressed: ref.read(readerProvider.notifier).dismissFeedback,
+      ),
       child: _FeedbackText(feedback: feedback),
     );
   }
 }
 
-const _bodyStyle = TextStyle(fontSize: 18, height: 1.5, color: Color(0xFF3A2A1A), fontWeight: FontWeight.w600);
+const _bodyStyle = TextStyle(fontSize: 18, height: 1.5, color: ink, fontWeight: FontWeight.w600);
 
-class _DialogueText extends StatelessWidget {
-  const _DialogueText({required this.text, required this.onNext});
+/// Bouton d'action principale, fixe en bas du panneau.
+class _ContinueButton extends StatelessWidget {
+  const _ContinueButton({super.key, required this.onPressed, this.label = 'CONTINUER', this.style = StoneStyle.sand});
 
-  final String text;
-  final VoidCallback onNext;
+  final VoidCallback onPressed;
+  final String label;
+  final StoneStyle style;
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(text, style: _bodyStyle),
-        const SizedBox(height: 18),
-        StoneButton(key: const ValueKey('continue'), label: 'CONTINUER', fontSize: 20, height: 58, onPressed: onNext),
-      ],
-    );
-  }
+  Widget build(BuildContext context) =>
+      StoneButton(label: label, fontSize: 20, height: 56, style: style, onPressed: onPressed);
 }
 
 class _ChoiceText extends StatelessWidget {
@@ -281,14 +304,6 @@ class _FeedbackText extends ConsumerWidget {
         Text(node.explanation, style: _bodyStyle),
         if (ref0 != null)
           ScriptureBlock(reference: BibleRef.tryParse(ref0)?.label ?? ref0, text: arc.verseText(ref0)),
-        const SizedBox(height: 14),
-        StoneButton(
-          key: const ValueKey('feedback-continue'),
-          label: 'CONTINUER',
-          fontSize: 20,
-          height: 58,
-          onPressed: ref.read(readerProvider.notifier).dismissFeedback,
-        ),
       ],
     );
   }
@@ -341,12 +356,11 @@ class _DoorHostState extends ConsumerState<_DoorHost> {
 }
 
 class _DebriefText extends StatelessWidget {
-  const _DebriefText({required this.teaching, required this.verses, required this.traits, required this.onNext});
+  const _DebriefText({required this.teaching, required this.verses, required this.traits});
 
   final String teaching;
   final List<VerseText> verses;
   final Map<Trait, int> traits;
-  final VoidCallback onNext;
 
   @override
   Widget build(BuildContext context) {
@@ -369,16 +383,7 @@ class _DebriefText extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
-        const Text('Aucun trait n\'est mauvais : l\'Écriture est un miroir, pas un tribunal.', style: TextStyle(color: Color(0xFF5B4630))),
-        const SizedBox(height: 18),
-        StoneButton(
-          key: const ValueKey('debrief-continue'),
-          label: 'TERMINER LE CHAPITRE',
-          fontSize: 18,
-          height: 58,
-          style: StoneStyle.moss,
-          onPressed: onNext,
-        ),
+        const Text('Aucun trait n\'est mauvais : l\'Écriture est un miroir, pas un tribunal.', style: TextStyle(color: inkSoft)),
       ],
     );
   }
@@ -388,20 +393,6 @@ class _EndText extends StatelessWidget {
   const _EndText();
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text('Chapitre terminé', textAlign: TextAlign.center, style: _bodyStyle.copyWith(fontWeight: FontWeight.w900, fontSize: 26)),
-        const SizedBox(height: 18),
-        StoneButton(
-          key: const ValueKey('end-back'),
-          label: 'RETOUR À L\'AVENTURE',
-          fontSize: 18,
-          height: 58,
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) =>
+      Text('Chapitre terminé', textAlign: TextAlign.center, style: _bodyStyle.copyWith(fontWeight: FontWeight.w900, fontSize: 26));
 }

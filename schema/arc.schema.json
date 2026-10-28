@@ -553,7 +553,8 @@
           "enum": [
             "none",
             "staff",
-            "scroll"
+            "scroll",
+            "lamp"
           ]
         },
         "flameHead": {
@@ -566,6 +567,9 @@
           "type": "number",
           "exclusiveMinimum": 0,
           "maximum": 1.5
+        },
+        "glasses": {
+          "type": "boolean"
         }
       }
     }

@@ -1,5 +1,8 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
+import '../app/palette.dart';
 import '../characters/character_spec.dart';
 import '../characters/character_widget.dart';
 import '../characters/pose.dart';
@@ -21,6 +24,8 @@ class SceneFrame extends StatelessWidget {
     this.animated = true,
     this.scrollable = true,
     this.panelFraction = 0.55,
+    this.topInset = 0,
+    this.footer,
   });
 
   final String setting;
@@ -38,6 +43,13 @@ class SceneFrame extends StatelessWidget {
 
   /// Part de la hauteur occupee par le panneau de texte (le reste : la scene).
   final double panelFraction;
+
+  /// Espace libre en haut (sous l'en-tete flottant) : le personnage ne le recouvre pas.
+  final double topInset;
+
+  /// Action principale, fixee en bas du panneau : toujours visible, meme quand
+  /// le texte est long ou la police agrandie.
+  final Widget? footer;
   final Widget child;
 
   @override
@@ -45,9 +57,13 @@ class SceneFrame extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, box) {
         final h = box.maxHeight;
-        final panelH = (h * panelFraction).clamp(260.0, h);
+        // `clamp(260, h)` leve une erreur quand h < 260 (paysage, clavier ouvert) :
+        // min/max ne plante jamais.
+        final panelH = math.min(h, math.max(260.0, h * panelFraction));
         // Le panneau recouvre un peu les pieds : le personnage « se tient derriere ».
-        final stageH = h - panelH + 14;
+        final stageH = math.max(0.0, h - panelH + 14);
+        final stageTop = math.min(topInset, stageH);
+        final stageFree = math.max(0.0, stageH - stageTop);
         return Stack(
           fit: StackFit.expand,
           children: [
@@ -56,8 +72,8 @@ class SceneFrame extends StatelessWidget {
               Positioned(
                 left: 0,
                 right: 0,
-                top: 0,
-                height: stageH,
+                top: stageTop,
+                height: stageFree,
                 child: Align(
                   alignment: Alignment.bottomCenter,
                   child: CharacterWidget(
@@ -66,7 +82,7 @@ class SceneFrame extends StatelessWidget {
                     action: action,
                     mood: mood,
                     talking: talking,
-                    height: (stageH - 8).clamp(120.0, 340.0),
+                    height: math.max(60.0, math.min(340.0, stageFree - 8)),
                     animated: animated,
                   ),
                 ),
@@ -76,7 +92,7 @@ class SceneFrame extends StatelessWidget {
               right: 0,
               bottom: 0,
               height: panelH,
-              child: _Panel(speakerName: speakerName, scrollable: scrollable, child: child),
+              child: _Panel(speakerName: speakerName, scrollable: scrollable, footer: footer, child: child),
             ),
           ],
         );
@@ -86,10 +102,11 @@ class SceneFrame extends StatelessWidget {
 }
 
 class _Panel extends StatelessWidget {
-  const _Panel({required this.speakerName, required this.scrollable, required this.child});
+  const _Panel({required this.speakerName, required this.scrollable, required this.footer, required this.child});
 
   final String? speakerName;
   final bool scrollable;
+  final Widget? footer;
   final Widget child;
 
   @override
@@ -97,6 +114,14 @@ class _Panel extends StatelessWidget {
     final body = scrollable
         ? SingleChildScrollView(padding: const EdgeInsets.fromLTRB(20, 26, 20, 20), child: child)
         : Padding(padding: const EdgeInsets.only(top: 14), child: child);
+    final content = footer == null
+        ? body
+        : Column(
+            children: [
+              Expanded(child: body),
+              Padding(padding: const EdgeInsets.fromLTRB(20, 6, 20, 14), child: footer),
+            ],
+          );
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -106,7 +131,7 @@ class _Panel extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFFFFF6E0), Color(0xFFF4E2B8)],
+                colors: [parchmentTop, parchmentBottom],
               ),
               borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
               border: Border(
@@ -116,7 +141,7 @@ class _Panel extends StatelessWidget {
               ),
               boxShadow: [BoxShadow(color: Color(0x55000000), blurRadius: 14, offset: Offset(0, -3))],
             ),
-            child: SafeArea(top: false, child: body),
+            child: SafeArea(top: false, child: content),
           ),
         ),
         if (speakerName != null)

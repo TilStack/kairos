@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kairos_core/kairos_core.dart' show maxOil;
 
 import '../app/controllers.dart';
 import '../app/music.dart';
@@ -19,7 +20,8 @@ class TitleScreen extends ConsumerWidget {
   const TitleScreen({super.key});
 
   void _open(BuildContext context, Widget screen) =>
-      Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => screen));
+      Navigator.of(context)
+          .push(MaterialPageRoute<void>(builder: (_) => screen));
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,68 +35,88 @@ class TitleScreen extends ConsumerWidget {
           AdventureBackdrop(animated: animated),
           SafeArea(
             child: LayoutBuilder(
-              builder: (context, box) => SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: box.maxHeight),
-                  child: IntrinsicHeight(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 36),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 40),
-                          KairosLogo(animated: animated),
-                          const Spacer(),
-                          ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 380),
-                            child: Column(
+              builder: (context, box) {
+                // Petits telephones : on resserre pour garder les 3 boutons visibles.
+                final compact = box.maxHeight < 640;
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: box.maxHeight),
+                    child: IntrinsicHeight(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 36),
+                        child: Column(
+                          children: [
+                            SizedBox(height: compact ? 6 : 40),
+                            KairosLogo(animated: animated),
+                            const Spacer(),
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 380),
+                              child: Column(
+                                children: [
+                                  StoneButton(
+                                    key: const ValueKey('play'),
+                                    label: 'JOUER',
+                                    fontSize: 30,
+                                    height: compact ? 60 : 74,
+                                    onPressed: () =>
+                                        _open(context, const AdventureScreen()),
+                                  ),
+                                  const SizedBox(height: 14),
+                                  StoneButton(
+                                    key: const ValueKey('lamp'),
+                                    label: 'MA LAMPE',
+                                    subtitle: lamp == null
+                                        ? null
+                                        : 'Huile ${lamp.oil}/$maxOil · série ${lamp.streak} j',
+                                    style: StoneStyle.moss,
+                                    height: compact ? 56 : 66,
+                                    leading: const Icon(
+                                      Icons.local_fire_department,
+                                      color: Color(0xFFC0501F),
+                                    ),
+                                    onPressed: () => _open(
+                                      context,
+                                      const MeditationScreen(),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 14),
+                                  StoneButton(
+                                    key: const ValueKey('journal'),
+                                    label: 'JOURNAL',
+                                    style: StoneStyle.slate,
+                                    fontSize: 22,
+                                    height: compact ? 50 : 58,
+                                    onPressed: () =>
+                                        _open(context, const JournalScreen()),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: compact ? 10 : 22),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                StoneButton(
-                                  key: const ValueKey('play'),
-                                  label: 'JOUER',
-                                  fontSize: 30,
-                                  height: 74,
-                                  onPressed: () => _open(context, const AdventureScreen()),
-                                ),
-                                const SizedBox(height: 14),
-                                StoneButton(
-                                  key: const ValueKey('lamp'),
-                                  label: 'MA LAMPE',
-                                  subtitle: lamp == null ? null : 'Huile ${lamp.oil}/$maxOilLabel · série ${lamp.streak} j',
-                                  style: StoneStyle.moss,
-                                  leading: const Icon(Icons.local_fire_department, color: Color(0xFFC0501F)),
-                                  onPressed: () => _open(context, const MeditationScreen()),
-                                ),
-                                const SizedBox(height: 14),
-                                StoneButton(
-                                  key: const ValueKey('journal'),
-                                  label: 'JOURNAL',
-                                  style: StoneStyle.slate,
-                                  fontSize: 22,
-                                  height: 58,
-                                  onPressed: () => _open(context, const JournalScreen()),
+                                StoneIconButton(
+                                  key: const ValueKey('music'),
+                                  icon: music
+                                      ? Icons.music_note
+                                      : Icons.music_off,
+                                  semanticLabel: music
+                                      ? 'Couper la musique'
+                                      : 'Activer la musique',
+                                  onPressed: () =>
+                                      ref.read(musicProvider.notifier).toggle(),
                                 ),
                               ],
                             ),
-                          ),
-                          const SizedBox(height: 22),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              StoneIconButton(
-                                key: const ValueKey('music'),
-                                icon: music ? Icons.music_note : Icons.music_off,
-                                semanticLabel: music ? 'Couper la musique' : 'Activer la musique',
-                                onPressed: () => ref.read(musicProvider.notifier).toggle(),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 18),
-                        ],
+                            SizedBox(height: compact ? 8 : 18),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ),
         ],
@@ -102,9 +124,6 @@ class TitleScreen extends ConsumerWidget {
     );
   }
 }
-
-/// Valeur affichee comme maximum de l'Huile.
-const maxOilLabel = 100;
 
 /// Logo « KAIROS » en lettres de pierre, avec Lumo qui dépasse et salue.
 class KairosLogo extends StatelessWidget {
@@ -140,9 +159,18 @@ class KairosLogo extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const _StoneTitle('KAIROS'),
+                  const FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: _StoneTitle('KAIROS'),
+                  ),
                   const SizedBox(height: 4),
-                  Transform.rotate(angle: -0.03, child: const _Plaque('LE CHEMIN DU DISCIPLE')),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Transform.rotate(
+                      angle: -0.03,
+                      child: const _Plaque('LE CHEMIN DU DISCIPLE'),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -159,7 +187,12 @@ class _StoneTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const style = TextStyle(fontSize: 70, fontWeight: FontWeight.w900, letterSpacing: 5, height: 1.05);
+    const style = TextStyle(
+      fontSize: 70,
+      fontWeight: FontWeight.w900,
+      letterSpacing: 5,
+      height: 1.05,
+    );
     Paint stroke(double w, Color c) => Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = w
@@ -171,10 +204,23 @@ class _StoneTitle extends StatelessWidget {
         // Ombre portee, puis contour sombre, puis arete claire.
         Transform.translate(
           offset: const Offset(0, 7),
-          child: Text(text, style: style.copyWith(foreground: stroke(16, const Color(0x55402010)))),
+          child: Text(
+            text,
+            style: style.copyWith(
+              foreground: stroke(16, const Color(0x55402010)),
+            ),
+          ),
         ),
-        Text(text, style: style.copyWith(foreground: stroke(15, const Color(0xFF4A3322)))),
-        Text(text, style: style.copyWith(foreground: stroke(7, const Color(0xFFFFF1CF)))),
+        Text(
+          text,
+          style: style.copyWith(
+            foreground: stroke(15, const Color(0xFF4A3322)),
+          ),
+        ),
+        Text(
+          text,
+          style: style.copyWith(foreground: stroke(7, const Color(0xFFFFF1CF))),
+        ),
         ShaderMask(
           shaderCallback: (r) => const LinearGradient(
             begin: Alignment.topCenter,
@@ -208,7 +254,12 @@ class _Plaque extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
         child: Text(
           text,
-          style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: 2, color: Color(0xFF3C4654)),
+          style: const TextStyle(
+            fontWeight: FontWeight.w900,
+            fontSize: 14,
+            letterSpacing: 2,
+            color: Color(0xFF3C4654),
+          ),
         ),
       ),
     );

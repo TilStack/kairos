@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
+import '../app/palette.dart';
+
 /// Decor d'aventure en couches (ciel, pyramides, fleuve, dunes, rochers,
 /// palmiers), dessine en code. Les nuages derivent et les palmes ondulent.
 class AdventureBackdrop extends StatefulWidget {
@@ -57,10 +59,10 @@ class _BackdropPainter extends CustomPainter {
     canvas.drawRect(
       Offset.zero & size,
       Paint()
-        ..shader = const LinearGradient(
+        ..shader = LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFF6EBBE0), Color(0xFFBFE3EE), Color(0xFFFBE1B0), Color(0xFFF6B77A)],
+          colors: [const Color(0xFF6EBBE0), desertSky[0], desertSky[1], const Color(0xFFF6B77A)],
           stops: [0, 0.3, 0.6, 1],
         ).createShader(Rect.fromLTWH(0, 0, w, horizon + 40)),
     );

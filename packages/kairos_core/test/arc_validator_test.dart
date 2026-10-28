@@ -241,7 +241,9 @@ void main() {
       final arc = parseArc(baseJson());
       expect(arc.characters.keys, hasLength(9));
       final lumo = arc.characters['lumo']!;
-      expect(lumo.flameHead, isTrue);
+      expect(lumo.glasses, isTrue);
+      expect(lumo.prop, 'lamp');
+      expect(lumo.flameHead, isFalse);
       expect(arc.characters['joseph']!.stripes, hasLength(5));
       expect(arc.characters['benjamin']!.scale, 0.8);
       expect(arc.characters['murmure']!.glowingEyes, isTrue);

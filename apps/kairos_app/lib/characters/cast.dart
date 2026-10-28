@@ -6,14 +6,16 @@ import 'character_spec.dart';
 /// Toutes les fiches sont des donnees : ajouter un acteur ne demande aucun
 /// nouveau code de dessin.
 abstract final class Cast {
-  /// Mascotte et guide du joueur : une personne dont la tete est une flamme.
+  /// Guide et compagnon du joueur : un jeune homme simple, lunettes rondes,
+  /// tunique blanche, qui porte une petite lampe a huile (l'Huile du jeu).
   static const lumo = CharacterSpec(
     id: 'lumo',
     name: 'Lumo',
-    skin: Color(0xFFFFC93C),
-    outfit: Color(0xFF3B4A9C),
-    outfitAccent: Color(0xFFFFC93C),
-    flameHead: true,
+    skin: Color(0xFF8A5A3B),
+    outfit: Color(0xFFF4F1E8),
+    hair: Color(0xFF1B1411),
+    glasses: true,
+    prop: Prop.lamp,
   );
 
   static const joseph = CharacterSpec(

@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kairos_core/kairos_core.dart';
 
+import '../../adventure/game_page.dart';
+import '../../adventure/stone_button.dart';
 import '../../app/controllers.dart';
+import '../../app/palette.dart';
 import '../../app/providers.dart';
 import '../../app/secure_screen.dart';
 import '../../app/widgets.dart';
+import '../../characters/cast.dart';
+import '../../characters/character_spec.dart';
+import '../../characters/pose.dart';
 
 const typeLabels = {
   JournalEntryType.meditation: 'Méditations',
@@ -44,16 +50,19 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
   @override
   Widget build(BuildContext context) {
     final entries = ref.watch(journalProvider);
+    // Lumo lit un parchemin : le Journal est son carnet comme le tien.
+    final lumo = (ref.watch(castProvider)['lumo'] ?? Cast.lumo).withProp(Prop.scroll);
     return SecureScope(
-      child: Scaffold(
-        appBar: AppBar(title: const Text('Mon journal')),
-        floatingActionButton: FloatingActionButton.extended(
-          key: const ValueKey('add-note'),
-          onPressed: _addNote,
-          icon: const Icon(Icons.add),
-          label: const Text('Note'),
-        ),
-        body: entries.when(
+      child: GamePage(
+        title: 'Mon journal',
+        setting: 'memory',
+        character: lumo,
+        action: CharacterAction.think,
+        mood: Mood.neutral,
+        speakerName: 'Lumo',
+        panelFraction: 0.68,
+        scrollable: false,
+        child: entries.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(child: Text('Erreur : $e')),
           data: (all) {
@@ -61,10 +70,10 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
             return Column(
               children: [
                 SizedBox(
-                  height: 56,
+                  height: 48,
                   child: ListView(
                     scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(right: 8),
@@ -96,14 +105,26 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                               'Ton journal est vide pour l\'instant. Tes méditations, tes Clés et '
                               'tes notes apparaîtront ici. Rien ne quitte ton téléphone.',
                               textAlign: TextAlign.center,
+                              style: TextStyle(color: ink, fontWeight: FontWeight.w600, height: 1.4),
                             ),
                           ),
                         )
                       : ListView.builder(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 88),
+                          padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
                           itemCount: shown.length,
                           itemBuilder: (_, i) => _EntryCard(entry: shown[i]),
                         ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+                  child: StoneButton(
+                    key: const ValueKey('add-note'),
+                    label: 'NOUVELLE NOTE',
+                    fontSize: 18,
+                    height: 54,
+                    leading: const Icon(Icons.edit_note, color: Color(0xFF5B3A1A)),
+                    onPressed: _addNote,
+                  ),
                 ),
               ],
             );

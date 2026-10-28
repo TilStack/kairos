@@ -3,13 +3,14 @@ import 'dart:ui';
 
 import 'package:flutter/painting.dart' show HSLColor, RadialGradient;
 
+import '../app/palette.dart' show characterOutline;
 import 'character_spec.dart';
 import 'pose.dart';
 
 /// Zone de dessin d'un personnage : 200 x 320 unites, pieds sur y = 312.
 const characterBox = Size(200, 320);
 
-const _outline = Color(0xFF2A1F3D);
+const _outline = characterOutline;
 const _ink = Color(0xFF3B2A20);
 
 Color _darken(Color c, [double amount = 0.18]) {
@@ -52,7 +53,7 @@ void paintCharacter(
 
   _legs(canvas, spec, pose);
   _torso(canvas, spec);
-  _arms(canvas, spec, pose);
+  _arms(canvas, spec, pose, t);
 
   canvas.save();
   canvas.translate(100, 122);
@@ -143,7 +144,7 @@ void _torso(Canvas canvas, CharacterSpec spec) {
   }
 }
 
-void _arms(Canvas canvas, CharacterSpec spec, Pose pose) {
+void _arms(Canvas canvas, CharacterSpec spec, Pose pose, double t) {
   Offset? rightHand;
   double rightForearm = 0;
   for (final left in [true, false]) {
@@ -161,13 +162,15 @@ void _arms(Canvas canvas, CharacterSpec spec, Pose pose) {
       rightForearm = a2;
     }
   }
-  if (rightHand != null) _prop(canvas, spec, rightHand, rightForearm);
+  if (rightHand != null) _prop(canvas, spec, rightHand, rightForearm, t);
 }
 
-void _prop(Canvas canvas, CharacterSpec spec, Offset hand, double forearm) {
+void _prop(Canvas canvas, CharacterSpec spec, Offset hand, double forearm, double t) {
   switch (spec.prop) {
     case Prop.none:
       return;
+    case Prop.lamp:
+      _lamp(canvas, hand, t);
     case Prop.staff:
       final top = hand + const Offset(0, -118);
       final bottom = hand + const Offset(0, 76);
@@ -193,6 +196,53 @@ void _prop(Canvas canvas, CharacterSpec spec, Offset hand, double forearm) {
       }
       canvas.restore();
   }
+}
+
+/// Petite lampe a huile en argile, tenue par une anse : la flamme vacille.
+void _lamp(Canvas canvas, Offset hand, double t) {
+  final top = hand + const Offset(0, 8);
+  final flicker = math.sin(t * 9) * 1.6;
+  // Halo chaud.
+  canvas.drawCircle(
+    top + const Offset(2, 12),
+    34,
+    Paint()
+      ..shader = const RadialGradient(colors: [Color(0x66FFD54A), Color(0x00FFD54A)])
+          .createShader(Rect.fromCircle(center: top + const Offset(2, 12), radius: 34)),
+  );
+  // Anse.
+  canvas.drawLine(hand, top + const Offset(0, 10), Paint()..strokeWidth = 3..color = _outline);
+  // Corps de la lampe.
+  final body = Path()
+    ..moveTo(top.dx - 17, top.dy + 12)
+    ..quadraticBezierTo(top.dx - 16, top.dy + 30, top.dx + 2, top.dy + 30)
+    ..quadraticBezierTo(top.dx + 18, top.dy + 30, top.dx + 17, top.dy + 12)
+    ..close();
+  canvas.drawPath(body, Paint()..color = const Color(0xFFC9923F));
+  canvas.drawPath(body, Paint()..style = PaintingStyle.stroke..strokeWidth = 3..strokeJoin = StrokeJoin.round..color = _outline);
+  // Bec.
+  final spout = Path()
+    ..moveTo(top.dx + 14, top.dy + 14)
+    ..lineTo(top.dx + 27, top.dy + 10)
+    ..lineTo(top.dx + 17, top.dy + 20)
+    ..close();
+  canvas.drawPath(spout, Paint()..color = const Color(0xFFC9923F));
+  canvas.drawPath(spout, Paint()..style = PaintingStyle.stroke..strokeWidth = 2.5..strokeJoin = StrokeJoin.round..color = _outline);
+  // Flamme.
+  final flame = Path()
+    ..moveTo(top.dx + 24, top.dy + 9)
+    ..quadraticBezierTo(top.dx + 19 + flicker, top.dy - 4, top.dx + 25 + flicker, top.dy - 12)
+    ..quadraticBezierTo(top.dx + 33, top.dy - 2, top.dx + 28, top.dy + 9)
+    ..close();
+  canvas.drawPath(flame, Paint()..color = const Color(0xFFFF9A2E));
+  canvas.drawPath(
+    Path()
+      ..moveTo(top.dx + 25, top.dy + 8)
+      ..quadraticBezierTo(top.dx + 23, top.dy, top.dx + 26 + flicker * 0.5, top.dy - 4)
+      ..quadraticBezierTo(top.dx + 29, top.dy + 2, top.dx + 27, top.dy + 8)
+      ..close(),
+    Paint()..color = const Color(0xFFFFE08A),
+  );
 }
 
 // ------------------------------------------------------------------- tete
@@ -233,6 +283,7 @@ void _head(Canvas canvas, CharacterSpec spec, Face face) {
 
   _hairAndHeadwear(canvas, spec);
   _face(canvas, face, spec.skin, glowing: spec.glowingEyes);
+  if (spec.glasses) _glasses(canvas);
 }
 
 void _hairAndHeadwear(Canvas canvas, CharacterSpec spec) {
@@ -351,6 +402,21 @@ void _face(Canvas canvas, Face face, Color skin, {required bool glowing}) {
   canvas.drawCircle(const Offset(74, 98), 7, blush);
   canvas.drawCircle(const Offset(126, 98), 7, blush);
   _mouth(canvas, face, const Offset(100, 104), _ink);
+}
+
+/// Lunettes rondes a fine monture.
+void _glasses(Canvas canvas) {
+  final frame = Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 3
+    ..color = const Color(0xFF2B2230);
+  for (final x in [85.0, 115.0]) {
+    canvas.drawCircle(Offset(x, 80), 13.5, Paint()..color = const Color(0x1AFFFFFF));
+    canvas.drawCircle(Offset(x, 80), 13.5, frame);
+  }
+  canvas.drawLine(const Offset(98.5, 79), const Offset(101.5, 79), frame);
+  canvas.drawLine(const Offset(71.5, 79), const Offset(62, 77), frame);
+  canvas.drawLine(const Offset(128.5, 79), const Offset(138, 77), frame);
 }
 
 void _mouth(Canvas canvas, Face face, Offset c, Color ink) {

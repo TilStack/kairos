@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kairos_core/kairos_core.dart';
 
+import 'palette.dart';
 import 'theme.dart';
 
 /// Libelles francais des traits du coeur.
@@ -63,7 +64,7 @@ class ScriptureBlock extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               reference,
-              style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.secondary),
+              style: theme.textTheme.labelLarge?.copyWith(color: scriptureRef, fontWeight: FontWeight.w800),
             ),
           ],
         ),

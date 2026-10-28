@@ -24,6 +24,7 @@ CharacterSpec specFromDef(CharacterDef d) => CharacterSpec(
       prop: Prop.values.byName(d.prop),
       flameHead: d.flameHead,
       glowingEyes: d.glowingEyes,
+      glasses: d.glasses,
       scale: d.scale,
     );
 

@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kairos_app/app/kairos_app.dart';
 import 'package:kairos_app/data/repository.dart';
+import 'package:kairos_core/kairos_core.dart';
 
 import 'helpers.dart';
 
@@ -58,7 +59,7 @@ void main() {
     await shot('4_potiphar_maison');
     await next();
     await shot('5_murmure');
-    await tester.pageBack();
+    await tester.tap(find.byIcon(Icons.arrow_back).last);
     await tester.pumpAndSettle();
 
     // Chapitre 2 : palais, souvenir.
@@ -71,5 +72,59 @@ void main() {
     await shot('8_benjamin');
     await next();
     await shot('9_jacob_souvenir');
+  });
+
+  testWidgets('pages : titre, carte, lampe, journal (captures)', (tester) async {
+    await loadFonts();
+    tester.view.physicalSize = const Size(780, 1688);
+    tester.view.devicePixelRatio = 2;
+    addTearDown(tester.view.reset);
+
+    final arc = loadTestArc();
+    final start = DateTime(2026, 11, 1, 8);
+    final repo = newRepo();
+    await repo.saveProgress('joseph-test', const ArcProgress(completed: {'ch1-potiphar'}));
+    await repo.saveLamp(LampState(oil: 55, streak: 3, goldVials: 0, lastMeditationDay: dayNumber(start) - 1, lastUpdateDay: dayNumber(start)));
+    final med = arc.meditations.first;
+    await repo.addJournalEntry(JournalEntry.meditation(
+      id: 'm1', at: start, arcId: arc.id, meditation: med, reflection: 'Je veux me confier en Dieu dans mes examens.',
+    ));
+    await repo.addJournalEntry(JournalEntry.note(id: 'n1', at: start.add(const Duration(hours: 1)), text: 'Merci Seigneur pour cette journée.'));
+    final key = GlobalKey();
+    await tester.pumpWidget(testApp(
+      repo: repo,
+      clock: FakeClock(start),
+      child: RepaintBoundary(key: key, child: const KairosApp()),
+    ));
+    await tester.pumpAndSettle();
+
+    Future<void> shot(String name) async {
+      await tester.runAsync(() async {
+        final boundary = key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+        final image = await boundary.toImage(pixelRatio: 1);
+        final bytes = (await image.toByteData(format: ui.ImageByteFormat.png))!;
+        File('build/pages/$name.png')
+          ..createSync(recursive: true)
+          ..writeAsBytesSync(bytes.buffer.asUint8List());
+      });
+    }
+
+    Future<void> back() async {
+      await tester.tap(find.byIcon(Icons.arrow_back).last);
+      await tester.pumpAndSettle();
+    }
+
+    await shot('1_titre');
+    await tester.tap(find.byKey(const ValueKey('play')));
+    await tester.pumpAndSettle();
+    await shot('2_carte');
+    await back();
+    await tester.tap(find.byKey(const ValueKey('lamp')));
+    await tester.pumpAndSettle();
+    await shot('3_lampe');
+    await back();
+    await tester.tap(find.byKey(const ValueKey('journal')));
+    await tester.pumpAndSettle();
+    await shot('4_journal');
   });
 }

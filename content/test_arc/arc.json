@@ -12,7 +12,7 @@
     }
   },
   "characters": [
-    { "id": "lumo", "name": "Lumo", "skin": "#FFC93C", "outfit": "#3B4A9C", "outfitAccent": "#FFC93C", "flameHead": true },
+    { "id": "lumo", "name": "Lumo", "skin": "#8A5A3B", "outfit": "#F4F1E8", "hair": "#1B1411", "glasses": true, "prop": "lamp" },
     { "id": "joseph", "name": "Joseph", "skin": "#D9A066", "outfit": "#E8452E", "outfitAccent": "#F2B632", "hair": "#3A2418",
       "stripes": ["#E8452E", "#F2B632", "#3FA86B", "#3F8FD9", "#8C5BC8"] },
     { "id": "potiphar", "name": "Potiphar", "skin": "#A9703F", "outfit": "#F1EBDD", "outfitAccent": "#D9A62E", "hair": "#1F1612",

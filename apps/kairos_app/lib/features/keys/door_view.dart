@@ -97,11 +97,15 @@ class _DoorViewState extends State<DoorView> {
       children: [
         Text(widget.prompt, style: theme.textTheme.titleMedium),
         const SizedBox(height: 12),
-        Row(
+        // Wrap et non Row : sur petit ecran ou police agrandie, la reference
+        // passe a la ligne au lieu de deborder.
+        Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             Chip(label: Text(levelLabels[_c.level]!)),
-            const SizedBox(width: 8),
-            Flexible(child: Text(widget.reference, style: theme.textTheme.labelLarge)),
+            Text(widget.reference, style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800)),
           ],
         ),
         const SizedBox(height: 12),

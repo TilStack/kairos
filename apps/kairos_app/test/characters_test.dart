@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kairos_app/characters/cast.dart';
 import 'package:kairos_app/characters/character_animator.dart';
+import 'package:kairos_app/characters/character_spec.dart';
 import 'package:kairos_app/characters/character_widget.dart';
 import 'package:kairos_app/characters/pose.dart';
 
@@ -93,9 +94,17 @@ void main() {
       expect(Cast.byId('inconnu').id, 'lumo'); // repli sur la mascotte
     });
 
-    test('la mascotte a une tete de feu', () {
-      expect(Cast.lumo.flameHead, isTrue);
-      expect(Cast.all.where((c) => c.flameHead), hasLength(1));
+    test('la mascotte : lunettes, lampe a huile, tunique blanche', () {
+      expect(Cast.lumo.glasses, isTrue);
+      expect(Cast.lumo.prop, Prop.lamp);
+      expect(Cast.lumo.flameHead, isFalse);
+    });
+
+    test('withProp change l accessoire sans toucher au reste', () {
+      final reading = Cast.lumo.withProp(Prop.scroll);
+      expect(reading.prop, Prop.scroll);
+      expect(reading.glasses, isTrue);
+      expect(reading.skin, Cast.lumo.skin);
     });
   });
 

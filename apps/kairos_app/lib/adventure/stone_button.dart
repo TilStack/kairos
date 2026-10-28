@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 enum StoneStyle {
   sand(Color(0xFFF0D497), Color(0xFFD9B26B), Color(0xFFA8743F), Color(0xFF5B3A1A)),
   moss(Color(0xFFC9DE62), Color(0xFF9DB83A), Color(0xFF627B17), Color(0xFF34430B)),
-  clay(Color(0xFFD9694F), Color(0xFFB6452F), Color(0xFF762818), Color(0xFFFFEBCB)),
+  clay(Color(0xFFC2553B), Color(0xFF9C3622), Color(0xFF662012), Color(0xFFFFFFFF)),
   slate(Color(0xFFDDE2E8), Color(0xFFB5BDC8), Color(0xFF6F7B89), Color(0xFF3C4654));
 
   const StoneStyle(this.top, this.bottom, this.edge, this.text);
@@ -62,26 +62,26 @@ class _StoneButtonState extends State<StoneButton> {
           onTapUp: enabled ? (_) => setState(() => _down = false) : null,
           onTapCancel: () => setState(() => _down = false),
           onTap: widget.onPressed,
-          child: SizedBox(
-            height: widget.height + _depth,
-            child: Stack(
-              children: [
-                // Epaisseur de la pierre.
-                Positioned.fill(
-                  top: _depth,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: s.edge,
-                      borderRadius: BorderRadius.circular(18),
-                    ),
+          // La hauteur est un MINIMUM : avec une police agrandie (accessibilite)
+          // ou un libelle sur deux lignes, le bouton grandit au lieu de deborder.
+          child: Stack(
+            children: [
+              // Epaisseur de la pierre.
+              Positioned.fill(
+                top: _depth,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: s.edge,
+                    borderRadius: BorderRadius.circular(18),
                   ),
                 ),
-                AnimatedPositioned(
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: _depth),
+                child: AnimatedContainer(
                   duration: const Duration(milliseconds: 70),
-                  left: 0,
-                  right: 0,
-                  top: dy,
-                  height: widget.height,
+                  transform: Matrix4.translationValues(0, dy, 0),
+                  constraints: BoxConstraints(minHeight: widget.height),
                   child: Opacity(
                     opacity: enabled ? 1 : 0.55,
                     child: DecoratedBox(
@@ -98,14 +98,17 @@ class _StoneButtonState extends State<StoneButton> {
                         borderRadius: BorderRadius.circular(15),
                         child: CustomPaint(
                           painter: _SpecklePainter(s),
-                          child: Center(child: _content(s)),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            child: Center(child: _content(s)),
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -114,9 +117,12 @@ class _StoneButtonState extends State<StoneButton> {
 
   Widget _content(StoneStyle s) {
     final label = _outlined(widget.label, s, widget.fontSize);
+    // Bouton-icone : pas de libelle, donc ni espace ni texte vide.
+    final hasLabel = widget.label.isNotEmpty;
     final children = <Widget>[
-      if (widget.leading != null) ...[widget.leading!, const SizedBox(width: 10)],
-      Flexible(child: label),
+      if (widget.leading != null) widget.leading!,
+      if (widget.leading != null && hasLabel) const SizedBox(width: 10),
+      if (hasLabel) Flexible(child: label),
     ];
     final row = Row(mainAxisSize: MainAxisSize.min, children: children);
     if (widget.subtitle == null) return row;
@@ -126,7 +132,7 @@ class _StoneButtonState extends State<StoneButton> {
         row,
         Text(
           widget.subtitle!,
-          style: TextStyle(color: s.text.withValues(alpha: 0.85), fontSize: 13, fontWeight: FontWeight.w800),
+          style: TextStyle(color: s.text, fontSize: 13, fontWeight: FontWeight.w800),
         ),
       ],
     );

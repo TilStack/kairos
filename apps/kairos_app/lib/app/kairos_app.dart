@@ -12,7 +12,8 @@ class KairosApp extends StatelessWidget {
       title: 'KAIROS',
       debugShowCheckedModeBanner: false,
       theme: buildTheme(Brightness.light),
-      darkTheme: buildTheme(Brightness.dark),
+      // Decors et panneaux de parchemin sont peints pour le jour : pas de theme sombre.
+      themeMode: ThemeMode.light,
       home: const TitleScreen(),
     );
   }

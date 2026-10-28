@@ -4,7 +4,7 @@ import 'dart:ui';
 enum Headwear { none, headband, turban, nemes, hood }
 
 /// Accessoire tenu en main.
-enum Prop { none, staff, scroll }
+enum Prop { none, staff, scroll, lamp }
 
 /// Apparence d'un personnage : de la donnee pure, sans logique de dessin.
 /// Un nouvel acteur = une nouvelle fiche, pas de nouveau code.
@@ -23,6 +23,7 @@ class CharacterSpec {
     this.prop = Prop.none,
     this.flameHead = false,
     this.glowingEyes = false,
+    this.glasses = false,
     this.scale = 1,
   });
 
@@ -48,6 +49,28 @@ class CharacterSpec {
   /// Yeux lumineux (« voix trompeuse », visage cache sous la capuche).
   final bool glowingEyes;
 
+  /// Lunettes rondes fines.
+  final bool glasses;
+
   /// Taille relative (enfant < 1, adulte = 1).
   final double scale;
+
+  /// Meme personnage avec un autre accessoire (ex. un parchemin au Journal).
+  CharacterSpec withProp(Prop newProp) => CharacterSpec(
+        id: id,
+        name: name,
+        skin: skin,
+        outfit: outfit,
+        outfitAccent: outfitAccent,
+        stripes: stripes,
+        hair: hair,
+        beard: beard,
+        headwear: headwear,
+        headwearColor: headwearColor,
+        prop: newProp,
+        flameHead: flameHead,
+        glowingEyes: glowingEyes,
+        glasses: glasses,
+        scale: scale,
+      );
 }

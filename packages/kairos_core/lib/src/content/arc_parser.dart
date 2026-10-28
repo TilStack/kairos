@@ -142,7 +142,7 @@ class _Parser {
       final p = '$path.characters[$i]';
       final cm = _obj(raw![i], p, {
         'id', 'name', 'skin', 'outfit', 'outfitAccent', 'stripes', 'hair', 'beard',
-        'headwear', 'headwearColor', 'prop', 'flameHead', 'glowingEyes', 'scale',
+        'headwear', 'headwearColor', 'prop', 'flameHead', 'glowingEyes', 'glasses', 'scale',
       });
       if (cm == null) continue;
       final id = _str(cm, 'id', p);
@@ -161,8 +161,10 @@ class _Parser {
       }
       final flame = cm['flameHead'];
       final glow = cm['glowingEyes'];
+      final glasses = cm['glasses'];
       if (flame != null && flame is! bool) _err('$p.flameHead', 'booleen attendu');
       if (glow != null && glow is! bool) _err('$p.glowingEyes', 'booleen attendu');
+      if (glasses != null && glasses is! bool) _err('$p.glasses', 'booleen attendu');
       final scaleRaw = cm['scale'];
       final scaleOk = scaleRaw is num && scaleRaw > 0 && scaleRaw <= 1.5;
       if (scaleRaw != null && !scaleOk) _err('$p.scale', 'nombre entre 0 (exclu) et 1.5 attendu');
@@ -177,7 +179,7 @@ class _Parser {
         id: id, name: name, skin: skin, outfit: outfit,
         outfitAccent: accent, stripes: stripes, hair: hair, beard: beard,
         headwear: headwear, headwearColor: headColor, prop: prop,
-        flameHead: flame == true, glowingEyes: glow == true,
+        flameHead: flame == true, glowingEyes: glow == true, glasses: glasses == true,
         scale: scaleRaw is num && scaleOk ? scaleRaw.toDouble() : 1.0,
       ));
     }
