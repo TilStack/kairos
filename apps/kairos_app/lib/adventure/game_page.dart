@@ -91,8 +91,11 @@ class GamePage extends ConsumerWidget {
     this.speakerName,
     this.panelFraction = 0.6,
     this.scrollable = true,
+    this.footer,
   });
 
+  /// Action principale, fixee en bas du panneau (voir `SceneFrame.footer`).
+  final Widget? footer;
   final String title;
   final String setting;
   final CharacterSpec? character;
@@ -122,6 +125,7 @@ class GamePage extends ConsumerWidget {
             panelFraction: panelFraction,
             scrollable: scrollable,
             topInset: top,
+            footer: footer,
             child: child,
           ),
           Positioned(top: 0, left: 0, right: 0, child: GameHeader(title: title)),

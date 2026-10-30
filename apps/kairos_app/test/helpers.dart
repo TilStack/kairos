@@ -7,7 +7,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kairos_app/app/kairos_app.dart';
 import 'package:kairos_app/app/music.dart';
 import 'package:kairos_app/app/providers.dart';
+import 'package:kairos_app/app/sfx.dart';
 import 'package:kairos_app/data/memory_repository.dart';
+import 'package:kairos_app/features/onboarding/how_to_play_screen.dart';
 import 'package:kairos_app/data/repository.dart';
 import 'package:kairos_core/kairos_core.dart';
 
@@ -24,6 +26,14 @@ class FakeMusicPlayer implements MusicPlayer {
 
   @override
   Future<void> stop() async => stops++;
+}
+
+/// Faux lecteur d'effets : on note les sons demandes, sans rien jouer.
+class FakeSfxPlayer implements SfxPlayer {
+  final played = <Sfx>[];
+
+  @override
+  void play(Sfx sfx) => played.add(sfx);
 }
 
 /// Horloge modifiable par les tests.
@@ -46,6 +56,8 @@ Widget testApp({
   required FakeClock clock,
   Widget child = const KairosApp(),
   MusicPlayer? music,
+  SfxPlayer? sfx,
+  bool onboarding = false,
 }) {
   var n = 0;
   return ProviderScope(
@@ -55,8 +67,11 @@ Widget testApp({
       clockProvider.overrideWithValue(clock.call),
       idProvider.overrideWithValue(() => 'id-${++n}'),
       musicPlayerProvider.overrideWithValue(music ?? FakeMusicPlayer()),
+      sfxPlayerProvider.overrideWithValue(sfx ?? FakeSfxPlayer()),
       // La scene Flame tourne en continu : desactivee pour pumpAndSettle.
       animationsProvider.overrideWithValue(false),
+      // Le guide du premier lancement s'ouvrirait par-dessus chaque test.
+      showOnboardingProvider.overrideWithValue(onboarding),
     ],
     child: child,
   );

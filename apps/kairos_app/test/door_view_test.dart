@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kairos_app/adventure/stone_button.dart';
 import 'package:kairos_app/features/keys/door_view.dart';
 import 'package:kairos_core/kairos_core.dart';
 
@@ -26,22 +27,33 @@ DoorChallenge door(int level) => DoorChallenge(verse: verse, verseId: 'PSA.119.1
 void main() {
   testWidgets('niveau 1 : Verifier desactive tant que tous les mots ne sont pas poses', (tester) async {
     await pumpDoor(tester, door(1));
-    final button = find.widgetWithText(FilledButton, 'Vérifier');
-    expect(tester.widget<FilledButton>(button).onPressed, isNull);
-    await tester.tap(find.byType(ActionChip).first);
+    final button = find.byKey(const ValueKey('door-verify'));
+    expect(tester.widget<StoneButton>(button).onPressed, isNull);
+    // Le joueur sait pourquoi le bouton est grise.
+    expect(find.text('Pose tous les mots pour pouvoir vérifier.'), findsOneWidget);
+    await tester.tap(find.byType(WordTile).first);
     await tester.pump();
-    expect(tester.widget<FilledButton>(button).onPressed, isNull);
+    expect(tester.widget<StoneButton>(button).onPressed, isNull);
+  });
+
+  testWidgets('chaque niveau dit au joueur quoi faire', (tester) async {
+    for (final level in [1, 2, 3]) {
+      await pumpDoor(tester, door(level));
+      expect(find.text('Forge la Clé'), findsOneWidget, reason: 'niveau $level');
+      expect(find.text(doorInstructions[level]!), findsOneWidget, reason: 'niveau $level');
+      expect(find.bySemanticsLabel('Essais restants : 3 sur 3'), findsOneWidget);
+    }
   });
 
   testWidgets('niveau 1 : un mot pose peut etre retire', (tester) async {
     await pumpDoor(tester, door(1));
     final total = door(1).scrambled.length;
-    await tester.tap(find.byType(ActionChip).first);
+    await tester.tap(find.byType(WordTile).first);
     await tester.pump();
-    expect(find.byType(ActionChip), findsNWidgets(total - 1));
-    await tester.tap(find.byType(InputChip));
+    expect(find.byType(WordTile), findsNWidgets(total - 1));
+    await tester.tap(find.byType(PlacedWordTile));
     await tester.pump();
-    expect(find.byType(ActionChip), findsNWidgets(total));
+    expect(find.byType(WordTile), findsNWidgets(total));
   });
 
   testWidgets('niveau 2 : champs pour chaque trou, reussite', (tester) async {
@@ -51,7 +63,7 @@ void main() {
     for (var i = 0; i < answers.length; i++) {
       await tester.enterText(find.byKey(ValueKey('gap-$i')), answers[i]);
     }
-    await tester.tap(find.text('Vérifier'));
+    await tester.tap(find.byKey(const ValueKey('door-verify')));
     await tester.pumpAndSettle();
     expect(find.text('La Clé est forgée.'), findsOneWidget);
     expect(c.status, DoorStatus.forged);
@@ -62,7 +74,7 @@ void main() {
     await pumpDoor(tester, c);
     await tester.enterText(find.byKey(const ValueKey('recall-verse')), verse.toLowerCase());
     await tester.enterText(find.byKey(const ValueKey('recall-ref')), 'Ps 119.105');
-    await tester.tap(find.text('Vérifier'));
+    await tester.tap(find.byKey(const ValueKey('door-verify')));
     await tester.pumpAndSettle();
     expect(find.text('La Clé est forgée.'), findsOneWidget);
     expect(find.text('Sans aucun indice : bravo.'), findsOneWidget);
@@ -75,7 +87,7 @@ void main() {
 
     Future<void> failOnce() async {
       await tester.enterText(find.byKey(const ValueKey('recall-verse')), 'je ne sais plus');
-      await tester.tap(find.text('Vérifier'));
+      await tester.tap(find.byKey(const ValueKey('door-verify')));
       await tester.pumpAndSettle();
     }
 
@@ -89,7 +101,7 @@ void main() {
     expect(c.status, DoorStatus.exhausted);
     expect(find.textContaining('La Porte s\'ouvre malgré tout'), findsOneWidget);
     expect(find.text('« $verse »'), findsOneWidget); // le verset est donne, jamais cache
-    await tester.tap(find.text('Continuer'));
+    await tester.tap(find.byKey(const ValueKey('door-continue')));
     expect(finished, 1);
   });
 

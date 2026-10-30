@@ -38,7 +38,7 @@ void main() {
     ));
     await tester.enterText(find.byKey(const ValueKey('recall-verse')), verse);
     await tester.enterText(find.byKey(const ValueKey('recall-ref')), 'Ps 119:105');
-    await tester.tap(find.text('Vérifier'));
+    await tester.tap(find.byKey(const ValueKey('door-verify')));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
     expect(find.byKey(const ValueKey('key-forge-scene')), findsOneWidget);

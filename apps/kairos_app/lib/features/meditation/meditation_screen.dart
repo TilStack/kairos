@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kairos_core/kairos_core.dart';
 
 import '../../adventure/game_page.dart';
+import '../../adventure/guidance.dart';
 import '../../adventure/stone_button.dart';
 import '../../app/controllers.dart';
 import '../../characters/cast.dart';
@@ -93,11 +94,13 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
             else if (meditation == null)
               const Text('Aucun passage de méditation disponible pour cet arc.')
             else if (lamp.meditatedOn(today))
-              const Card(child: ListTile(
-                leading: Icon(Icons.check_circle),
-                title: Text('Tu as médité aujourd\'hui.'),
-                subtitle: Text('Ta lampe brille. Reviens demain.'),
-              ))
+              const StoneCard(
+                child: ListTile(
+                  leading: Icon(Icons.check_circle),
+                  title: Text('Tu as médité aujourd\'hui.'),
+                  subtitle: Text('Ta lampe brille. Reviens demain.'),
+                ),
+              )
             else
               ..._form(theme, arc, meditation),
           ],
@@ -107,10 +110,10 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
   }
 
   Widget _blessing(ThemeData theme, MeditationResult result) {
-    return Card(
+    return StoneCard(
       key: const ValueKey('blessing'),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(2),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -133,27 +136,31 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
   List<Widget> _form(ThemeData theme, Arc arc, Meditation m) {
     final ref0 = BibleRef.tryParse(m.passage)?.label ?? m.passage;
     return [
-      Text('Passage du jour', style: theme.textTheme.titleMedium),
-      ScriptureBlock(reference: ref0, text: arc.verseText(m.passage)),
-      const SizedBox(height: 8),
-      Text(m.question, style: theme.textTheme.titleSmall),
-      RadioGroup<int>(
-        groupValue: _answer,
-        onChanged: (v) => setState(() => _answer = v),
-        child: Column(
-          children: [
-            for (var i = 0; i < m.options.length; i++)
-              RadioListTile<int>(
-                key: ValueKey('answer-$i'),
-                value: i,
-                title: Text(m.options[i]),
-              ),
-          ],
-        ),
+      const InstructionBanner(
+        icon: Icons.local_fire_department,
+        title: 'Recharge ta lampe',
+        text: 'Médite en trois étapes : lis le passage, réponds à la question, '
+            'écris ta réflexion. Prends ton temps.',
       ),
-      const SizedBox(height: 8),
-      Text(m.reflectionPrompt, style: theme.textTheme.titleSmall),
-      const SizedBox(height: 8),
+      const StepHeading(number: 1, text: 'Lis le passage du jour'),
+      ScriptureBlock(reference: ref0, text: arc.verseText(m.passage)),
+      const StepHeading(number: 2, text: 'Réponds à la question'),
+      Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: Text(m.question, style: theme.textTheme.titleSmall),
+      ),
+      for (var i = 0; i < m.options.length; i++)
+        StoneOption(
+          key: ValueKey('answer-$i'),
+          text: m.options[i],
+          selected: _answer == i,
+          onPressed: () => setState(() => _answer = i),
+        ),
+      const StepHeading(number: 3, text: 'Écris ta réflexion'),
+      Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: Text(m.reflectionPrompt, style: theme.textTheme.titleSmall),
+      ),
       TextField(
         key: const ValueKey('reflection'),
         controller: _reflection,
@@ -168,7 +175,10 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
       if (_message != null)
         Padding(
           padding: const EdgeInsets.only(top: 12),
-          child: Text(_message!, key: const ValueKey('rejection'), style: TextStyle(color: theme.colorScheme.primary)),
+          child: InstructionBanner(
+            icon: Icons.info_outline,
+            text: _message!,
+          ),
         ),
       const SizedBox(height: 16),
       StoneButton(

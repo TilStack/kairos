@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kairos_app/adventure/stone_button.dart';
 import 'package:kairos_app/main.dart';
 import 'package:kairos_core/kairos_core.dart';
 
@@ -28,7 +29,7 @@ Future<void> skipDialogues(WidgetTester tester) async {
 /// Remet le verset du niveau 1 en ordre en touchant les mots.
 Future<void> solveOrder(WidgetTester tester, String verse) async {
   for (final word in verse.split(' ')) {
-    await tester.tap(find.widgetWithText(ActionChip, word).first);
+    await tester.tap(find.widgetWithText(WordTile, word).first);
     await tester.pump();
   }
   await tester.pumpAndSettle();
@@ -88,9 +89,9 @@ void main() {
     // Porte, niveau 1 : on remet le verset en ordre.
     expect(find.text('Niveau 1 · Reconstitution'), findsOneWidget);
     await solveOrder(tester, gen399);
-    await tapText(tester, 'Vérifier');
+    await tapKey(tester, 'door-verify');
     expect(find.text('La Clé est forgée.'), findsOneWidget);
-    await tapText(tester, 'Continuer');
+    await tapKey(tester, 'door-continue');
 
     // Debriefing : texte exact de l'Ecriture + traits reveles.
     expect(find.text('« $gen399 »'), findsOneWidget);

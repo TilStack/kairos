@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:kairos_core/kairos_core.dart' show maxOil;
+import 'package:kairos_core/kairos_core.dart' show dayNumber, maxOil;
 
 import '../app/controllers.dart';
 import '../app/music.dart';
@@ -11,21 +11,54 @@ import '../characters/pose.dart';
 import '../features/home/home_shell.dart';
 import '../features/journal/journal_screen.dart';
 import '../features/meditation/meditation_screen.dart';
+import '../features/onboarding/how_to_play_screen.dart';
 import 'backdrop.dart';
 import 'stone_button.dart';
 
 /// Ecran-titre : decor d'aventure, logo en pierre, mascotte qui salue, et
 /// les trois entrees du jeu.
-class TitleScreen extends ConsumerWidget {
+class TitleScreen extends ConsumerStatefulWidget {
   const TitleScreen({super.key});
+
+  @override
+  ConsumerState<TitleScreen> createState() => _TitleScreenState();
+}
+
+class _TitleScreenState extends ConsumerState<TitleScreen> {
+  @override
+  void initState() {
+    super.initState();
+    if (ref.read(showOnboardingProvider)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _showHowToOnce());
+    }
+  }
+
+  /// Premier lancement : le guide s'ouvre tout seul, une seule fois.
+  Future<void> _showHowToOnce() async {
+    final repo = ref.read(repositoryProvider);
+    if (await repo.getSetting(howToSetting) != null) return;
+    // Note avant l'affichage : un arret brutal ne le fait pas revenir en boucle.
+    await repo.setSetting(howToSetting, 'seen');
+    if (mounted) _open(context, const HowToPlayScreen());
+  }
 
   void _open(BuildContext context, Widget screen) =>
       Navigator.of(context)
           .push(MaterialPageRoute<void>(builder: (_) => screen));
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  /// Ce que la lampe attend du joueur aujourd\'hui, en clair.
+  String? _lampHint() {
     final lamp = ref.watch(lampProvider).value;
+    if (lamp == null) return null;
+    final today = dayNumber(ref.read(clockProvider)());
+    return lamp.meditatedOn(today)
+        ? 'Médité aujourd\'hui · série ${lamp.streak} j'
+        : 'À méditer aujourd\'hui · Huile ${lamp.oil}/$maxOil';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final started = ref.watch(progressProvider).value?.completed.isNotEmpty ?? false;
     final music = ref.watch(musicProvider).value ?? true;
     final animated = ref.watch(animationsProvider);
     return Scaffold(
@@ -41,21 +74,28 @@ class TitleScreen extends ConsumerWidget {
                 return SingleChildScrollView(
                   child: ConstrainedBox(
                     constraints: BoxConstraints(minHeight: box.maxHeight),
-                    child: IntrinsicHeight(
-                      child: Padding(
+                    child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 36),
+                        // Deux groupes (logo / actions) ecartes l'un de l'autre :
+                        // sans IntrinsicHeight, dont le calcul se trompait de 19 px.
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            SizedBox(height: compact ? 6 : 40),
-                            KairosLogo(animated: animated),
-                            const Spacer(),
+                            Column(
+                              children: [
+                                SizedBox(height: compact ? 6 : 40),
+                                KairosLogo(animated: animated),
+                              ],
+                            ),
+                            Column(
+                              children: [
                             ConstrainedBox(
                               constraints: const BoxConstraints(maxWidth: 380),
                               child: Column(
                                 children: [
                                   StoneButton(
                                     key: const ValueKey('play'),
-                                    label: 'JOUER',
+                                    label: started ? 'CONTINUER' : 'JOUER',
                                     fontSize: 30,
                                     height: compact ? 60 : 74,
                                     onPressed: () =>
@@ -65,9 +105,7 @@ class TitleScreen extends ConsumerWidget {
                                   StoneButton(
                                     key: const ValueKey('lamp'),
                                     label: 'MA LAMPE',
-                                    subtitle: lamp == null
-                                        ? null
-                                        : 'Huile ${lamp.oil}/$maxOil · série ${lamp.streak} j',
+                                    subtitle: _lampHint(),
                                     style: StoneStyle.moss,
                                     height: compact ? 56 : 66,
                                     leading: const Icon(
@@ -102,17 +140,26 @@ class TitleScreen extends ConsumerWidget {
                                       ? Icons.music_note
                                       : Icons.music_off,
                                   semanticLabel: music
-                                      ? 'Couper la musique'
-                                      : 'Activer la musique',
+                                      ? 'Couper le son'
+                                      : 'Activer le son',
                                   onPressed: () =>
                                       ref.read(musicProvider.notifier).toggle(),
+                                ),
+                                const SizedBox(width: 14),
+                                StoneIconButton(
+                                  key: const ValueKey('howto'),
+                                  icon: Icons.help_outline,
+                                  semanticLabel: 'Comment jouer',
+                                  onPressed: () =>
+                                      _open(context, const HowToPlayScreen()),
                                 ),
                               ],
                             ),
                             SizedBox(height: compact ? 8 : 18),
+                              ],
+                            ),
                           ],
                         ),
-                      ),
                     ),
                   ),
                 );

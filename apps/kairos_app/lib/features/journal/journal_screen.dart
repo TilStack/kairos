@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kairos_core/kairos_core.dart';
 
 import '../../adventure/game_page.dart';
+import '../../adventure/guidance.dart';
 import '../../adventure/stone_button.dart';
 import '../../app/controllers.dart';
 import '../../app/palette.dart';
@@ -145,10 +146,8 @@ class _EntryCard extends ConsumerWidget {
     final arc = ref.watch(arcProvider);
     final local = entry.createdAt.toLocal();
     final date = '${local.day.toString().padLeft(2, '0')}/${local.month.toString().padLeft(2, '0')}/${local.year}';
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
+    return StoneCard(
+      child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -165,7 +164,6 @@ class _EntryCard extends ConsumerWidget {
               if (entry.type != JournalEntryType.key)
                 ScriptureBlock(reference: BibleRef.tryParse(r)?.label ?? r, text: arc.verseText(r)),
           ],
-        ),
       ),
     );
   }

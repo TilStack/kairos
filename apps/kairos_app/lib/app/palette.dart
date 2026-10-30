@@ -12,6 +12,14 @@ const inkSoft = Color(0xFF5B4630);
 const parchmentTop = Color(0xFFFFF6E0);
 const parchmentBottom = Color(0xFFF4E2B8);
 
+/// Bandeau de consigne (« a toi de jouer ») : fond or pale, bord or, texte `ink`.
+const hintBackground = Color(0xFFFFEBB5);
+const hintBorder = Color(0xFFC9A04A);
+
+/// Carte d'information sur parchemin (plus claire que le panneau).
+const cardBackground = Color(0xFFFFFBEF);
+const cardBorder = Color(0xFFC9A877);
+
 /// Reference biblique sous un verset : or fonce, lisible sur parchemin
 /// (l'or vif des decors n'atteint que 2:1).
 const scriptureRef = Color(0xFF75500F);

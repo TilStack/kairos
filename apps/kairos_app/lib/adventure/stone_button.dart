@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../app/sfx.dart';
+
 /// Matiere des boutons : pierre claire, mousse, argile ou ardoise.
 enum StoneStyle {
   sand(Color(0xFFF0D497), Color(0xFFD9B26B), Color(0xFFA8743F), Color(0xFF5B3A1A)),
@@ -61,7 +63,12 @@ class _StoneButtonState extends State<StoneButton> {
           onTapDown: enabled ? (_) => setState(() => _down = true) : null,
           onTapUp: enabled ? (_) => setState(() => _down = false) : null,
           onTapCancel: () => setState(() => _down = false),
-          onTap: widget.onPressed,
+          onTap: enabled
+              ? () {
+                  playSfx(context);
+                  widget.onPressed!();
+                }
+              : null,
           // La hauteur est un MINIMUM : avec une police agrandie (accessibilite)
           // ou un libelle sur deux lignes, le bouton grandit au lieu de deborder.
           child: Stack(
@@ -164,45 +171,168 @@ Widget _outlined(String text, StoneStyle s, double size) {
 
 /// Reponse a un choix : tablette de pierre dont la hauteur suit le texte
 /// (les phrases de choix sont longues, contrairement aux libelles de bouton).
+/// `selected` non nul : option a cocher (pastille pleine ou vide), en mousse
+/// quand elle est choisie. `subtitle` explique l'option en une phrase.
 class StoneOption extends StatelessWidget {
-  const StoneOption({super.key, required this.text, required this.onPressed});
+  const StoneOption({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    this.subtitle,
+    this.selected,
+  });
 
   final String text;
+  final String? subtitle;
+  final bool? selected;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    const s = StoneStyle.sand;
+    final s = selected == true ? StoneStyle.moss : StoneStyle.sand;
     return Semantics(
       button: true,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 10),
+      selected: selected,
+      label: subtitle == null ? text : '$text. $subtitle',
+      child: ExcludeSemantics(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [s.top, s.bottom],
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: s.edge, width: 3),
+              boxShadow: [BoxShadow(color: s.edge, offset: const Offset(0, 4))],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(14),
+                onTap: () {
+                  playSfx(context);
+                  onPressed();
+                },
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: 56),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    child: Row(
+                      children: [
+                        if (selected != null) ...[
+                          Icon(
+                            selected! ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                            color: s.text,
+                          ),
+                          const SizedBox(width: 12),
+                        ],
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                text,
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: s.text, height: 1.25),
+                              ),
+                              if (subtitle != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 2),
+                                  child: Text(
+                                    subtitle!,
+                                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: s.text, height: 1.25),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Mot a poser (defi de reconstitution) : petite tuile de pierre.
+class WordTile extends StatelessWidget {
+  const WordTile({super.key, required this.label, required this.onPressed});
+
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => _Tile(label: label, onPressed: onPressed, style: StoneStyle.sand);
+}
+
+/// Mot deja pose : tuile de mousse, qu'on retouche pour la retirer.
+class PlacedWordTile extends StatelessWidget {
+  const PlacedWordTile({super.key, required this.label, required this.onPressed});
+
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) =>
+      _Tile(label: label, onPressed: onPressed, style: StoneStyle.moss, trailing: Icons.close);
+}
+
+class _Tile extends StatelessWidget {
+  const _Tile({required this.label, required this.onPressed, required this.style, this.trailing});
+
+  final String label;
+  final VoidCallback onPressed;
+  final StoneStyle style;
+  final IconData? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: trailing == null ? label : '$label, touche pour retirer',
+      child: ExcludeSemantics(
         child: DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [s.top, s.bottom],
+              colors: [style.top, style.bottom],
             ),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: s.edge, width: 3),
-            boxShadow: [BoxShadow(color: s.edge, offset: const Offset(0, 4))],
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: style.edge, width: 2.5),
+            boxShadow: [BoxShadow(color: style.edge, offset: const Offset(0, 3))],
           ),
           child: Material(
             color: Colors.transparent,
             child: InkWell(
-              borderRadius: BorderRadius.circular(14),
-              onTap: onPressed,
+              borderRadius: BorderRadius.circular(10),
+              onTap: () {
+                playSfx(context);
+                onPressed();
+              },
               child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 56),
+                constraints: const BoxConstraints(minHeight: 44, minWidth: 44),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      text,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF5B3A1A), height: 1.25),
-                    ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        label,
+                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: style.text),
+                      ),
+                      if (trailing != null) ...[
+                        const SizedBox(width: 6),
+                        Icon(trailing, size: 16, color: style.text),
+                      ],
+                    ],
                   ),
                 ),
               ),

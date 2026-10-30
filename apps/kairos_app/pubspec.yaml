@@ -37,6 +37,9 @@ flutter:
   assets:
     - assets/arcs/joseph-test/arc.json
     - assets/audio/theme.wav
+    - assets/audio/tap.wav
+    - assets/audio/success.wav
+    - assets/audio/error.wav
 
 # Chiffrement au repos : SQLCipher a la place de SQLite (sqlite3 >= 3.x).
 hooks:

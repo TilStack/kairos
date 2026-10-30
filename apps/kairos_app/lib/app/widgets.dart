@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kairos_core/kairos_core.dart';
 
+import '../adventure/guidance.dart';
 import 'palette.dart';
 import 'theme.dart';
 
@@ -20,6 +21,14 @@ const anomalyLabels = {
   AnomalyType.truncated: 'Verset tronqué',
   AnomalyType.outOfContext: 'Sorti de son contexte',
   AnomalyType.misattributed: 'Faussement attribué',
+};
+
+/// Explication courte de chaque anomalie, affichee sous le bouton de reponse.
+const anomalyHints = {
+  AnomalyType.distorted: 'Des mots ont été changés ou ajoutés.',
+  AnomalyType.truncated: 'La phrase est coupée : la suite change le sens.',
+  AnomalyType.outOfContext: 'Le verset existe, mais on lui fait dire autre chose.',
+  AnomalyType.misattributed: 'La phrase vient d\'ailleurs, pas de la Bible.',
 };
 
 const levelLabels = {
@@ -86,9 +95,9 @@ class LampGauge extends StatelessWidget {
     return Semantics(
       label: 'Lampe : huile ${lamp.oil} sur $maxOil, série de ${lamp.streak} jours, '
           '${lamp.goldVials} fioles d\'or',
-      child: Card(
+      child: StoneCard(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(4),
           child: Column(
             children: [
               AnimatedScale(
@@ -114,6 +123,12 @@ class LampGauge extends StatelessWidget {
                   Text('Série : ${lamp.streak} j'),
                   Text('Fioles d\'or : ${lamp.goldVials}'),
                 ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'L\'Huile baisse doucement chaque jour. Médite pour la recharger.',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodySmall?.copyWith(color: inkSoft),
               ),
             ],
           ),

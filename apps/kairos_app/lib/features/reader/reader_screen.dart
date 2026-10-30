@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kairos_core/kairos_core.dart';
 
 import '../../adventure/game_page.dart';
+import '../../adventure/guidance.dart';
 import '../../adventure/scene_frame.dart';
 import '../../adventure/stone_button.dart';
 import '../../app/controllers.dart';
@@ -226,7 +227,12 @@ class _ChoiceText extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(prompt, style: _bodyStyle.copyWith(fontWeight: FontWeight.w800)),
-        const SizedBox(height: 14),
+        const SizedBox(height: 12),
+        const InstructionBanner(
+          text: 'Touche la réponse qui te ressemble. Il n\'y a pas de mauvaise réponse : '
+              'tes choix révèlent ton cœur.',
+        ),
+        const SizedBox(height: 12),
         for (final o in options)
           StoneOption(key: ValueKey('option-${o.id}'), text: o.text, onPressed: () => onChoose(o.id)),
       ],
@@ -245,6 +251,13 @@ class _DiscernmentText extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        const InstructionBanner(
+          icon: Icons.visibility,
+          title: 'Défi de discernement',
+          text: 'Un verset est cité, mais quelque chose cloche. Lis-le bien, '
+              'puis touche l\'anomalie que tu repères.',
+        ),
+        const SizedBox(height: 12),
         DecoratedBox(
           decoration: BoxDecoration(
             color: const Color(0x22B03A2E),
@@ -272,6 +285,7 @@ class _DiscernmentText extends StatelessWidget {
           StoneOption(
             key: ValueKey('anomaly-${type.id}'),
             text: anomalyLabels[type]!,
+            subtitle: anomalyHints[type],
             onPressed: () => onAnswer(type),
           ),
       ],
