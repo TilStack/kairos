@@ -5,6 +5,7 @@ import 'package:kairos_core/kairos_core.dart' show dayNumber, maxOil;
 import '../app/controllers.dart';
 import '../app/music.dart';
 import '../app/providers.dart';
+import '../app/voice.dart';
 import '../characters/cast.dart';
 import '../characters/character_widget.dart';
 import '../characters/pose.dart';
@@ -46,6 +47,23 @@ class _TitleScreenState extends ConsumerState<TitleScreen> {
       Navigator.of(context)
           .push(MaterialPageRoute<void>(builder: (_) => screen));
 
+  /// Active ou coupe la lecture automatique, et le dit au joueur.
+  Future<void> _toggleVoice(bool wasOn) async {
+    await ref.read(voiceAutoProvider.notifier).toggle();
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(
+        // Flottant et remonte : il ne cache pas la rangee de boutons.
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.fromLTRB(24, 0, 24, 130),
+        duration: const Duration(seconds: 2),
+        content: Text(wasOn
+            ? 'Lecture à voix haute coupée. Tu peux toujours toucher ÉCOUTER.'
+            : 'Lecture à voix haute activée : les répliques seront lues.'),
+      ));
+  }
+
   /// Ce que la lampe attend du joueur aujourd\'hui, en clair.
   String? _lampHint() {
     final lamp = ref.watch(lampProvider).value;
@@ -60,6 +78,7 @@ class _TitleScreenState extends ConsumerState<TitleScreen> {
   Widget build(BuildContext context) {
     final started = ref.watch(progressProvider).value?.completed.isNotEmpty ?? false;
     final music = ref.watch(musicProvider).value ?? true;
+    final voiceAuto = ref.watch(voiceAutoProvider).value ?? false;
     final animated = ref.watch(animationsProvider);
     return Scaffold(
       body: Stack(
@@ -144,6 +163,17 @@ class _TitleScreenState extends ConsumerState<TitleScreen> {
                                       : 'Activer le son',
                                   onPressed: () =>
                                       ref.read(musicProvider.notifier).toggle(),
+                                ),
+                                const SizedBox(width: 14),
+                                StoneIconButton(
+                                  key: const ValueKey('voice'),
+                                  icon: voiceAuto
+                                      ? Icons.record_voice_over
+                                      : Icons.voice_over_off,
+                                  semanticLabel: voiceAuto
+                                      ? 'Couper la lecture à voix haute'
+                                      : 'Activer la lecture à voix haute',
+                                  onPressed: () => _toggleVoice(voiceAuto),
                                 ),
                                 const SizedBox(width: 14),
                                 StoneIconButton(

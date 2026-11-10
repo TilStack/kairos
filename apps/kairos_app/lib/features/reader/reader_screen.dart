@@ -6,6 +6,7 @@ import '../../adventure/game_page.dart';
 import '../../adventure/guidance.dart';
 import '../../adventure/scene_frame.dart';
 import '../../adventure/stone_button.dart';
+import '../../adventure/voice_line.dart';
 import '../../app/controllers.dart';
 import '../../app/palette.dart';
 import '../../app/providers.dart';
@@ -119,7 +120,11 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
           speakerName: node.speaker ?? _cast(node).name,
           panelFraction: 0.42,
           footer: _ContinueButton(key: const ValueKey('continue'), onPressed: controller.advance),
-          child: Text(node.text, style: _bodyStyle),
+          child: VoiceLine(
+            text: node.text,
+            characterId: _cast(node).id,
+            child: Text(node.text, style: _bodyStyle),
+          ),
         ),
       ChoiceStep(:final node, :final options) => _scene(
           node,
@@ -127,7 +132,11 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
           defaultAction: CharacterAction.think,
           speakerName: node.character == null ? null : _cast(node).name,
           panelFraction: 0.56,
-          child: _ChoiceText(prompt: node.prompt, options: options, onChoose: controller.choose),
+          child: VoiceLine(
+            text: node.prompt,
+            characterId: _cast(node).id,
+            child: _ChoiceText(prompt: node.prompt, options: options, onChoose: controller.choose),
+          ),
         ),
       DiscernmentStep(:final node) => _scene(
           node,
@@ -136,7 +145,11 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
           defaultMood: Mood.sly,
           speakerName: node.speaker ?? _cast(node, fallbackId: 'murmure').name,
           panelFraction: 0.64,
-          child: _DiscernmentText(node: node, onAnswer: controller.answerDiscernment),
+          child: VoiceLine(
+            text: node.quote,
+            characterId: _cast(node, fallbackId: 'murmure').id,
+            child: _DiscernmentText(node: node, onAnswer: controller.answerDiscernment),
+          ),
         ),
       DoorStep(:final node) => _scene(
           node,
@@ -156,7 +169,11 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
             style: StoneStyle.moss,
             onPressed: controller.advance,
           ),
-          child: _DebriefText(teaching: node.teaching, verses: verses, traits: traits),
+          child: VoiceLine(
+            text: node.teaching,
+            characterId: 'lumo',
+            child: _DebriefText(teaching: node.teaching, verses: verses, traits: traits),
+          ),
         ),
       EndStep(:final node) => _scene(
           node,
@@ -194,7 +211,11 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
         key: const ValueKey('feedback-continue'),
         onPressed: ref.read(readerProvider.notifier).dismissFeedback,
       ),
-      child: _FeedbackText(feedback: feedback),
+      child: VoiceLine(
+        text: '${feedback.correct ? 'Bien vu !' : 'Pas tout à fait.'} ${feedback.node.explanation}',
+        characterId: 'lumo',
+        child: _FeedbackText(feedback: feedback),
+      ),
     );
   }
 }

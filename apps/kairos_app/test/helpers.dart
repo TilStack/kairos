@@ -8,6 +8,7 @@ import 'package:kairos_app/app/kairos_app.dart';
 import 'package:kairos_app/app/music.dart';
 import 'package:kairos_app/app/providers.dart';
 import 'package:kairos_app/app/sfx.dart';
+import 'package:kairos_app/app/voice.dart';
 import 'package:kairos_app/data/memory_repository.dart';
 import 'package:kairos_app/features/onboarding/how_to_play_screen.dart';
 import 'package:kairos_app/data/repository.dart';
@@ -23,6 +24,27 @@ class FakeMusicPlayer implements MusicPlayer {
 
   @override
   Future<void> start() async => starts++;
+
+  @override
+  Future<void> stop() async => stops++;
+
+  final ducks = <bool>[];
+
+  @override
+  Future<void> duck(bool on) async => ducks.add(on);
+}
+
+/// Fausse voix : on note les phrases demandees, sans rien prononcer.
+class FakeSpeechPlayer implements SpeechPlayer {
+  final spoken = <String>[];
+  final profiles = <VoiceProfile>[];
+  int stops = 0;
+
+  @override
+  Future<void> speak(String text, VoiceProfile profile) async {
+    spoken.add(text);
+    profiles.add(profile);
+  }
 
   @override
   Future<void> stop() async => stops++;
@@ -57,6 +79,7 @@ Widget testApp({
   Widget child = const KairosApp(),
   MusicPlayer? music,
   SfxPlayer? sfx,
+  SpeechPlayer? speech,
   bool onboarding = false,
 }) {
   var n = 0;
@@ -68,6 +91,7 @@ Widget testApp({
       idProvider.overrideWithValue(() => 'id-${++n}'),
       musicPlayerProvider.overrideWithValue(music ?? FakeMusicPlayer()),
       sfxPlayerProvider.overrideWithValue(sfx ?? FakeSfxPlayer()),
+      speechPlayerProvider.overrideWithValue(speech ?? FakeSpeechPlayer()),
       // La scene Flame tourne en continu : desactivee pour pumpAndSettle.
       animationsProvider.overrideWithValue(false),
       // Le guide du premier lancement s'ouvrirait par-dessus chaque test.

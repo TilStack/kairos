@@ -35,6 +35,12 @@ const howToRules = [
         'l\'Huile. Elle baisse doucement quand tu t\'absentes.',
   ),
   _Rule(
+    Icons.volume_up,
+    'Écoute les répliques',
+    'Touche ÉCOUTER pour entendre une réplique. Le haut-parleur de l\'écran-titre '
+        'les lit toutes seules ; il est coupé tant que tu ne l\'actives pas.',
+  ),
+  _Rule(
     Icons.edit_note,
     'Écris ton journal',
     'Tes méditations, tes Clés et tes notes sont gardées dans ton JOURNAL. '

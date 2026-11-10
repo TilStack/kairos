@@ -8,6 +8,9 @@ import 'providers.dart';
 abstract class MusicPlayer {
   Future<void> start();
   Future<void> stop();
+
+  /// Baisse la musique pendant qu'une voix parle, puis la remonte.
+  Future<void> duck(bool on);
 }
 
 /// Lecture en boucle du theme, avec Flame Audio. Se met en pause toute seule
@@ -15,6 +18,7 @@ abstract class MusicPlayer {
 class FlameMusicPlayer implements MusicPlayer {
   static const _track = 'theme.wav';
   static const _volume = 0.4;
+  static const _duckedVolume = 0.12;
   var _initialized = false;
 
   @override
@@ -28,6 +32,16 @@ class FlameMusicPlayer implements MusicPlayer {
       await FlameAudio.bgm.play(_track, volume: _volume);
     } on Object {
       // Pas de peripherique audio ou fichier illisible : le jeu reste jouable.
+    }
+  }
+
+  @override
+  Future<void> duck(bool on) async {
+    try {
+      if (!_initialized) return;
+      await FlameAudio.bgm.audioPlayer.setVolume(on ? _duckedVolume : _volume);
+    } on Object {
+      // Musique non demarree : rien a baisser.
     }
   }
 
