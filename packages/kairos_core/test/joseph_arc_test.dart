@@ -1,0 +1,115 @@
+import 'dart:io';
+
+import 'package:kairos_core/kairos_core.dart';
+import 'package:test/test.dart';
+
+/// L'arc complet livre avec l'application : « La Tunique et le Trone ».
+Arc loadJosephArc() => parseArcString(File('../../content/joseph/arc.json').readAsStringSync());
+
+void main() {
+  late Arc arc;
+  late NarrativeEngine engine;
+
+  setUpAll(() {
+    arc = loadJosephArc();
+    engine = NarrativeEngine(arc);
+  });
+
+  test('l\'arc est valide, sans erreur ni avertissement', () {
+    final report = validateArc(arc);
+    expect(report.errors, isEmpty);
+    expect(report.warnings, isEmpty);
+  });
+
+  test('dix chapitres, dans l\'ordre de l\'histoire', () {
+    expect(arc.chapters.map((c) => c.id), [
+      'ch1-reveur',
+      'ch2-citerne',
+      'ch3-potiphar',
+      'ch4-prison',
+      'ch5-songes',
+      'ch6-gouverneur',
+      'ch7-freres',
+      'ch8-coupe',
+      'ch9-reconnaissance',
+      'ch10-pardon',
+    ]);
+  });
+
+  test('chaque chapitre a au moins un choix, un discernement, une Porte et un bilan', () {
+    for (final c in arc.chapters) {
+      final kinds = c.nodes.values.map((n) => n.runtimeType).toSet();
+      expect(kinds, containsAll([ChoiceNode, DiscernmentNode, DoorNode, DebriefNode]), reason: c.id);
+    }
+  });
+
+  test('les quatre types d\'anomalie sont tous travailles', () {
+    final used = {
+      for (final c in arc.chapters)
+        for (final n in c.nodes.values.whereType<DiscernmentNode>()) n.anomaly,
+    };
+    expect(used, containsAll(AnomalyType.values));
+  });
+
+  test('les versets des Portes sont memorisables (8 a 40 mots)', () {
+    for (final c in arc.chapters) {
+      for (final door in c.nodes.values.whereType<DoorNode>()) {
+        final words = arc.verseText(door.verse)!.split(RegExp(r'\s+')).length;
+        expect(words, inInclusiveRange(8, 40), reason: '${c.id} / ${door.verse}');
+      }
+    }
+  });
+
+  test('chaque personnage cite dans un noeud est dans la distribution', () {
+    final known = arc.characters.keys.toSet();
+    for (final c in arc.chapters) {
+      for (final n in c.nodes.values) {
+        final who = n.character;
+        if (who != null) expect(known, contains(who), reason: '${c.id}/${n.id}');
+      }
+    }
+  });
+
+  /// Joue un chapitre jusqu'a la fin avec la strategie donnee.
+  GameState play(GameState start, {required bool firstOption}) {
+    var s = start;
+    for (var i = 0; i < 500; i++) {
+      final step = engine.view(s);
+      switch (step) {
+        case DialogueStep():
+        case DebriefStep():
+          s = engine.advance(s);
+        case ChoiceStep(:final options):
+          expect(options, isNotEmpty, reason: 'choix sans option visible : ${s.nodeId}');
+          s = engine.choose(s, (firstOption ? options.first : options.last).id);
+        case DiscernmentStep(:final node):
+          s = engine.answerDiscernment(s, node.anomaly).state;
+        case DoorStep():
+          s = engine.resolveDoor(s, forged: true);
+        case EndStep():
+          return s;
+      }
+    }
+    fail('chapitre sans fin : ${s.chapterId}/${s.nodeId}');
+  }
+
+  for (final firstOption in [true, false]) {
+    test('l\'arc se joue de bout en bout (${firstOption ? 'premieres' : 'dernieres'} options)', () {
+      var traits = <Trait, int>{};
+      var flags = <String>{};
+      var keys = <String>{};
+      for (final c in arc.chapters) {
+        final end = play(
+          engine.start(c.id, traits: traits, flags: flags, keys: keys),
+          firstOption: firstOption,
+        );
+        expect(end.finished, isTrue, reason: c.id);
+        traits = end.traits;
+        flags = end.flags;
+        keys = end.keys;
+      }
+      // Une Cle par Porte : dix chapitres, dix versets differents au plus.
+      expect(keys.length, greaterThanOrEqualTo(9));
+    });
+  }
+}

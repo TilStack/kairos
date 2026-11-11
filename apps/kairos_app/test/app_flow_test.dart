@@ -40,16 +40,17 @@ void main() {
   final gen399 = arc.verseText('GEN.39.9')!;
   final start = DateTime(2026, 11, 1, 8);
 
-  test('l asset embarque est identique a l arc de test du depot', () {
+  test('l asset embarque est identique a l arc complet du depot', () {
     String norm(String s) => s.replaceAll('\r\n', '\n');
-    final asset = norm(File('assets/arcs/joseph-test/arc.json').readAsStringSync());
-    final source = norm(File('../../content/test_arc/arc.json').readAsStringSync());
+    final asset = norm(File('assets/arcs/joseph/arc.json').readAsStringSync());
+    final source = norm(File('../../content/joseph/arc.json').readAsStringSync());
     expect(asset, source);
   });
 
   testWidgets('l arc embarque se charge et se valide au demarrage', (tester) async {
     final loaded = await loadBundledArc();
-    expect(loaded.id, 'joseph-test');
+    expect(loaded.id, 'joseph');
+    expect(loaded.chapters, hasLength(10));
   });
 
   testWidgets('parcours complet du chapitre 1, avec persistance', (tester) async {

@@ -8,7 +8,7 @@ import 'app/providers.dart';
 import 'data/drift_repository.dart';
 import 'data/secure_database.dart';
 
-const arcAsset = 'assets/arcs/joseph-test/arc.json';
+const arcAsset = 'assets/arcs/joseph/arc.json';
 
 /// Charge et valide l'arc embarque : un arc invalide arrete le demarrage
 /// avec un message clair plutot que de planter en cours de partie.
