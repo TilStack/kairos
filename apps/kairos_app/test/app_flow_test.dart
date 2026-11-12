@@ -48,7 +48,8 @@ void main() {
   });
 
   testWidgets('l arc embarque se charge et se valide au demarrage', (tester) async {
-    final loaded = await loadBundledArc();
+    // Lecture reelle de l'asset : hors du temps simule du test.
+    final loaded = (await tester.runAsync(loadBundledArc))!;
     expect(loaded.id, 'joseph');
     expect(loaded.chapters, hasLength(10));
   });
