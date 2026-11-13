@@ -1,15 +1,24 @@
+import 'dart:ui' show PlatformDispatcher;
+
 import 'package:flutter/material.dart';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../adventure/title_screen.dart';
+import 'l10n.dart';
 import 'theme.dart';
 
-class KairosApp extends StatelessWidget {
+class KairosApp extends ConsumerWidget {
   const KairosApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final lang = ref.watch(langProvider);
     return MaterialApp(
       title: 'KAIROS',
+      locale: Locale(lang),
+      // Les ecrans lisent la langue ici : ils se reconstruisent quand elle change.
+      builder: (context, child) => L10n(lang: lang, child: child!),
       debugShowCheckedModeBanner: false,
       theme: buildTheme(Brightness.light),
       // Decors et panneaux de parchemin sont peints pour le jour : pas de theme sombre.
@@ -35,7 +44,7 @@ class StartupErrorApp extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Center(
-              child: Text('KAIROS ne peut pas démarrer.\n\n$message', textAlign: TextAlign.center),
+              child: Text(translate(PlatformDispatcher.instance.locale.languageCode == 'en' ? 'en' : 'fr', 'startup.error', {'msg': message}), textAlign: TextAlign.center),
             ),
           ),
         ),

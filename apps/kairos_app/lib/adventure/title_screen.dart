@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kairos_core/kairos_core.dart' show dayNumber, maxOil;
 
 import '../app/controllers.dart';
+import '../app/l10n.dart';
 import '../app/music.dart';
 import '../app/providers.dart';
 import '../app/voice.dart';
@@ -58,9 +59,7 @@ class _TitleScreenState extends ConsumerState<TitleScreen> {
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.fromLTRB(24, 0, 24, 130),
         duration: const Duration(seconds: 2),
-        content: Text(wasOn
-            ? 'Lecture à voix haute coupée. Tu peux toujours toucher ÉCOUTER.'
-            : 'Lecture à voix haute activée : les répliques seront lues.'),
+        content: Text(context.tr(wasOn ? 'voice.snack_off' : 'voice.snack_on')),
       ));
   }
 
@@ -70,8 +69,8 @@ class _TitleScreenState extends ConsumerState<TitleScreen> {
     if (lamp == null) return null;
     final today = dayNumber(ref.read(clockProvider)());
     return lamp.meditatedOn(today)
-        ? 'Médité aujourd\'hui · série ${lamp.streak} j'
-        : 'À méditer aujourd\'hui · Huile ${lamp.oil}/$maxOil';
+        ? context.tr('lamp.done', {'n': lamp.streak})
+        : context.tr('lamp.todo', {'oil': lamp.oil, 'max': maxOil});
   }
 
   @override
@@ -114,7 +113,7 @@ class _TitleScreenState extends ConsumerState<TitleScreen> {
                                 children: [
                                   StoneButton(
                                     key: const ValueKey('play'),
-                                    label: started ? 'CONTINUER' : 'JOUER',
+                                    label: context.tr(started ? 'continue_game' : 'play'),
                                     fontSize: 30,
                                     height: compact ? 60 : 74,
                                     onPressed: () =>
@@ -123,7 +122,7 @@ class _TitleScreenState extends ConsumerState<TitleScreen> {
                                   const SizedBox(height: 14),
                                   StoneButton(
                                     key: const ValueKey('lamp'),
-                                    label: 'MA LAMPE',
+                                    label: context.tr('lamp'),
                                     subtitle: _lampHint(),
                                     style: StoneStyle.moss,
                                     height: compact ? 56 : 66,
@@ -139,7 +138,7 @@ class _TitleScreenState extends ConsumerState<TitleScreen> {
                                   const SizedBox(height: 14),
                                   StoneButton(
                                     key: const ValueKey('journal'),
-                                    label: 'JOURNAL',
+                                    label: context.tr('journal'),
                                     style: StoneStyle.slate,
                                     fontSize: 22,
                                     height: compact ? 50 : 58,
@@ -150,38 +149,50 @@ class _TitleScreenState extends ConsumerState<TitleScreen> {
                               ),
                             ),
                             SizedBox(height: compact ? 10 : 22),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            Wrap(
+                              alignment: WrapAlignment.center,
+                              spacing: 14,
+                              runSpacing: 10,
                               children: [
                                 StoneIconButton(
                                   key: const ValueKey('music'),
                                   icon: music
                                       ? Icons.music_note
                                       : Icons.music_off,
-                                  semanticLabel: music
-                                      ? 'Couper le son'
-                                      : 'Activer le son',
+                                  semanticLabel: context.tr(music ? 'sound.off' : 'sound.on'),
                                   onPressed: () =>
                                       ref.read(musicProvider.notifier).toggle(),
                                 ),
-                                const SizedBox(width: 14),
                                 StoneIconButton(
                                   key: const ValueKey('voice'),
                                   icon: voiceAuto
                                       ? Icons.record_voice_over
                                       : Icons.voice_over_off,
-                                  semanticLabel: voiceAuto
-                                      ? 'Couper la lecture à voix haute'
-                                      : 'Activer la lecture à voix haute',
+                                  semanticLabel: context.tr(voiceAuto ? 'voice.off' : 'voice.on'),
                                   onPressed: () => _toggleVoice(voiceAuto),
                                 ),
-                                const SizedBox(width: 14),
                                 StoneIconButton(
                                   key: const ValueKey('howto'),
                                   icon: Icons.help_outline,
-                                  semanticLabel: 'Comment jouer',
+                                  semanticLabel: context.tr('howto.label'),
                                   onPressed: () =>
                                       _open(context, const HowToPlayScreen()),
+                                ),
+                                SizedBox(
+                                  width: 62,
+                                  child: StoneButton(
+                                    key: const ValueKey('lang'),
+                                    // Affiche la langue vers laquelle on bascule.
+                                    label: context.lang == 'en' ? 'FR' : 'EN',
+                                    fontSize: 20,
+                                    height: 56,
+                                    onPressed: () =>
+                                        ref.read(languageProvider.notifier).toggle(),
+                                    leading: Semantics(
+                                      label: context.tr('lang.switch'),
+                                      child: const SizedBox.shrink(),
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
@@ -212,7 +223,7 @@ class KairosLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       header: true,
-      label: 'KAIROS, le chemin du disciple',
+      label: context.tr('logo.semantic'),
       child: ExcludeSemantics(
         child: Stack(
           clipBehavior: Clip.none,
@@ -245,7 +256,7 @@ class KairosLogo extends StatelessWidget {
                     fit: BoxFit.scaleDown,
                     child: Transform.rotate(
                       angle: -0.03,
-                      child: const _Plaque('LE CHEMIN DU DISCIPLE'),
+                      child: _Plaque(context.tr('logo.tagline')),
                     ),
                   ),
                 ],

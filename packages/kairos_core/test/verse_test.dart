@@ -5,6 +5,7 @@ const jn316 = 'Car Dieu a tant aimé le monde qu’il a donné son Fils unique, 
     'afin que quiconque croit en lui ne périsse point, mais qu’il ait la vie éternelle.';
 
 void main() {
+  englishBookNamesTests();
   group('normalizeVerse', () {
     test('supprime accents, casse et ponctuation', () {
       expect(normalizeVerse('L’Éternel est mon berger, je ne manquerai de rien.'),
@@ -176,6 +177,20 @@ void main() {
       expect(progressiveHint(verse, 0), '');
       expect(progressiveHint(verse, 1), 'D… e… a…');
       expect(progressiveHint(verse, 2), 'Dieu est a…');
+    });
+  });
+}
+
+void englishBookNamesTests() {
+  group('BibleRef en anglais', () {
+    test('noms anglais reconnus, libelle dans la langue demandee', () {
+      final r = BibleRef.tryParse('John 3:16')!;
+      expect(r.id, 'JHN.3.16');
+      expect(r.labelIn('en'), 'John 3:16');
+      expect(r.labelIn('fr'), 'Jean 3:16');
+      expect(BibleRef.tryParse('Genesis 39:9')!.labelIn('fr'), 'Genèse 39:9');
+      expect(BibleRef.tryParse('Psalms 119:105')!.id, 'PSA.119.105');
+      expect(BibleRef.tryParse('1 Corinthians 10:13')!.id, '1CO.10.13');
     });
   });
 }

@@ -7,6 +7,7 @@ import 'package:test/test.dart';
 Arc loadJosephArc() => parseArcString(File('../../content/joseph/arc.json').readAsStringSync());
 
 void main() {
+  englishArcTests();
   late Arc arc;
   late NarrativeEngine engine;
 
@@ -112,4 +113,94 @@ void main() {
       expect(keys.length, greaterThanOrEqualTo(9));
     });
   }
+}
+
+/// La version anglaise doit avoir exactement la meme structure : c'est ce qui
+/// permet de changer de langue sans perdre sa progression.
+void englishArcTests() {
+  group('arc anglais', () {
+    late Arc fr;
+    late Arc en;
+    late NarrativeEngine engine;
+
+    setUpAll(() {
+      fr = loadJosephArc();
+      en = parseArcString(File('../../content/joseph/arc.en.json').readAsStringSync());
+      engine = NarrativeEngine(en);
+    });
+
+    test('valide, sans erreur ni avertissement', () {
+      final report = validateArc(en);
+      expect(report.errors, isEmpty);
+      expect(report.warnings, isEmpty);
+    });
+
+    test('meme identifiant, memes chapitres, memes noeuds et memes liens', () {
+      expect(en.id, fr.id);
+      expect(en.chapters.map((c) => c.id), fr.chapters.map((c) => c.id));
+      for (var i = 0; i < fr.chapters.length; i++) {
+        final a = fr.chapters[i];
+        final b = en.chapters[i];
+        expect(b.start, a.start, reason: a.id);
+        expect(b.nodes.keys.toList(), a.nodes.keys.toList(), reason: a.id);
+        for (final id in a.nodes.keys) {
+          final x = a.nodes[id]!;
+          final y = b.nodes[id]!;
+          expect(y.runtimeType, x.runtimeType, reason: '${a.id}/$id');
+          expect(y.character, x.character, reason: '${a.id}/$id');
+          if (x is ChoiceNode) {
+            final ids = x.options.map((o) => o.id).toList();
+            expect((y as ChoiceNode).options.map((o) => o.id).toList(), ids, reason: '${a.id}/$id');
+          }
+          if (x is DiscernmentNode) {
+            expect((y as DiscernmentNode).anomaly, x.anomaly, reason: '${a.id}/$id');
+            expect(y.correctRef, x.correctRef, reason: '${a.id}/$id');
+          }
+          if (x is DoorNode) expect((y as DoorNode).verse, x.verse, reason: '${a.id}/$id');
+        }
+      }
+    });
+
+    test('memes versets et memes meditations (passages)', () {
+      expect(en.verses['WEB']!.keys.toSet(), fr.verses['LSG1910']!.keys.toSet());
+      expect(en.meditations.map((m) => m.passage), fr.meditations.map((m) => m.passage));
+      for (var i = 0; i < fr.meditations.length; i++) {
+        expect(en.meditations[i].answerIndex, fr.meditations[i].answerIndex);
+        expect(en.meditations[i].options.length, fr.meditations[i].options.length);
+      }
+    });
+
+    test('les versets des Portes restent memorisables (8 a 40 mots)', () {
+      for (final c in en.chapters) {
+        for (final door in c.nodes.values.whereType<DoorNode>()) {
+          final words = en.verseText(door.verse)!.split(RegExp(r'\s+')).length;
+          expect(words, inInclusiveRange(8, 40), reason: '${c.id} / ${door.verse}');
+        }
+      }
+    });
+
+    test('se joue de bout en bout', () {
+      var s = engine.start('ch1-reveur');
+      for (final c in en.chapters) {
+        s = engine.start(c.id, traits: s.traits, flags: s.flags, keys: s.keys);
+        for (var i = 0; i < 500; i++) {
+          final step = engine.view(s, lang: 'en');
+          if (step is EndStep) break;
+          switch (step) {
+            case DialogueStep() || DebriefStep():
+              s = engine.advance(s);
+            case ChoiceStep(:final options):
+              s = engine.choose(s, options.first.id);
+            case DiscernmentStep(:final node):
+              s = engine.answerDiscernment(s, node.anomaly).state;
+            case DoorStep():
+              s = engine.resolveDoor(s, forged: true);
+            case EndStep():
+              break;
+          }
+        }
+      }
+      expect(s.keys.length, greaterThanOrEqualTo(9));
+    });
+  });
 }

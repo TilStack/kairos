@@ -8,6 +8,7 @@ import '../../adventure/scene_frame.dart';
 import '../../adventure/stone_button.dart';
 import '../../adventure/voice_line.dart';
 import '../../app/controllers.dart';
+import '../../app/l10n.dart';
 import '../../app/palette.dart';
 import '../../app/providers.dart';
 import '../../app/widgets.dart';
@@ -97,8 +98,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Text(
-            'Ce chapitre ne peut pas être ouvert. Si le contenu a été mis à jour, '
-            'recommence le chapitre.\n\n${reader.error}',
+            context.tr('reader.error', {'e': '${reader.error}'}),
           ),
         ),
       );
@@ -111,7 +111,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
     if (feedback != null) return _feedbackScene(feedback);
 
     final engine = ref.read(engineProvider);
-    final step = engine.view(game);
+    final step = engine.view(game, lang: ref.watch(langProvider));
     final controller = ref.read(readerProvider.notifier);
     final Widget scene = switch (step) {
       DialogueStep(:final node) => _scene(
@@ -165,7 +165,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
           panelFraction: 0.62,
           footer: _ContinueButton(
             key: const ValueKey('debrief-continue'),
-            label: 'TERMINER LE CHAPITRE',
+            label: context.tr('debrief.finish'),
             style: StoneStyle.moss,
             onPressed: controller.advance,
           ),
@@ -182,7 +182,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
           footer: Builder(
             builder: (context) => _ContinueButton(
               key: const ValueKey('end-back'),
-              label: 'RETOUR À L\'AVENTURE',
+              label: context.tr('end.back'),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ),
@@ -212,7 +212,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
         onPressed: ref.read(readerProvider.notifier).dismissFeedback,
       ),
       child: VoiceLine(
-        text: '${feedback.correct ? 'Bien vu !' : 'Pas tout à fait.'} ${feedback.node.explanation}',
+        text: '${context.tr(feedback.correct ? 'fb.good' : 'fb.bad_short')} ${feedback.node.explanation}',
         characterId: 'lumo',
         child: _FeedbackText(feedback: feedback),
       ),
@@ -224,15 +224,15 @@ const _bodyStyle = TextStyle(fontSize: 18, height: 1.5, color: ink, fontWeight: 
 
 /// Bouton d'action principale, fixe en bas du panneau.
 class _ContinueButton extends StatelessWidget {
-  const _ContinueButton({super.key, required this.onPressed, this.label = 'CONTINUER', this.style = StoneStyle.sand});
+  const _ContinueButton({super.key, required this.onPressed, this.label, this.style = StoneStyle.sand});
 
   final VoidCallback onPressed;
-  final String label;
+  final String? label;
   final StoneStyle style;
 
   @override
   Widget build(BuildContext context) =>
-      StoneButton(label: label, fontSize: 20, height: 56, style: style, onPressed: onPressed);
+      StoneButton(label: label ?? context.tr('continue'), fontSize: 20, height: 56, style: style, onPressed: onPressed);
 }
 
 class _ChoiceText extends StatelessWidget {
@@ -249,10 +249,7 @@ class _ChoiceText extends StatelessWidget {
       children: [
         Text(prompt, style: _bodyStyle.copyWith(fontWeight: FontWeight.w800)),
         const SizedBox(height: 12),
-        const InstructionBanner(
-          text: 'Touche la réponse qui te ressemble. Il n\'y a pas de mauvaise réponse : '
-              'tes choix révèlent ton cœur.',
-        ),
+        InstructionBanner(text: context.tr('choice.banner')),
         const SizedBox(height: 12),
         for (final o in options)
           StoneOption(key: ValueKey('option-${o.id}'), text: o.text, onPressed: () => onChoose(o.id)),
@@ -272,11 +269,10 @@ class _DiscernmentText extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const InstructionBanner(
+        InstructionBanner(
           icon: Icons.visibility,
-          title: 'Défi de discernement',
-          text: 'Un verset est cité, mais quelque chose cloche. Lis-le bien, '
-              'puis touche l\'anomalie que tu repères.',
+          title: context.tr('disc.title'),
+          text: context.tr('disc.text'),
         ),
         const SizedBox(height: 12),
         DecoratedBox(
@@ -293,20 +289,20 @@ class _DiscernmentText extends StatelessWidget {
                 Text(node.quote, style: _bodyStyle.copyWith(fontStyle: FontStyle.italic)),
                 if (node.claimedRef != null) ...[
                   const SizedBox(height: 6),
-                  Text('Cité comme : ${node.claimedRef}', style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF7A2D1F))),
+                  Text(context.tr('disc.cited', {'ref': node.claimedRef!}), style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF7A2D1F))),
                 ],
               ],
             ),
           ),
         ),
         const SizedBox(height: 14),
-        const Text('Quelle est l\'anomalie ?', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900, color: Color(0xFF3A2A1A))),
+        Text(context.tr('disc.question'), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900, color: Color(0xFF3A2A1A))),
         const SizedBox(height: 8),
         for (final type in AnomalyType.values)
           StoneOption(
             key: ValueKey('anomaly-${type.id}'),
-            text: anomalyLabels[type]!,
-            subtitle: anomalyHints[type],
+            text: anomalyLabel(context, type),
+            subtitle: anomalyHint(context, type),
             onPressed: () => onAnswer(type),
           ),
       ],
@@ -330,15 +326,15 @@ class _FeedbackText extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          feedback.correct ? 'Bien vu !' : 'Pas tout à fait — voici pourquoi.',
+          context.tr(feedback.correct ? 'fb.good' : 'fb.bad'),
           style: _bodyStyle.copyWith(fontWeight: FontWeight.w900, fontSize: 22),
         ),
         const SizedBox(height: 8),
-        Text('Il s\'agissait d\'un verset : ${anomalyLabels[node.anomaly]!.toLowerCase()}.', style: _bodyStyle),
+        Text(context.tr('fb.kind', {'label': anomalyLabel(context, node.anomaly).toLowerCase()}), style: _bodyStyle),
         const SizedBox(height: 8),
         Text(node.explanation, style: _bodyStyle),
         if (ref0 != null)
-          ScriptureBlock(reference: BibleRef.tryParse(ref0)?.label ?? ref0, text: arc.verseText(ref0)),
+          ScriptureBlock(reference: BibleRef.tryParse(ref0)?.labelIn(context.lang) ?? ref0, text: arc.verseText(ref0)),
       ],
     );
   }
@@ -381,7 +377,7 @@ class _DoorHostState extends ConsumerState<_DoorHost> {
         return DoorView(
           challenge: challenge,
           prompt: widget.node.prompt,
-          reference: BibleRef.tryParse(widget.node.verse)?.label ?? widget.node.verse,
+          reference: BibleRef.tryParse(widget.node.verse)?.labelIn(context.lang) ?? widget.node.verse,
           celebrate: ref.watch(animationsProvider),
           onFinished: () => ref.read(readerProvider.notifier).finishDoor(challenge, mastery),
         );
@@ -402,23 +398,23 @@ class _DebriefText extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text('À la lumière de l\'Écriture', style: _bodyStyle.copyWith(fontWeight: FontWeight.w900, fontSize: 22)),
+        Text(context.tr('debrief.title'), style: _bodyStyle.copyWith(fontWeight: FontWeight.w900, fontSize: 22)),
         const SizedBox(height: 8),
         for (final v in verses) ScriptureBlock(reference: v.label, text: v.text),
         const SizedBox(height: 6),
         Text(teaching, style: _bodyStyle),
         const SizedBox(height: 16),
-        Text('Ton cœur, révélé par tes choix', style: _bodyStyle.copyWith(fontWeight: FontWeight.w900)),
+        Text(context.tr('debrief.traits'), style: _bodyStyle.copyWith(fontWeight: FontWeight.w900)),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: [
-            for (final t in Trait.values) Chip(label: Text('${traitLabels[t]} · ${traits[t] ?? 0}')),
+            for (final t in Trait.values) Chip(label: Text('${traitLabel(context, t)} · ${traits[t] ?? 0}')),
           ],
         ),
         const SizedBox(height: 8),
-        const Text('Aucun trait n\'est mauvais : l\'Écriture est un miroir, pas un tribunal.', style: TextStyle(color: inkSoft)),
+        Text(context.tr('debrief.note'), style: const TextStyle(color: inkSoft)),
       ],
     );
   }
@@ -429,5 +425,5 @@ class _EndText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      Text('Chapitre terminé', textAlign: TextAlign.center, style: _bodyStyle.copyWith(fontWeight: FontWeight.w900, fontSize: 26));
+      Text(context.tr('end.title'), textAlign: TextAlign.center, style: _bodyStyle.copyWith(fontWeight: FontWeight.w900, fontSize: 26));
 }

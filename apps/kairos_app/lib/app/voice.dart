@@ -34,7 +34,7 @@ VoiceProfile voiceFor(String? characterId) => voiceProfiles[characterId] ?? defa
 /// Moteur de synthese vocale. Les tests le remplacent par un faux.
 abstract class SpeechPlayer {
   /// Rend la main quand la phrase est finie (ou interrompue).
-  Future<void> speak(String text, VoiceProfile profile);
+  Future<void> speak(String text, VoiceProfile profile, {String lang = 'fr'});
   Future<void> stop();
 }
 
@@ -44,14 +44,14 @@ class FlutterTtsPlayer implements SpeechPlayer {
   Future<void>? _ready;
 
   Future<void> _init() async {
-    await _tts.setLanguage('fr-FR');
     await _tts.awaitSpeakCompletion(true);
   }
 
   @override
-  Future<void> speak(String text, VoiceProfile profile) async {
+  Future<void> speak(String text, VoiceProfile profile, {String lang = 'fr'}) async {
     try {
       await (_ready ??= _init());
+      await _tts.setLanguage(lang == 'en' ? 'en-US' : 'fr-FR');
       await _tts.setPitch(profile.pitch);
       await _tts.setSpeechRate(profile.rate);
       await _tts.speak(text);
@@ -74,7 +74,7 @@ final speechPlayerProvider = Provider<SpeechPlayer>((ref) => FlutterTtsPlayer())
 
 /// Texte prepare pour la voix : sans guillemets ni retours a la ligne.
 String speakable(String text) =>
-    text.replaceAll(RegExp(r'[«»]'), '').replaceAll(RegExp(r'\s+'), ' ').trim();
+    text.replaceAll(RegExp(r'[«»“”]'), '').replaceAll(RegExp(r'\s+'), ' ').trim();
 
 /// Lecture a voix haute : une seule voix a la fois, la musique baisse pendant
 /// qu'elle parle. `speaking` donne le texte en cours de lecture (ou null).
@@ -86,12 +86,12 @@ class VoiceService {
   final speaking = ValueNotifier<String?>(null);
   int _token = 0;
 
-  Future<void> speak(String text, {String? characterId}) async {
+  Future<void> speak(String text, {String? characterId, String lang = 'fr'}) async {
     final mine = ++_token;
     await _speech.stop();
     speaking.value = text;
     await _music.duck(true);
-    await _speech.speak(speakable(text), voiceFor(characterId));
+    await _speech.speak(speakable(text), voiceFor(characterId), lang: lang);
     // Une lecture plus recente a pris la suite : elle gere l'etat elle-meme.
     if (mine == _token) {
       speaking.value = null;

@@ -78,6 +78,15 @@ dart run bin/kairos_validate.dart --strict ../../content/joseph/arc.json
 - Porte (verset à mémoriser) : `GEN.50.20`
 - Discernement (out_of_context) : « Tu vois bien : « toutes choses concourent au bien ». Alors le mal que nous avons fait n'a finalement pas d'importance. » — attribué à *Romains 8:28*
 
+## Version anglaise (nouveau)
+
+- **Fichier :** `content/joseph/arc.en.json` (copie dans `apps/kairos_app/assets/arcs/joseph/arc.en.json`). Même identifiant d'arc (`joseph`), mêmes chapitres, mêmes nœuds et mêmes liens que le français : la progression et les Clés sont conservées quand on change de langue.
+- **Bible anglaise :** World English Bible (WEB, domaine public). Elle écrit « Yahweh » là où la Louis Segond écrit « l'Éternel ». À remplacer si vous préférez une autre version libre de droits.
+- **Traduction des dialogues :** faite à partir du français, pas du texte biblique anglais. Relire en priorité les citations « piégées » du Murmure (*The Whisper*) : elles ont été réécrites pour correspondre au texte anglais (par ex. « Pride goes before glory » au lieu de « destruction »), et non traduites mot à mot.
+- **Un test vérifie** que les deux versions ont la même structure (nœuds, options, anomalies, versets) : si vous ajoutez un nœud ou une option en français, ajoutez-le aussi en anglais.
+- **Interface :** les textes de l'application sont dans `lib/app/l10n_fr.dart` et `lib/app/l10n_en.dart` (mêmes clés, vérifié par test). La langue se change avec le bouton FR/EN de l'écran-titre ; par défaut, l'app suit la langue du téléphone (français sinon).
+- **Limites connues :** les entrées déjà écrites dans le Journal gardent la langue dans laquelle elles ont été créées. La voix lit en anglais si la langue est l'anglais et si le téléphone a une voix anglaise.
+
 ## Pas encore faits
 - Représentation de l'épouse de Potiphar : elle n'apparaît pas, on en parle seulement (à valider).
 - Dieu et Jésus ne sont jamais dessinés.

@@ -1,0 +1,1910 @@
+{
+  "schemaVersion": 1,
+  "id": "joseph",
+  "title": "The Coat and the Throne",
+  "version": "0.9.0",
+  "minEngineVersion": 1,
+  "defaultBible": "WEB",
+  "bibles": {
+    "WEB": {
+      "name": "World English Bible",
+      "license": "public domain"
+    }
+  },
+  "characters": [
+    {
+      "id": "lumo",
+      "name": "Lumo",
+      "skin": "#8A5A3B",
+      "outfit": "#F4F1E8",
+      "hair": "#1B1411",
+      "glasses": true,
+      "prop": "lamp"
+    },
+    {
+      "id": "joseph",
+      "name": "Joseph",
+      "skin": "#D9A066",
+      "outfit": "#E8452E",
+      "outfitAccent": "#F2B632",
+      "hair": "#3A2418",
+      "stripes": [
+        "#E8452E",
+        "#F2B632",
+        "#3FA86B",
+        "#3F8FD9",
+        "#8C5BC8"
+      ]
+    },
+    {
+      "id": "potiphar",
+      "name": "Potiphar",
+      "skin": "#A9703F",
+      "outfit": "#F1EBDD",
+      "outfitAccent": "#D9A62E",
+      "hair": "#1F1612",
+      "headwear": "turban",
+      "headwearColor": "#F1EBDD"
+    },
+    {
+      "id": "intendant",
+      "name": "The steward",
+      "skin": "#B98558",
+      "outfit": "#7A8B5A",
+      "outfitAccent": "#4E5A35",
+      "hair": "#2A1B12",
+      "headwear": "headband",
+      "headwearColor": "#D8C7A0",
+      "prop": "scroll"
+    },
+    {
+      "id": "murmure",
+      "name": "The Whisper",
+      "skin": "#120D1E",
+      "outfit": "#3A2D5C",
+      "outfitAccent": "#7D5FD0",
+      "headwear": "hood",
+      "glowingEyes": true
+    },
+    {
+      "id": "frere",
+      "name": "One of Joseph's brothers",
+      "skin": "#CB9560",
+      "outfit": "#8E7A55",
+      "outfitAccent": "#5E4B32",
+      "hair": "#2B1A12",
+      "beard": "#2B1A12",
+      "headwear": "headband",
+      "headwearColor": "#D8C7A0",
+      "prop": "staff"
+    },
+    {
+      "id": "benjamin",
+      "name": "Benjamin",
+      "skin": "#D2A06B",
+      "outfit": "#4F8FB8",
+      "outfitAccent": "#F2E3B5",
+      "hair": "#2B1A12",
+      "scale": 0.8
+    },
+    {
+      "id": "pharaon",
+      "name": "Pharaoh",
+      "skin": "#B87A48",
+      "outfit": "#2E6FBF",
+      "outfitAccent": "#E8B930",
+      "headwear": "nemes"
+    },
+    {
+      "id": "jacob",
+      "name": "Jacob (Israel)",
+      "skin": "#C98E58",
+      "outfit": "#8A6A4F",
+      "outfitAccent": "#D8C7A0",
+      "hair": "#E6E2D6",
+      "beard": "#E6E2D6",
+      "headwear": "headband",
+      "headwearColor": "#B04A3A",
+      "prop": "staff"
+    },
+    {
+      "id": "ruben",
+      "name": "Reuben",
+      "skin": "#C98E58",
+      "outfit": "#6E8C5A",
+      "outfitAccent": "#D8C7A0",
+      "hair": "#3A2418",
+      "beard": "#3A2418",
+      "headwear": "headband",
+      "headwearColor": "#D8C7A0"
+    },
+    {
+      "id": "juda",
+      "name": "Judah",
+      "skin": "#CB9560",
+      "outfit": "#2F6F8F",
+      "outfitAccent": "#F2B632",
+      "hair": "#2B1A12",
+      "beard": "#2B1A12",
+      "headwear": "headband",
+      "headwearColor": "#F2B632"
+    },
+    {
+      "id": "echanson",
+      "name": "Pharaoh's cupbearer",
+      "skin": "#B87A48",
+      "outfit": "#8A3F5F",
+      "outfitAccent": "#E8B930",
+      "hair": "#1F1612",
+      "headwear": "turban",
+      "headwearColor": "#E8DFC8"
+    }
+  ],
+  "verses": {
+    "WEB": {
+      "1CO.10.13": "No temptation has taken you except what is common to man. God is faithful, who will not allow you to be tempted above what you are able, but will with the temptation also make the way of escape, that you may be able to endure it.",
+      "GEN.39.21": "But Yahweh was with Joseph, and showed kindness to him, and gave him favor in the sight of the keeper of the prison.",
+      "GEN.39.9": "He isn't greater in this house than I, neither has he kept back anything from me but you, because you are his wife. How then can I do this great wickedness, and sin against God?",
+      "GEN.41.16": "Joseph answered Pharaoh, saying, It isn't in me. God will give Pharaoh an answer of peace.",
+      "GEN.41.52": "The name of the second, he called Ephraim: For God has made me fruitful in the land of my affliction.",
+      "GEN.45.5": "Now don't be grieved, nor angry with yourselves, that you sold me here, for God sent me before you to preserve life.",
+      "GEN.50.20": "As for you, you meant evil against me, but God meant it for good, to bring to pass, as it is this day, to save many people alive.",
+      "JAS.1.5": "But if any of you lacks wisdom, let him ask of God, who gives to all liberally and without reproach; and it will be given to him.",
+      "JHN.15.13": "Greater love has no one than this, that someone lay down his life for his friends.",
+      "PRO.14.30": "The life of the body is a heart at peace, but envy rots the bones.",
+      "PRO.16.18": "Pride goes before destruction, and a haughty spirit before a fall.",
+      "PRO.28.13": "He who conceals his sins doesn't prosper, but whoever confesses and renounces them finds mercy.",
+      "PRO.3.5": "Trust in Yahweh with all your heart, and don't lean on your own understanding.",
+      "ROM.12.21": "Don't be overcome by evil, but overcome evil with good.",
+      "ROM.8.28": "We know that all things work together for good for those who love God, to those who are called according to his purpose."
+    }
+  },
+  "meditations": [
+    {
+      "id": "med-1",
+      "passage": "PRO.3.5",
+      "reflectionPrompt": "In what area of your life do you rely mostly on your own wisdom? What would change if you trusted in Yahweh?",
+      "question": "Whom does this verse invite us to trust with all our heart?",
+      "options": [
+        "Ourselves",
+        "Yahweh",
+        "Our friends"
+      ],
+      "answerIndex": 1
+    },
+    {
+      "id": "med-2",
+      "passage": "GEN.39.9",
+      "reflectionPrompt": "Joseph sees evil as a sin against God. What temptation do you need to refuse this week, even if no one would ever know?",
+      "question": "Against whom does Joseph say he would sin by doing this evil?",
+      "options": [
+        "Against Potiphar",
+        "Against himself",
+        "Against God"
+      ],
+      "answerIndex": 2
+    },
+    {
+      "id": "med-3",
+      "passage": "ROM.8.28",
+      "reflectionPrompt": "Is there a trial you are going through that you can entrust to God? Write your prayer.",
+      "question": "To whom is this promise addressed?",
+      "options": [
+        "To everyone, unconditionally",
+        "To those who love God",
+        "To the richest"
+      ],
+      "answerIndex": 1
+    },
+    {
+      "id": "med-4",
+      "passage": "PRO.16.18",
+      "reflectionPrompt": "Is there an opportunity this week to listen before speaking, rather than putting yourself forward?",
+      "question": "According to this verse, what goes before a fall?",
+      "options": [
+        "Laziness",
+        "Pride",
+        "Anger"
+      ],
+      "answerIndex": 1
+    },
+    {
+      "id": "med-5",
+      "passage": "GEN.39.21",
+      "reflectionPrompt": "What difficult situation are you going through where you need to feel God's presence? Write to him what you feel.",
+      "question": "Who was with Joseph, even in prison?",
+      "options": [
+        "No one",
+        "The guards",
+        "Yahweh"
+      ],
+      "answerIndex": 2
+    },
+    {
+      "id": "med-6",
+      "passage": "GEN.41.16",
+      "reflectionPrompt": "What are you good at? How could you thank God for it today?",
+      "question": "To whom does Joseph attribute the answer he is about to give?",
+      "options": [
+        "His own intelligence",
+        "God",
+        "The wise men of Egypt"
+      ],
+      "answerIndex": 1
+    },
+    {
+      "id": "med-7",
+      "passage": "JAS.1.5",
+      "reflectionPrompt": "In what decision do you need wisdom? Take a moment to ask God for it in your own words.",
+      "question": "Whom does this verse invite us to ask for wisdom?",
+      "options": [
+        "God",
+        "The oldest people",
+        "No one: it is gained alone"
+      ],
+      "answerIndex": 0
+    },
+    {
+      "id": "med-8",
+      "passage": "JHN.15.13",
+      "reflectionPrompt": "Who around you needs you to give a little of your time or attention this week?",
+      "question": "According to this verse, what is the greatest love?",
+      "options": [
+        "Loving in words",
+        "Giving one's possessions",
+        "Laying down one's life for one's friends"
+      ],
+      "answerIndex": 2
+    },
+    {
+      "id": "med-9",
+      "passage": "GEN.45.5",
+      "reflectionPrompt": "Is there a wrong done to you that you can hand over to God, asking him to help you forgive?",
+      "question": "According to Joseph, who sent him to Egypt to save lives?",
+      "options": [
+        "His brothers",
+        "The merchants",
+        "God"
+      ],
+      "answerIndex": 2
+    },
+    {
+      "id": "med-10",
+      "passage": "ROM.12.21",
+      "reflectionPrompt": "What situation tempts you to answer evil with evil? How could you answer with good today?",
+      "question": "How does this verse invite us to overcome evil?",
+      "options": [
+        "With evil",
+        "With good",
+        "By ignoring it"
+      ],
+      "answerIndex": 1
+    }
+  ],
+  "chapters": [
+    {
+      "id": "ch1-reveur",
+      "title": "The Dreamer",
+      "theme": "Humility",
+      "start": "r1",
+      "nodes": [
+        {
+          "id": "r1",
+          "type": "dialogue",
+          "setting": "desert",
+          "scene": "The land of Canaan",
+          "character": "lumo",
+          "mood": "happy",
+          "action": "wave",
+          "speaker": "Lumo",
+          "text": "Welcome, witness! We are travelling back in time to the land of Canaan. Joseph is seventeen and tends the flock with his brothers. Stay close to me: everything begins here.",
+          "next": "r2"
+        },
+        {
+          "id": "r2",
+          "type": "dialogue",
+          "setting": "house",
+          "scene": "Jacob's tent",
+          "character": "jacob",
+          "mood": "happy",
+          "action": "talk",
+          "speaker": "Jacob",
+          "text": "Joseph is the son of my old age, and I love him more than all his brothers. Look at the coat I made for him: it is magnificent!",
+          "next": "r3"
+        },
+        {
+          "id": "r3",
+          "type": "dialogue",
+          "setting": "desert",
+          "scene": "The fields",
+          "character": "frere",
+          "mood": "sad",
+          "action": "sad",
+          "speaker": "One of Joseph's brothers",
+          "text": "Our father loves him more than us. To him, that beautiful coat; to us, nothing. We can't even speak kindly to him anymore.",
+          "next": "r4"
+        },
+        {
+          "id": "r4",
+          "type": "dialogue",
+          "scene": "The fields",
+          "character": "joseph",
+          "mood": "wow",
+          "action": "talk",
+          "speaker": "Joseph",
+          "text": "I had a dream! We were binding sheaves in the field, and my sheaf stood upright. Your sheaves gathered around it and bowed down.",
+          "next": "r5"
+        },
+        {
+          "id": "r5",
+          "type": "choice",
+          "scene": "The fields",
+          "character": "joseph",
+          "mood": "think",
+          "action": "think",
+          "prompt": "Joseph tells his dream to his brothers, who look at him sideways. What do you do?",
+          "options": [
+            {
+              "id": "advise",
+              "text": "You advise Joseph to keep this dream to himself for a while, until he understands it better.",
+              "effects": {
+                "traits": {
+                  "humility": 1,
+                  "wisdom": 1
+                }
+              },
+              "next": "r6"
+            },
+            {
+              "id": "listen",
+              "text": "You listen to the brothers: they are hurt, and you suggest talking it over calmly.",
+              "effects": {
+                "traits": {
+                  "compassion": 1,
+                  "courage": 1
+                }
+              },
+              "next": "r6"
+            },
+            {
+              "id": "celebrate",
+              "text": "You congratulate Joseph: a dream this strong is meant to be shared!",
+              "effects": {
+                "traits": {
+                  "faith": 1,
+                  "courage": 1
+                }
+              },
+              "next": "r6"
+            }
+          ]
+        },
+        {
+          "id": "r6",
+          "type": "dialogue",
+          "scene": "The fields",
+          "character": "frere",
+          "mood": "sly",
+          "action": "point",
+          "speaker": "One of Joseph's brothers",
+          "text": "You, rule over us? You want to dominate us? His brothers hate him even more because of his dreams and his words.",
+          "next": "r7"
+        },
+        {
+          "id": "r7",
+          "type": "discernment",
+          "scene": "The evening",
+          "character": "murmure",
+          "mood": "sly",
+          "action": "talk",
+          "speaker": "The Whisper",
+          "quote": "Don't worry: \"Pride goes before glory.\" Joseph is right to be proud!",
+          "claimedRef": "Proverbs 16:18",
+          "anomaly": "distorted",
+          "correctRef": "PRO.16.18",
+          "explanation": "The verse does not say \"pride goes before glory\": it says pride goes before destruction and a haughty spirit before a fall. With a single word changed, the sentence says the opposite of the text.",
+          "refs": [
+            "PRO.16.18"
+          ],
+          "next": "r8"
+        },
+        {
+          "id": "r8",
+          "type": "door",
+          "scene": "The door",
+          "character": "lumo",
+          "mood": "think",
+          "action": "point",
+          "prompt": "To leave the fields, you must find the saying that warns against pride.",
+          "verse": "PRO.16.18",
+          "refs": [
+            "PRO.16.18"
+          ],
+          "next": "r9"
+        },
+        {
+          "id": "r9",
+          "type": "debrief",
+          "character": "lumo",
+          "mood": "happy",
+          "action": "cheer",
+          "teaching": "Joseph's dreams will come true, but he tells them without seeing his brothers' pain. God gives gifts to serve, not to rise above others. Humility listens before it speaks.",
+          "verses": [
+            "PRO.16.18"
+          ],
+          "next": "r10"
+        },
+        {
+          "id": "r10",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "ch2-citerne",
+      "title": "The Cistern",
+      "theme": "Jealousy and compassion",
+      "start": "c1",
+      "nodes": [
+        {
+          "id": "c1",
+          "type": "dialogue",
+          "setting": "desert",
+          "scene": "Dothan",
+          "character": "lumo",
+          "mood": "neutral",
+          "action": "walk",
+          "speaker": "Lumo",
+          "text": "Some time later. Joseph's brothers are grazing the flock near Dothan, far from home. Jacob sends Joseph to see how they are.",
+          "next": "c2"
+        },
+        {
+          "id": "c2",
+          "type": "dialogue",
+          "scene": "Dothan",
+          "character": "frere",
+          "mood": "sly",
+          "action": "point",
+          "speaker": "One of Joseph's brothers",
+          "text": "Look, here comes the dreamer! Let's kill him and throw him into a cistern, and we'll see what becomes of his dreams.",
+          "next": "c3"
+        },
+        {
+          "id": "c3",
+          "type": "dialogue",
+          "scene": "Dothan",
+          "character": "ruben",
+          "mood": "sad",
+          "action": "point",
+          "speaker": "Reuben",
+          "text": "Let's not shed his blood! Throw him into this cistern in the wilderness instead, but don't lay a hand on him.",
+          "next": "c4"
+        },
+        {
+          "id": "c4",
+          "type": "choice",
+          "scene": "Dothan",
+          "character": "lumo",
+          "mood": "think",
+          "action": "think",
+          "prompt": "The brothers have seized Joseph. You are close by, hidden behind a rock. What do you do?",
+          "options": [
+            {
+              "id": "speak",
+              "text": "You step forward and beg the brothers to let him go.",
+              "effects": {
+                "traits": {
+                  "courage": 1,
+                  "compassion": 1
+                }
+              },
+              "next": "c5"
+            },
+            {
+              "id": "ruben",
+              "text": "You join Reuben and secretly help him protect Joseph.",
+              "effects": {
+                "traits": {
+                  "wisdom": 1,
+                  "compassion": 1
+                }
+              },
+              "next": "c5"
+            },
+            {
+              "id": "pray",
+              "text": "You pray, heavy-hearted, that God will keep Joseph safe.",
+              "effects": {
+                "traits": {
+                  "faith": 1,
+                  "humility": 1
+                }
+              },
+              "next": "c5"
+            }
+          ]
+        },
+        {
+          "id": "c5",
+          "type": "dialogue",
+          "scene": "Dothan",
+          "character": "juda",
+          "mood": "think",
+          "action": "talk",
+          "speaker": "Judah",
+          "text": "What do we gain by killing our brother and hiding his blood? Let's sell him to the Ishmaelites instead. After all, he is our brother, our own flesh.",
+          "next": "c6"
+        },
+        {
+          "id": "c6",
+          "type": "dialogue",
+          "setting": "house",
+          "scene": "Jacob's tent",
+          "character": "jacob",
+          "mood": "sad",
+          "action": "sad",
+          "speaker": "Jacob",
+          "text": "This is my son's coat! A wild beast has devoured him... I will mourn my son until my last day.",
+          "next": "c7"
+        },
+        {
+          "id": "c7",
+          "type": "dialogue",
+          "setting": "desert",
+          "scene": "The road",
+          "character": "lumo",
+          "mood": "sad",
+          "action": "sad",
+          "speaker": "Lumo",
+          "text": "The brothers lied to their father. Meanwhile, the merchants carry Joseph off to Egypt, sold as a slave.",
+          "next": "c8"
+        },
+        {
+          "id": "c8",
+          "type": "discernment",
+          "scene": "The evening",
+          "character": "murmure",
+          "mood": "sly",
+          "action": "talk",
+          "speaker": "The Whisper",
+          "quote": "Calm down: \"The life of the body is a heart at peace.\" Don't get involved in these quarrels between brothers!",
+          "claimedRef": "Proverbs 14:30",
+          "anomaly": "truncated",
+          "correctRef": "PRO.14.30",
+          "explanation": "The quotation stops halfway: the sentence continues with \"but envy rots the bones.\" Cut in two, it becomes an excuse to do nothing, while the verse speaks of the envy that eats away: the envy of Joseph's brothers.",
+          "refs": [
+            "PRO.14.30"
+          ],
+          "next": "c9"
+        },
+        {
+          "id": "c9",
+          "type": "door",
+          "scene": "The door",
+          "character": "lumo",
+          "mood": "think",
+          "action": "point",
+          "prompt": "A heavy stone seals the entrance of the cistern. Find the saying about envy to roll it away.",
+          "verse": "PRO.14.30",
+          "refs": [
+            "PRO.14.30"
+          ],
+          "next": "c10"
+        },
+        {
+          "id": "c10",
+          "type": "debrief",
+          "character": "lumo",
+          "mood": "happy",
+          "action": "cheer",
+          "teaching": "Envy drove the brothers to harm their own brother. Reuben and Judah held back the worst, but not the betrayal. Yet God sees everything, even what happens at the bottom of a cistern.",
+          "verses": [
+            "PRO.14.30"
+          ],
+          "next": "c11"
+        },
+        {
+          "id": "c11",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "ch3-potiphar",
+      "title": "In Potiphar's House",
+      "theme": "Integrity",
+      "start": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "setting": "house",
+          "type": "dialogue",
+          "scene": "Potiphar's house",
+          "character": "lumo",
+          "mood": "happy",
+          "action": "wave",
+          "speaker": "Lumo",
+          "text": "Here we are in Egypt. Joseph has been sold to Potiphar, an officer of Pharaoh, and you work in his house. Everyone talks about a Hebrew slave who succeeds at everything.",
+          "next": "n1b"
+        },
+        {
+          "id": "n1b",
+          "type": "dialogue",
+          "scene": "The morning",
+          "character": "joseph",
+          "mood": "happy",
+          "action": "talk",
+          "speaker": "Joseph",
+          "text": "Hello! My name is Joseph. I come from far away, but I believe God is with me, even here. Would you help me carry these jars?",
+          "next": "n2"
+        },
+        {
+          "id": "n2",
+          "type": "choice",
+          "scene": "Midday",
+          "character": "intendant",
+          "mood": "think",
+          "action": "point",
+          "prompt": "At mealtime, the steward questions you about Joseph. What do you answer?",
+          "options": [
+            {
+              "id": "defend",
+              "text": "\"He is honest in everything he does.\"",
+              "effects": {
+                "traits": {
+                  "integrity": 1,
+                  "courage": 1
+                },
+                "setFlags": [
+                  "defended_joseph"
+                ]
+              },
+              "next": "n2a"
+            },
+            {
+              "id": "silent",
+              "text": "You shrug and change the subject.",
+              "effects": {
+                "traits": {
+                  "humility": 1
+                }
+              },
+              "next": "n2a"
+            },
+            {
+              "id": "warn",
+              "text": "You take the steward aside to warn him of a danger lurking around Joseph.",
+              "requires": {
+                "traits": {
+                  "courage": {
+                    "min": 1
+                  }
+                }
+              },
+              "effects": {
+                "traits": {
+                  "compassion": 1,
+                  "wisdom": 1
+                },
+                "setFlags": [
+                  "warned_joseph"
+                ]
+              },
+              "next": "n2a"
+            }
+          ]
+        },
+        {
+          "id": "n2a",
+          "setting": "house",
+          "type": "dialogue",
+          "scene": "Midday",
+          "character": "potiphar",
+          "mood": "neutral",
+          "action": "point",
+          "speaker": "Potiphar",
+          "text": "My house has prospered ever since Joseph has worked in it. I have entrusted everything to him, and he has never betrayed my trust. Here is a man you can count on.",
+          "next": "n3"
+        },
+        {
+          "id": "n3",
+          "setting": "house",
+          "type": "discernment",
+          "scene": "The evening",
+          "character": "murmure",
+          "mood": "sly",
+          "action": "talk",
+          "speaker": "The Whisper",
+          "quote": "You know, you have to stay practical: the Bible itself says \"God helps those who help themselves.\"",
+          "claimedRef": "Proverbs 3:5",
+          "anomaly": "misattributed",
+          "correctRef": "PRO.3.5",
+          "explanation": "This sentence is a popular saying: it appears nowhere in the Bible. Proverbs 3:5 says almost the opposite: not to lean on your own understanding, but to trust in the Lord.",
+          "refs": [
+            "PRO.3.5"
+          ],
+          "next": "n4"
+        },
+        {
+          "id": "n4",
+          "setting": "house",
+          "type": "door",
+          "scene": "The door",
+          "character": "lumo",
+          "mood": "think",
+          "action": "point",
+          "prompt": "The bedroom door is shut. Only a restrained word can let you pass without shame.",
+          "verse": "GEN.39.9",
+          "refs": [
+            "GEN.39.9"
+          ],
+          "next": "n4b"
+        },
+        {
+          "id": "n4b",
+          "type": "dialogue",
+          "scene": "Potiphar's house",
+          "character": "lumo",
+          "mood": "sad",
+          "action": "sad",
+          "speaker": "Lumo",
+          "text": "Joseph refused to sin against God. Yet he is falsely accused and thrown into prison. Doing good does not always shield us from hardship.",
+          "next": "n5"
+        },
+        {
+          "id": "n5",
+          "type": "debrief",
+          "character": "lumo",
+          "mood": "happy",
+          "action": "cheer",
+          "teaching": "Joseph refuses evil because he fears God, not only because someone might be watching. Integrity is faithfulness before God, even when no one sees.",
+          "verses": [
+            "GEN.39.9",
+            "PRO.3.5"
+          ],
+          "next": "n6"
+        },
+        {
+          "id": "n6",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "ch4-prison",
+      "title": "The Prison",
+      "theme": "God is with us in hardship",
+      "start": "p1",
+      "nodes": [
+        {
+          "id": "p1",
+          "type": "dialogue",
+          "setting": "memory",
+          "scene": "The prison",
+          "character": "lumo",
+          "mood": "sad",
+          "action": "sad",
+          "speaker": "Lumo",
+          "text": "The king's prison. Joseph is locked up here though he has done nothing wrong. And yet, something astonishing is happening.",
+          "next": "p2"
+        },
+        {
+          "id": "p2",
+          "type": "dialogue",
+          "scene": "The prison",
+          "character": "intendant",
+          "mood": "happy",
+          "action": "talk",
+          "speaker": "The prison warden",
+          "text": "This man takes care of everything, and I no longer have to worry about anything. Whatever he does succeeds: it seems someone is watching over him.",
+          "next": "p3"
+        },
+        {
+          "id": "p3",
+          "type": "dialogue",
+          "scene": "The prison",
+          "character": "echanson",
+          "mood": "sad",
+          "action": "sad",
+          "speaker": "Pharaoh's cupbearer",
+          "text": "Last night I had a dream and no one can explain it to me. I was the king's cupbearer, and here I am behind these walls... I am so worried.",
+          "next": "p4"
+        },
+        {
+          "id": "p4",
+          "type": "dialogue",
+          "scene": "The prison",
+          "character": "joseph",
+          "mood": "think",
+          "action": "talk",
+          "speaker": "Joseph",
+          "text": "Don't interpretations belong to God? Tell me your dream, please.",
+          "next": "p5"
+        },
+        {
+          "id": "p5",
+          "type": "choice",
+          "scene": "The prison",
+          "character": "joseph",
+          "mood": "think",
+          "action": "think",
+          "prompt": "Joseph tells the cupbearer he will return to his place beside Pharaoh, then asks him: \"Remember me.\" What do you do?",
+          "options": [
+            {
+              "id": "promise",
+              "text": "You promise Joseph you will not forget him, even if the cupbearer does.",
+              "effects": {
+                "traits": {
+                  "compassion": 1,
+                  "courage": 1
+                }
+              },
+              "next": "p6"
+            },
+            {
+              "id": "trust",
+              "text": "You tell Joseph: \"God will not forget you.\"",
+              "effects": {
+                "traits": {
+                  "faith": 1
+                }
+              },
+              "next": "p6"
+            },
+            {
+              "id": "plan",
+              "text": "You help Joseph prepare what he will say to the cupbearer before he leaves.",
+              "effects": {
+                "traits": {
+                  "wisdom": 1
+                }
+              },
+              "next": "p6"
+            }
+          ]
+        },
+        {
+          "id": "p6",
+          "type": "dialogue",
+          "scene": "The prison",
+          "character": "lumo",
+          "mood": "sad",
+          "action": "sad",
+          "speaker": "Lumo",
+          "text": "Three days later, everything happens as Joseph said. But the cupbearer no longer thinks of him: he forgets him. Joseph will wait two more long years in prison.",
+          "next": "p7"
+        },
+        {
+          "id": "p7",
+          "type": "discernment",
+          "scene": "The prison",
+          "character": "murmure",
+          "mood": "sly",
+          "action": "talk",
+          "speaker": "The Whisper",
+          "quote": "Courage: God never sends us more trials than we can bear. It is promised in 1 Corinthians 10:13.",
+          "claimedRef": "1 Corinthians 10:13",
+          "anomaly": "out_of_context",
+          "correctRef": "1CO.10.13",
+          "explanation": "This verse speaks of temptation, not of every trial: God does not allow us to be tempted beyond what we can bear and he provides a way out. The Bible does not promise light trials, but God's presence, as with Joseph in prison.",
+          "refs": [
+            "1CO.10.13"
+          ],
+          "next": "p8"
+        },
+        {
+          "id": "p8",
+          "type": "door",
+          "scene": "The door",
+          "character": "lumo",
+          "mood": "think",
+          "action": "point",
+          "prompt": "The prison bolts will only yield to the saying that tells who was with Joseph.",
+          "verse": "GEN.39.21",
+          "refs": [
+            "GEN.39.21"
+          ],
+          "next": "p9"
+        },
+        {
+          "id": "p9",
+          "type": "debrief",
+          "character": "lumo",
+          "mood": "happy",
+          "action": "cheer",
+          "teaching": "Even in an unjust prison, Joseph is not alone: \"Yahweh was with Joseph.\" God's presence does not depend on our circumstances. Joseph keeps serving faithfully, right where he is.",
+          "verses": [
+            "GEN.39.21",
+            "1CO.10.13"
+          ],
+          "next": "p10"
+        },
+        {
+          "id": "p10",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "ch5-songes",
+      "title": "Pharaoh's Dreams",
+      "theme": "Humility before God",
+      "start": "s1",
+      "nodes": [
+        {
+          "id": "s1",
+          "type": "dialogue",
+          "setting": "palace",
+          "scene": "The palace",
+          "character": "lumo",
+          "mood": "neutral",
+          "action": "talk",
+          "speaker": "Lumo",
+          "text": "Two years have passed. Pharaoh has had two dreams that trouble him: seven thin cows devouring seven fat cows, seven thin ears of grain swallowing seven full ones. No wise man in Egypt can explain them.",
+          "next": "s2"
+        },
+        {
+          "id": "s2",
+          "type": "dialogue",
+          "scene": "The palace",
+          "character": "pharaon",
+          "mood": "sad",
+          "action": "think",
+          "speaker": "Pharaoh",
+          "text": "My spirit is troubled. I have had dreams, and no one can tell me what they mean. Someone help me!",
+          "next": "s3"
+        },
+        {
+          "id": "s3",
+          "type": "dialogue",
+          "scene": "The palace",
+          "character": "echanson",
+          "mood": "think",
+          "action": "talk",
+          "speaker": "Pharaoh's cupbearer",
+          "text": "My lord, today I remember my faults. In prison with me there was a young Hebrew. He explained our dreams to us, and everything happened just as he said.",
+          "next": "s4"
+        },
+        {
+          "id": "s4",
+          "type": "choice",
+          "scene": "The palace",
+          "character": "joseph",
+          "mood": "think",
+          "action": "think",
+          "prompt": "They send for Joseph. While he is being prepared, he confides that he fears not being up to the task. What do you answer?",
+          "options": [
+            {
+              "id": "god",
+              "text": "\"Remember: it is not you who interprets, it is God who speaks.\"",
+              "effects": {
+                "traits": {
+                  "faith": 1,
+                  "humility": 1
+                }
+              },
+              "next": "s5"
+            },
+            {
+              "id": "courage",
+              "text": "\"Breathe. You told the cupbearer the truth, tell Pharaoh the truth too.\"",
+              "effects": {
+                "traits": {
+                  "courage": 1,
+                  "integrity": 1
+                }
+              },
+              "next": "s5"
+            },
+            {
+              "id": "wisdom",
+              "text": "\"First listen to the whole dream, without rushing.\"",
+              "effects": {
+                "traits": {
+                  "wisdom": 1
+                }
+              },
+              "next": "s5"
+            }
+          ]
+        },
+        {
+          "id": "s5",
+          "type": "dialogue",
+          "scene": "The palace",
+          "character": "joseph",
+          "mood": "think",
+          "action": "talk",
+          "speaker": "Joseph",
+          "text": "I am not the one who answers: this answer comes from God. Here is what he makes known to Pharaoh: seven years of plenty are coming, then seven years of famine.",
+          "next": "s6"
+        },
+        {
+          "id": "s6",
+          "type": "discernment",
+          "scene": "The palace",
+          "character": "murmure",
+          "mood": "sly",
+          "action": "talk",
+          "speaker": "The Whisper",
+          "quote": "A wise man of Egypt would tell you: \"Dreams always tell the truth.\" It is written in Proverbs.",
+          "claimedRef": "Proverbs 16:33",
+          "anomaly": "misattributed",
+          "correctRef": "GEN.41.16",
+          "explanation": "This sentence is not found in Proverbs, nor anywhere else in the Bible. A dream only becomes reliable when God gives its meaning: that is what Joseph declares to Pharaoh.",
+          "refs": [
+            "GEN.41.16"
+          ],
+          "next": "s7"
+        },
+        {
+          "id": "s7",
+          "type": "door",
+          "scene": "The door",
+          "character": "lumo",
+          "mood": "think",
+          "action": "point",
+          "prompt": "The great palace door opens for whoever knows to whom the answer belongs. Find Joseph's words.",
+          "verse": "GEN.41.16",
+          "refs": [
+            "GEN.41.16"
+          ],
+          "next": "s8"
+        },
+        {
+          "id": "s8",
+          "type": "debrief",
+          "character": "lumo",
+          "mood": "happy",
+          "action": "cheer",
+          "teaching": "Joseph could have boasted: he had just been brought out of prison to interpret the king's dreams! He gives the glory to God first. Humility is not putting yourself down, it is knowing where our gifts come from.",
+          "verses": [
+            "GEN.41.16"
+          ],
+          "next": "s9"
+        },
+        {
+          "id": "s9",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "ch6-gouverneur",
+      "title": "Governor of Egypt",
+      "theme": "Wisdom and service",
+      "start": "g1",
+      "nodes": [
+        {
+          "id": "g1",
+          "type": "dialogue",
+          "setting": "palace",
+          "scene": "The palace",
+          "character": "lumo",
+          "mood": "neutral",
+          "action": "talk",
+          "speaker": "Lumo",
+          "text": "Joseph does not stop at explaining the dream: he proposes a plan. During the seven years of plenty, Egypt must set grain aside for the seven years of famine.",
+          "next": "g2"
+        },
+        {
+          "id": "g2",
+          "type": "dialogue",
+          "scene": "The palace",
+          "character": "pharaon",
+          "mood": "happy",
+          "action": "point",
+          "speaker": "Pharaoh",
+          "text": "Could we find a man like this one, who has the spirit of God in him? Since God has made all this known to you, no one is as discerning and wise as you.",
+          "next": "g3"
+        },
+        {
+          "id": "g3",
+          "type": "dialogue",
+          "scene": "The palace",
+          "character": "lumo",
+          "mood": "happy",
+          "action": "cheer",
+          "speaker": "Lumo",
+          "text": "Joseph is thirty years old. Pharaoh gives him his ring, garments of fine linen and a chariot: he is now governor of all Egypt.",
+          "next": "g4"
+        },
+        {
+          "id": "g4",
+          "type": "choice",
+          "scene": "The granaries",
+          "character": "joseph",
+          "mood": "think",
+          "action": "think",
+          "prompt": "The granaries fill up for seven years. Some people grumble: \"Why keep all this grain?\" Joseph asks for your advice.",
+          "options": [
+            {
+              "id": "explain",
+              "text": "\"Explain to them why: the famine is coming.\"",
+              "effects": {
+                "traits": {
+                  "wisdom": 1,
+                  "integrity": 1
+                }
+              },
+              "next": "g5"
+            },
+            {
+              "id": "serve",
+              "text": "\"Store the grain carefully, then open the granaries to everyone when the famine comes.\"",
+              "effects": {
+                "traits": {
+                  "compassion": 1,
+                  "wisdom": 1
+                }
+              },
+              "next": "g5"
+            },
+            {
+              "id": "wait",
+              "text": "\"Let time pass: the facts will speak for themselves.\"",
+              "effects": {
+                "traits": {
+                  "humility": 1,
+                  "faith": 1
+                }
+              },
+              "next": "g5"
+            }
+          ]
+        },
+        {
+          "id": "g5",
+          "type": "dialogue",
+          "setting": "house",
+          "scene": "Joseph's house",
+          "character": "joseph",
+          "mood": "happy",
+          "action": "talk",
+          "speaker": "Joseph",
+          "text": "Two sons were born to me in Egypt. Their names express my gratitude to God for what he has done in my life, even in the land where I suffered so much.",
+          "next": "g6"
+        },
+        {
+          "id": "g6",
+          "type": "discernment",
+          "setting": "palace",
+          "scene": "The granaries",
+          "character": "murmure",
+          "mood": "sly",
+          "action": "talk",
+          "speaker": "The Whisper",
+          "quote": "Even the Bible says: \"If any of you lacks wisdom, let him ask.\" So ask men: Joseph knows everything!",
+          "claimedRef": "James 1:5",
+          "anomaly": "truncated",
+          "correctRef": "JAS.1.5",
+          "explanation": "The quotation is cut short: the full verse says \"let him ask of God, who gives to all liberally and without reproach.\" By removing the words \"of God,\" the promise is twisted.",
+          "refs": [
+            "JAS.1.5"
+          ],
+          "next": "g7"
+        },
+        {
+          "id": "g7",
+          "type": "door",
+          "scene": "The door",
+          "character": "lumo",
+          "mood": "think",
+          "action": "point",
+          "prompt": "The names of Joseph's sons tell of his gratitude. Find the saying about the second one to pass.",
+          "verse": "GEN.41.52",
+          "refs": [
+            "GEN.41.52"
+          ],
+          "next": "g8"
+        },
+        {
+          "id": "g8",
+          "type": "debrief",
+          "character": "lumo",
+          "mood": "happy",
+          "action": "cheer",
+          "teaching": "Joseph receives immense power, but he uses it to serve and protect. His wisdom comes from God, and his sons bear names of gratitude. True wisdom is asked of God, who gives it without reproach.",
+          "verses": [
+            "JAS.1.5",
+            "GEN.41.52"
+          ],
+          "next": "g9"
+        },
+        {
+          "id": "g9",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "ch7-freres",
+      "title": "The Brothers in Egypt",
+      "theme": "Truth and conscience",
+      "start": "f1",
+      "nodes": [
+        {
+          "id": "f1",
+          "type": "dialogue",
+          "setting": "desert",
+          "scene": "Canaan",
+          "character": "lumo",
+          "mood": "neutral",
+          "action": "walk",
+          "speaker": "Lumo",
+          "text": "The famine reaches the whole region, even Canaan. Jacob sends ten of his sons to buy grain in Egypt. He keeps Benjamin, the youngest, close to him.",
+          "next": "f2"
+        },
+        {
+          "id": "f2",
+          "type": "dialogue",
+          "setting": "palace",
+          "scene": "The palace",
+          "character": "frere",
+          "mood": "sad",
+          "action": "sad",
+          "speaker": "One of Joseph's brothers",
+          "text": "My lord, we come from the land of Canaan to buy grain. We are all sons of one father. We are honest men.",
+          "next": "f3"
+        },
+        {
+          "id": "f3",
+          "type": "dialogue",
+          "scene": "The palace",
+          "character": "joseph",
+          "mood": "neutral",
+          "action": "point",
+          "speaker": "Joseph",
+          "text": "You are spies! You have come to see the weak points of the land!",
+          "next": "f4"
+        },
+        {
+          "id": "f4",
+          "type": "dialogue",
+          "scene": "The palace",
+          "character": "lumo",
+          "mood": "think",
+          "action": "talk",
+          "speaker": "Lumo",
+          "text": "Joseph recognized them right away, but they do not recognize him: he is dressed like an Egyptian lord and speaks through an interpreter. He keeps them in prison for three days.",
+          "next": "f5"
+        },
+        {
+          "id": "f5",
+          "type": "dialogue",
+          "setting": "memory",
+          "scene": "The prison",
+          "character": "ruben",
+          "mood": "sad",
+          "action": "sad",
+          "speaker": "Reuben",
+          "text": "We are paying for what we did to our brother. I told you: do not sin against the boy! You would not listen, and now his blood is required of us.",
+          "next": "f6"
+        },
+        {
+          "id": "f6",
+          "type": "dialogue",
+          "setting": "palace",
+          "scene": "The palace",
+          "character": "lumo",
+          "mood": "sad",
+          "action": "sad",
+          "speaker": "Lumo",
+          "text": "Joseph has understood everything. He steps away from them and weeps in secret. Then he comes back and has Simeon bound before their eyes before letting the others leave.",
+          "next": "f7"
+        },
+        {
+          "id": "f7",
+          "type": "choice",
+          "scene": "The palace",
+          "character": "joseph",
+          "mood": "think",
+          "action": "think",
+          "prompt": "The brothers leave with the grain, without Simeon. Joseph tells you: \"I want to know whether they have changed. But it costs me.\" What do you answer?",
+          "options": [
+            {
+              "id": "patience",
+              "text": "\"Take your time to see their hearts, without rushing.\"",
+              "effects": {
+                "traits": {
+                  "wisdom": 1,
+                  "humility": 1
+                }
+              },
+              "next": "f8"
+            },
+            {
+              "id": "truth",
+              "text": "\"Tell them the truth when you are ready. Truth heals.\"",
+              "effects": {
+                "traits": {
+                  "integrity": 1,
+                  "courage": 1
+                }
+              },
+              "next": "f8"
+            },
+            {
+              "id": "tender",
+              "text": "\"Your brother's heart is still there. Do not hide it.\"",
+              "effects": {
+                "traits": {
+                  "compassion": 1
+                }
+              },
+              "next": "f8"
+            }
+          ]
+        },
+        {
+          "id": "f8",
+          "type": "dialogue",
+          "setting": "desert",
+          "scene": "The road",
+          "character": "lumo",
+          "mood": "wow",
+          "action": "talk",
+          "speaker": "Lumo",
+          "text": "On the road, the brothers open their sacks: the money they had paid is still there. They tremble and say to one another: \"What has God done to us?\"",
+          "next": "f9"
+        },
+        {
+          "id": "f9",
+          "type": "discernment",
+          "scene": "The road",
+          "character": "murmure",
+          "mood": "sly",
+          "action": "talk",
+          "speaker": "The Whisper",
+          "quote": "\"He who conceals his sins prospers.\" Say nothing: what no one knows does not exist.",
+          "claimedRef": "Proverbs 28:13",
+          "anomaly": "distorted",
+          "correctRef": "PRO.28.13",
+          "explanation": "The verse says exactly the opposite: whoever conceals his sins does not prosper, but whoever confesses and renounces them finds mercy. Joseph's brothers are living it: their hidden fault has weighed on them for years.",
+          "refs": [
+            "PRO.28.13"
+          ],
+          "next": "f10"
+        },
+        {
+          "id": "f10",
+          "type": "door",
+          "scene": "The door",
+          "character": "lumo",
+          "mood": "think",
+          "action": "point",
+          "prompt": "A stone door closes in front of the brothers. Only the saying about the confessed fault will open it.",
+          "verse": "PRO.28.13",
+          "refs": [
+            "PRO.28.13"
+          ],
+          "next": "f11"
+        },
+        {
+          "id": "f11",
+          "type": "debrief",
+          "character": "lumo",
+          "mood": "happy",
+          "action": "cheer",
+          "teaching": "The brothers have carried their fault for years: their conscience is finally speaking. God invites us to confess and leave evil behind, not to hide it. Joseph, for his part, seeks the truth so that the relationship can be healed.",
+          "verses": [
+            "PRO.28.13"
+          ],
+          "next": "f12"
+        },
+        {
+          "id": "f12",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "ch8-coupe",
+      "title": "The Silver Cup",
+      "theme": "Love that gives itself",
+      "start": "k1",
+      "nodes": [
+        {
+          "id": "k1",
+          "type": "dialogue",
+          "setting": "desert",
+          "scene": "Canaan",
+          "character": "lumo",
+          "mood": "neutral",
+          "action": "talk",
+          "speaker": "Lumo",
+          "text": "The famine continues and the grain from Canaan is used up. Jacob must let Benjamin go with his brothers, with a heavy heart. Judah vouches for him.",
+          "next": "k2"
+        },
+        {
+          "id": "k2",
+          "type": "dialogue",
+          "setting": "house",
+          "scene": "Jacob's tent",
+          "character": "jacob",
+          "mood": "sad",
+          "action": "sad",
+          "speaker": "Jacob",
+          "text": "If I must be bereaved of my children, so be it. Take your brother, and may God give you favor before that man.",
+          "next": "k3"
+        },
+        {
+          "id": "k3",
+          "type": "dialogue",
+          "setting": "palace",
+          "scene": "The palace",
+          "character": "lumo",
+          "mood": "happy",
+          "action": "talk",
+          "speaker": "Lumo",
+          "text": "At the sight of Benjamin, Joseph is moved. He steps aside to weep, then returns and has a great meal served to his brothers.",
+          "next": "k4"
+        },
+        {
+          "id": "k4",
+          "type": "dialogue",
+          "setting": "desert",
+          "scene": "The road",
+          "character": "lumo",
+          "mood": "wow",
+          "action": "point",
+          "speaker": "Lumo",
+          "text": "In the morning, Joseph has his silver cup slipped into Benjamin's sack. Barely out of the city, the brothers are overtaken: \"You have stolen the cup!\"",
+          "next": "k5"
+        },
+        {
+          "id": "k5",
+          "type": "dialogue",
+          "setting": "palace",
+          "scene": "The palace",
+          "character": "benjamin",
+          "mood": "sad",
+          "action": "sad",
+          "speaker": "Benjamin",
+          "text": "I didn't steal anything! I don't know how it got into my sack... I'm afraid!",
+          "next": "k6"
+        },
+        {
+          "id": "k6",
+          "type": "choice",
+          "scene": "The palace",
+          "character": "juda",
+          "mood": "think",
+          "action": "think",
+          "prompt": "The cup is found in Benjamin's sack. The brothers have come back to the palace, crushed. Judah steps forward, and you are beside him. What do you do?",
+          "options": [
+            {
+              "id": "stand",
+              "text": "You stand beside Judah, so he is not alone.",
+              "effects": {
+                "traits": {
+                  "courage": 1,
+                  "compassion": 1
+                }
+              },
+              "next": "k7"
+            },
+            {
+              "id": "pray",
+              "text": "You pray that Joseph will hear Judah's heart.",
+              "effects": {
+                "traits": {
+                  "faith": 1
+                }
+              },
+              "next": "k7"
+            },
+            {
+              "id": "listen",
+              "text": "You listen to Judah in silence, to learn from him.",
+              "effects": {
+                "traits": {
+                  "humility": 1,
+                  "wisdom": 1
+                }
+              },
+              "next": "k7"
+            }
+          ]
+        },
+        {
+          "id": "k7",
+          "type": "dialogue",
+          "scene": "The palace",
+          "character": "juda",
+          "mood": "sad",
+          "action": "talk",
+          "speaker": "Judah",
+          "text": "My lord, let your servant stay as a slave in place of the boy, and let the boy go back up with his brothers. How could I go back to my father without him?",
+          "next": "k8"
+        },
+        {
+          "id": "k8",
+          "type": "discernment",
+          "scene": "The palace",
+          "character": "murmure",
+          "mood": "sly",
+          "action": "talk",
+          "speaker": "The Whisper",
+          "quote": "An eye for an eye, a tooth for a tooth! The Bible says so: Joseph has the right to punish them as they deserve.",
+          "claimedRef": "Exodus 21:24",
+          "anomaly": "out_of_context",
+          "correctRef": "ROM.12.21",
+          "explanation": "\"An eye for an eye\" is a rule given to judges to keep vengeance from spreading, not a right to take revenge. The New Testament sums up the way forward: do not be overcome by evil, but overcome evil with good. That is what Judah does by offering himself in place of his brother.",
+          "refs": [
+            "ROM.12.21"
+          ],
+          "next": "k9"
+        },
+        {
+          "id": "k9",
+          "type": "door",
+          "scene": "The door",
+          "character": "lumo",
+          "mood": "think",
+          "action": "point",
+          "prompt": "Judah offered his freedom for his brother. Find the saying that tells what the greatest love is.",
+          "verse": "JHN.15.13",
+          "refs": [
+            "JHN.15.13"
+          ],
+          "next": "k10"
+        },
+        {
+          "id": "k10",
+          "type": "debrief",
+          "character": "lumo",
+          "mood": "happy",
+          "action": "cheer",
+          "teaching": "Long ago, Judah had proposed selling Joseph. Today, he offers to take Benjamin's place: his heart has changed. A love that gives itself is stronger than jealousy. Jesus will say it is the greatest love.",
+          "verses": [
+            "JHN.15.13",
+            "ROM.12.21"
+          ],
+          "next": "k11"
+        },
+        {
+          "id": "k11",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "ch9-reconnaissance",
+      "title": "I Am Joseph",
+      "theme": "God leads the story",
+      "start": "j1",
+      "nodes": [
+        {
+          "id": "j1",
+          "type": "dialogue",
+          "setting": "palace",
+          "scene": "The palace",
+          "character": "lumo",
+          "mood": "wow",
+          "action": "talk",
+          "speaker": "Lumo",
+          "text": "Joseph can hold back no longer. He sends all his servants out: he is about to make himself known to his brothers. He weeps so loudly that the Egyptians hear him.",
+          "next": "j2"
+        },
+        {
+          "id": "j2",
+          "type": "dialogue",
+          "scene": "The palace",
+          "character": "joseph",
+          "mood": "wow",
+          "action": "wave",
+          "speaker": "Joseph",
+          "text": "I am Joseph, your brother, whom you sold into Egypt. Come close to me, please.",
+          "next": "j3"
+        },
+        {
+          "id": "j3",
+          "type": "dialogue",
+          "scene": "The palace",
+          "character": "frere",
+          "mood": "sad",
+          "action": "sad",
+          "speaker": "One of Joseph's brothers",
+          "text": "Joseph?... Our brother?... We... we don't know what to say.",
+          "next": "j4"
+        },
+        {
+          "id": "j4",
+          "type": "choice",
+          "scene": "The palace",
+          "character": "joseph",
+          "mood": "think",
+          "action": "think",
+          "prompt": "The brothers shrink back, frozen with fear. Joseph looks at you, as if asking for help. What do you do?",
+          "options": [
+            {
+              "id": "reassure",
+              "text": "You tell the brothers: \"He does not want revenge. Come close, listen to him.\"",
+              "effects": {
+                "traits": {
+                  "compassion": 1,
+                  "courage": 1
+                }
+              },
+              "next": "j5"
+            },
+            {
+              "id": "silence",
+              "text": "You stay silent and let Joseph's words do their work.",
+              "effects": {
+                "traits": {
+                  "humility": 1,
+                  "wisdom": 1
+                }
+              },
+              "next": "j5"
+            },
+            {
+              "id": "thank",
+              "text": "You quietly thank God for this moment.",
+              "effects": {
+                "traits": {
+                  "faith": 1
+                }
+              },
+              "next": "j5"
+            }
+          ]
+        },
+        {
+          "id": "j5",
+          "type": "dialogue",
+          "scene": "The palace",
+          "character": "joseph",
+          "mood": "happy",
+          "action": "talk",
+          "speaker": "Joseph",
+          "text": "God sent me ahead of you to keep you alive. It was not you who sent me here, it was God. He has made me a father to Pharaoh and governor of all Egypt.",
+          "next": "j6"
+        },
+        {
+          "id": "j6",
+          "type": "dialogue",
+          "scene": "The palace",
+          "character": "lumo",
+          "mood": "happy",
+          "action": "cheer",
+          "speaker": "Lumo",
+          "text": "Joseph embraces Benjamin, then all his brothers, weeping. After that, his brothers can finally talk with him. Pharaoh invites Jacob's whole family to come and live in Egypt.",
+          "next": "j7"
+        },
+        {
+          "id": "j7",
+          "type": "discernment",
+          "scene": "The palace",
+          "character": "murmure",
+          "mood": "sly",
+          "action": "talk",
+          "speaker": "The Whisper",
+          "quote": "Joseph wiped everything from his memory, as the Bible says: \"Forgive and forget.\"",
+          "claimedRef": "Genesis 45:5",
+          "anomaly": "misattributed",
+          "correctRef": "GEN.45.5",
+          "explanation": "\"Forgive and forget\" is a popular saying: it is not in this passage. Joseph names the facts (\"you sold me\"), then he sees God's hand behind them. Forgiving is not pretending nothing happened.",
+          "refs": [
+            "GEN.45.5"
+          ],
+          "next": "j8"
+        },
+        {
+          "id": "j8",
+          "type": "door",
+          "scene": "The door",
+          "character": "lumo",
+          "mood": "think",
+          "action": "point",
+          "prompt": "The door of the reunion hall opens for whoever knows why God sent Joseph to Egypt.",
+          "verse": "GEN.45.5",
+          "refs": [
+            "GEN.45.5"
+          ],
+          "next": "j9"
+        },
+        {
+          "id": "j9",
+          "type": "debrief",
+          "character": "lumo",
+          "mood": "happy",
+          "action": "cheer",
+          "teaching": "Joseph does not deny the harm done to him, but he recognizes that God led the story to save lives. This reading does not justify evil: it gives hope.",
+          "verses": [
+            "GEN.45.5"
+          ],
+          "next": "j10"
+        },
+        {
+          "id": "j10",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "ch10-pardon",
+      "title": "Forgiveness",
+      "theme": "Forgiveness and God's sovereignty",
+      "start": "m1",
+      "nodes": [
+        {
+          "id": "m1",
+          "setting": "palace",
+          "type": "dialogue",
+          "scene": "The palace",
+          "character": "lumo",
+          "mood": "neutral",
+          "action": "walk",
+          "speaker": "Lumo",
+          "text": "Jacob has joined Joseph in Egypt with his whole family, and then he has died. Joseph's brothers worry: now that their father is gone, what if Joseph finally takes revenge?",
+          "next": [
+            {
+              "if": {
+                "flags": [
+                  "warned_joseph"
+                ]
+              },
+              "to": "m1b"
+            },
+            {
+              "to": "m1c"
+            }
+          ]
+        },
+        {
+          "id": "m1b",
+          "type": "dialogue",
+          "scene": "The palace",
+          "character": "joseph",
+          "mood": "happy",
+          "action": "wave",
+          "speaker": "Joseph",
+          "text": "Joseph remembers your warning from long ago and briefly bows his head toward you.",
+          "next": "m1c"
+        },
+        {
+          "id": "m1c",
+          "type": "dialogue",
+          "scene": "The palace",
+          "character": "frere",
+          "mood": "sad",
+          "action": "sad",
+          "speaker": "One of Joseph's brothers",
+          "text": "Joseph may hate us and pay us back for all the harm we did him... We sent him this message: \"Forgive your brothers' crime.\"",
+          "next": "m1e"
+        },
+        {
+          "id": "m1e",
+          "setting": "memory",
+          "type": "dialogue",
+          "scene": "A memory",
+          "character": "jacob",
+          "mood": "sad",
+          "action": "sad",
+          "speaker": "Jacob (in Joseph's memory)",
+          "text": "Joseph remembers his father, years earlier, weeping over the loss of his favorite son. He clenches his fists to hold back his tears.",
+          "next": "m1f"
+        },
+        {
+          "id": "m1f",
+          "type": "dialogue",
+          "setting": "palace",
+          "scene": "The palace",
+          "character": "joseph",
+          "mood": "sad",
+          "action": "sad",
+          "speaker": "Joseph",
+          "text": "Joseph weeps when these words are reported to him. His brothers come and throw themselves at his feet: \"We are your slaves!\"",
+          "next": "m2"
+        },
+        {
+          "id": "m2",
+          "setting": "palace",
+          "type": "choice",
+          "scene": "The palace",
+          "character": "joseph",
+          "mood": "think",
+          "action": "think",
+          "prompt": "Joseph asks your advice in front of his worried brothers. What do you tell him?",
+          "options": [
+            {
+              "id": "forgive",
+              "text": "\"Forgive them: you have seen what God has made of this evil.\"",
+              "effects": {
+                "traits": {
+                  "compassion": 1,
+                  "faith": 1
+                }
+              },
+              "next": "m2b"
+            },
+            {
+              "id": "justice",
+              "text": "\"They must first acknowledge their wrong.\"",
+              "effects": {
+                "traits": {
+                  "integrity": 1,
+                  "wisdom": 1
+                }
+              },
+              "next": "m2b"
+            }
+          ]
+        },
+        {
+          "id": "m2b",
+          "type": "discernment",
+          "scene": "The palace",
+          "character": "murmure",
+          "mood": "sly",
+          "action": "talk",
+          "speaker": "The Whisper",
+          "quote": "You see: \"all things work together for good.\" So the evil we did doesn't really matter in the end.",
+          "claimedRef": "Romans 8:28",
+          "anomaly": "out_of_context",
+          "correctRef": "ROM.8.28",
+          "explanation": "Romans 8:28 is a promise made to those who love God: it never excuses evil. Joseph himself tells his brothers: \"you meant evil against me.\" Evil remains evil, even if God can turn it to good.",
+          "refs": [
+            "ROM.8.28"
+          ],
+          "next": "m2d"
+        },
+        {
+          "id": "m2d",
+          "type": "dialogue",
+          "scene": "The palace",
+          "character": "joseph",
+          "mood": "happy",
+          "action": "talk",
+          "speaker": "Joseph",
+          "text": "Don't be afraid. Am I in the place of God? I will provide for you and your children.",
+          "next": "m3"
+        },
+        {
+          "id": "m3",
+          "type": "door",
+          "scene": "The door",
+          "character": "lumo",
+          "mood": "think",
+          "action": "point",
+          "prompt": "The last door of the story only opens with the saying that sums up Joseph's whole story.",
+          "verse": "GEN.50.20",
+          "refs": [
+            "GEN.50.20"
+          ],
+          "next": "m4"
+        },
+        {
+          "id": "m4",
+          "type": "debrief",
+          "character": "lumo",
+          "mood": "happy",
+          "action": "cheer",
+          "teaching": "God is never caught off guard by the evil done to us: he can turn it to good without excusing it. Joseph's forgiveness is born from this outlook.",
+          "verses": [
+            "GEN.50.20"
+          ],
+          "next": "m4b"
+        },
+        {
+          "id": "m4b",
+          "type": "dialogue",
+          "scene": "The palace",
+          "character": "lumo",
+          "mood": "happy",
+          "action": "cheer",
+          "speaker": "Lumo",
+          "text": "There you are, witness: you have walked with Joseph from the cistern to the palace. Keep the Keys you have forged, and come back to meditate every day: your lamp is waiting for you.",
+          "next": "m5"
+        },
+        {
+          "id": "m5",
+          "type": "end"
+        }
+      ]
+    }
+  ]
+}

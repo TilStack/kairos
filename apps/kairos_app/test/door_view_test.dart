@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kairos_app/adventure/stone_button.dart';
+import 'package:kairos_app/app/l10n_fr.dart';
 import 'package:kairos_app/features/keys/door_view.dart';
 import 'package:kairos_core/kairos_core.dart';
 
@@ -40,7 +41,7 @@ void main() {
     for (final level in [1, 2, 3]) {
       await pumpDoor(tester, door(level));
       expect(find.text('Forge la Clé'), findsOneWidget, reason: 'niveau $level');
-      expect(find.text(doorInstructions[level]!), findsOneWidget, reason: 'niveau $level');
+      expect(find.text(frStrings['door.instr.$level']!), findsOneWidget, reason: 'niveau $level');
       expect(find.bySemanticsLabel('Essais restants : 3 sur 3'), findsOneWidget);
     }
   });

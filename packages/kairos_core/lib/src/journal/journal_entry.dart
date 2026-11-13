@@ -35,12 +35,13 @@ class JournalEntry {
     required String arcId,
     required Meditation meditation,
     required String reflection,
+    String lang = 'fr',
   }) =>
       JournalEntry(
         id: id,
         type: JournalEntryType.meditation,
         createdAt: at.toUtc(),
-        title: 'Méditation',
+        title: lang == 'en' ? 'Meditation' : 'Méditation',
         body: '${meditation.reflectionPrompt}\n\n${reflection.trim()}',
         arcId: arcId,
         refs: [meditation.passage],
@@ -54,12 +55,13 @@ class JournalEntry {
     required String verseId,
     required String label,
     required String text,
+    String lang = 'fr',
   }) =>
       JournalEntry(
         id: id,
         type: JournalEntryType.key,
         createdAt: at.toUtc(),
-        title: 'Clé forgée : $label',
+        title: lang == 'en' ? 'Key forged: $label' : 'Clé forgée : $label',
         body: text,
         arcId: arcId,
         refs: [verseId],
@@ -72,13 +74,18 @@ class JournalEntry {
     required String arcId,
     required DiscernmentNode node,
     required bool correct,
+    String lang = 'fr',
   }) =>
       JournalEntry(
         id: id,
         type: JournalEntryType.discernment,
         createdAt: at.toUtc(),
-        title: correct ? 'Discernement réussi' : 'Discernement à relire',
-        body: '« ${node.quote} »\n\n${node.explanation}',
+        title: lang == 'en'
+            ? (correct ? 'Discernment passed' : 'Discernment to review')
+            : (correct ? 'Discernement réussi' : 'Discernement à relire'),
+        body: lang == 'en'
+            ? '“${node.quote}”\n\n${node.explanation}'
+            : '« ${node.quote} »\n\n${node.explanation}',
         arcId: arcId,
         refs: [if (node.correctRef != null) node.correctRef!],
       );
@@ -88,6 +95,7 @@ class JournalEntry {
     required String id,
     required DateTime at,
     required String text,
+    String lang = 'fr',
   }) =>
       JournalEntry(
         id: id,

@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kairos_app/app/kairos_app.dart';
+import 'package:kairos_app/app/l10n.dart';
 import 'package:kairos_app/app/music.dart';
 import 'package:kairos_app/app/providers.dart';
 import 'package:kairos_app/app/sfx.dart';
@@ -13,6 +14,12 @@ import 'package:kairos_app/data/memory_repository.dart';
 import 'package:kairos_app/features/onboarding/how_to_play_screen.dart';
 import 'package:kairos_app/data/repository.dart';
 import 'package:kairos_core/kairos_core.dart';
+
+/// Les deux arcs livres avec l'application, par langue.
+Map<String, Arc> loadRealArcs() => {
+      'fr': parseArcString(File('../../content/joseph/arc.json').readAsStringSync()),
+      'en': parseArcString(File('../../content/joseph/arc.en.json').readAsStringSync()),
+    };
 
 /// Arc de test commun a l'app et au moteur.
 Arc loadTestArc() => parseArcString(File('../../content/test_arc/arc.json').readAsStringSync());
@@ -38,12 +45,14 @@ class FakeMusicPlayer implements MusicPlayer {
 class FakeSpeechPlayer implements SpeechPlayer {
   final spoken = <String>[];
   final profiles = <VoiceProfile>[];
+  final languages = <String>[];
   int stops = 0;
 
   @override
-  Future<void> speak(String text, VoiceProfile profile) async {
+  Future<void> speak(String text, VoiceProfile profile, {String lang = 'fr'}) async {
     spoken.add(text);
     profiles.add(profile);
+    languages.add(lang);
   }
 
   @override
@@ -80,18 +89,22 @@ Widget testApp({
   MusicPlayer? music,
   SfxPlayer? sfx,
   SpeechPlayer? speech,
+  Map<String, Arc>? arcs,
   bool onboarding = false,
 }) {
   var n = 0;
   return ProviderScope(
     overrides: [
-      arcProvider.overrideWithValue(loadTestArc()),
+      // Par defaut l'arc de test (francais) ; `arcs` : les vrais arcs, un par langue.
+      if (arcs == null) arcProvider.overrideWithValue(loadTestArc()) else arcsProvider.overrideWithValue(arcs),
       repositoryProvider.overrideWithValue(repo),
       clockProvider.overrideWithValue(clock.call),
       idProvider.overrideWithValue(() => 'id-${++n}'),
       musicPlayerProvider.overrideWithValue(music ?? FakeMusicPlayer()),
       sfxPlayerProvider.overrideWithValue(sfx ?? FakeSfxPlayer()),
       speechPlayerProvider.overrideWithValue(speech ?? FakeSpeechPlayer()),
+      // Les textes des tests sont en francais, quelle que soit la langue du poste.
+      deviceLanguageProvider.overrideWithValue('fr'),
       // La scene Flame tourne en continu : desactivee pour pumpAndSettle.
       animationsProvider.overrideWithValue(false),
       // Le guide du premier lancement s'ouvrirait par-dessus chaque test.

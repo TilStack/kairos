@@ -4,6 +4,7 @@ import 'package:kairos_core/kairos_core.dart';
 
 import '../../adventure/guidance.dart';
 import '../../adventure/stone_button.dart';
+import '../../app/l10n.dart';
 import '../../app/palette.dart';
 import '../../app/sfx.dart';
 import '../../app/theme.dart';
@@ -19,13 +20,6 @@ int stableSeed(String input) {
   }
   return hash;
 }
-
-/// Consigne de chaque niveau : ce que le joueur doit faire, en une phrase.
-const doorInstructions = {
-  1: 'Touche les mots dans l\'ordre du verset, puis appuie sur VÉRIFIER.',
-  2: 'Écris les mots manquants du verset, puis appuie sur VÉRIFIER.',
-  3: 'Écris le verset de mémoire, puis sa référence. Appuie sur VÉRIFIER.',
-};
 
 /// Porte : defi de memorisation d'un verset (niveaux 1 a 3).
 /// Jamais bloquante : apres trois essais, le recit continue.
@@ -115,7 +109,7 @@ class _DoorViewState extends State<DoorView> {
           runSpacing: 4,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            Chip(label: Text(levelLabels[_c.level]!)),
+            Chip(label: Text(levelLabel(context, _c.level))),
             Text(widget.reference, style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800)),
           ],
         ),
@@ -123,8 +117,8 @@ class _DoorViewState extends State<DoorView> {
         if (!done) ...[
           InstructionBanner(
             icon: Icons.vpn_key,
-            title: 'Forge la Clé',
-            text: doorInstructions[_c.level]!,
+            title: context.tr('door.forge'),
+            text: context.tr('door.instr.${_c.level}'),
           ),
           const SizedBox(height: 10),
           _Attempts(left: _c.attemptsLeft),
@@ -136,7 +130,7 @@ class _DoorViewState extends State<DoorView> {
         if (done)
           StoneButton(
             key: const ValueKey('door-continue'),
-            label: 'CONTINUER',
+            label: context.tr('door.continue'),
             fontSize: 20,
             height: 56,
             style: StoneStyle.moss,
@@ -145,18 +139,18 @@ class _DoorViewState extends State<DoorView> {
         else ...[
           StoneButton(
             key: const ValueKey('door-verify'),
-            label: 'VÉRIFIER',
+            label: context.tr('door.verify'),
             fontSize: 20,
             height: 56,
             onPressed: _canSubmit ? _check : null,
           ),
           if (!_canSubmit)
-            const Padding(
-              padding: EdgeInsets.only(top: 8),
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
               child: Text(
-                'Pose tous les mots pour pouvoir vérifier.',
+                context.tr('door.place_all'),
                 textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.w700, color: inkSoft),
+                style: const TextStyle(fontWeight: FontWeight.w700, color: inkSoft),
               ),
             ),
         ],
@@ -190,11 +184,11 @@ class _DoorViewState extends State<DoorView> {
               borderRadius: BorderRadius.circular(12),
             ),
             child: _placed.isEmpty
-                ? const Padding(
-                    padding: EdgeInsets.all(8),
+                ? Padding(
+                    padding: const EdgeInsets.all(8),
                     child: Text(
-                      'Ton verset apparaîtra ici, mot après mot.',
-                      style: TextStyle(fontWeight: FontWeight.w700, color: inkSoft),
+                      context.tr('door.slot_empty'),
+                      style: const TextStyle(fontWeight: FontWeight.w700, color: inkSoft),
                     ),
                   )
                 : Wrap(
@@ -250,15 +244,15 @@ class _DoorViewState extends State<DoorView> {
             minLines: 3,
             maxLines: 6,
             textCapitalization: TextCapitalization.sentences,
-            decoration: const InputDecoration(labelText: 'Verset', border: OutlineInputBorder()),
+            decoration: InputDecoration(labelText: context.tr('door.verse'), border: const OutlineInputBorder()),
           ),
           const SizedBox(height: 12),
           TextField(
             key: const ValueKey('recall-ref'),
             controller: _refField,
-            decoration: const InputDecoration(
-              labelText: 'Référence (ex. Jean 3:16)',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: context.tr('door.ref'),
+              border: const OutlineInputBorder(),
             ),
           ),
         ];
@@ -296,8 +290,8 @@ class _DoorViewState extends State<DoorView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('La Clé est forgée.', style: theme.textTheme.titleMedium),
-                  Text(_c.hintsUsed == 0 ? 'Sans aucun indice : bravo.' : 'Elle est rangée dans ton coffre.'),
+                  Text(context.tr('door.forged'), style: theme.textTheme.titleMedium),
+                  Text(context.tr(_c.hintsUsed == 0 ? 'door.no_hint' : 'door.in_chest')),
                 ],
               ),
             ),
@@ -320,7 +314,7 @@ class _DoorViewState extends State<DoorView> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('La Porte s\'ouvre malgré tout. La Clé t\'attend : tu y reviendras.'),
+          Text(context.tr('door.exhausted')),
           ScriptureBlock(reference: widget.reference, text: _c.verse),
         ],
       );
@@ -329,10 +323,10 @@ class _DoorViewState extends State<DoorView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Pas tout à fait. Il te reste ${r.attemptsLeft} essai${r.attemptsLeft > 1 ? 's' : ''}.'),
+          Text(context.tr('door.miss', {'n': r.attemptsLeft, 's': r.attemptsLeft > 1 ? 's' : ''})),
           if (r.hint != null) ...[
             const SizedBox(height: 6),
-            Text('Indice : ${r.hint}', style: const TextStyle(fontFamily: 'serif')),
+            Text(context.tr('door.hint', {'h': r.hint!}), style: const TextStyle(fontFamily: 'serif')),
           ],
         ],
       ),
@@ -349,11 +343,11 @@ class _Attempts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'Essais restants : $left sur $failuresBeforeFallback',
+      label: context.tr('door.attempts.semantic', {'n': left, 'total': failuresBeforeFallback}),
       child: ExcludeSemantics(
         child: Row(
           children: [
-            const Text('Essais', style: TextStyle(fontWeight: FontWeight.w900, color: ink)),
+            Text(context.tr('door.attempts'), style: const TextStyle(fontWeight: FontWeight.w900, color: ink)),
             const SizedBox(width: 10),
             for (var i = 0; i < failuresBeforeFallback; i++)
               Padding(
@@ -369,10 +363,10 @@ class _Attempts extends StatelessWidget {
                 ),
               ),
             const SizedBox(width: 4),
-            const Expanded(
+            Expanded(
               child: Text(
-                'Après une erreur, un indice t\'aide.',
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: inkSoft),
+                context.tr('door.attempts.hint'),
+                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: inkSoft),
               ),
             ),
           ],

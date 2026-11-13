@@ -6,19 +6,11 @@ import '../../adventure/game_page.dart';
 import '../../adventure/guidance.dart';
 import '../../adventure/stone_button.dart';
 import '../../app/controllers.dart';
+import '../../app/l10n.dart';
 import '../../characters/cast.dart';
 import '../../characters/pose.dart';
 import '../../app/providers.dart';
 import '../../app/widgets.dart';
-
-/// Messages doux : on invite a recommencer, sans reproche ni honte.
-const rejectionMessages = {
-  MeditationRejection.tooFast: 'Prends encore un moment pour lire et méditer le passage.',
-  MeditationRejection.wrongAnswer: 'Relis le passage : la réponse s\'y trouve.',
-  MeditationRejection.reflectionTooShort:
-      'Écris quelques mots de plus ($minReflectionChars caractères au moins).',
-  MeditationRejection.alreadyDone: 'Tu as déjà médité aujourd\'hui. À demain !',
-};
 
 /// Meditation quotidienne : seule facon de recharger l'Huile. Disponible
 /// hors ligne, jamais achetable (CDC §4.4).
@@ -33,7 +25,7 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
   late final DateTime _openedAt;
   final _reflection = TextEditingController();
   int? _answer;
-  String? _message;
+  MeditationRejection? _rejection;
   MeditationResult? _done;
 
   @override
@@ -60,7 +52,7 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
         );
     if (!mounted) return;
     setState(() {
-      _message = result.rejection == null ? null : rejectionMessages[result.rejection]!;
+      _rejection = result.rejection;
       if (result.accepted) _done = result;
     });
   }
@@ -75,7 +67,7 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
 
     final lumo = ref.watch(castProvider)['lumo'] ?? Cast.lumo;
     return GamePage(
-      title: 'Ma lampe',
+      title: context.tr('med.title'),
       setting: 'house',
       character: lumo,
       // Lumo se rejouit quand la lampe vient d'etre rechargee.
@@ -84,7 +76,7 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
       panelFraction: 0.7,
       child: lampAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Text('Erreur : $e'),
+        error: (e, _) => Text(context.tr('error', {'e': e})),
         data: (lamp) => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -92,13 +84,13 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
             const SizedBox(height: 12),
             if (_done != null) _blessing(theme, _done!)
             else if (meditation == null)
-              const Text('Aucun passage de méditation disponible pour cet arc.')
+              Text(context.tr('med.none'))
             else if (lamp.meditatedOn(today))
-              const StoneCard(
+              StoneCard(
                 child: ListTile(
-                  leading: Icon(Icons.check_circle),
-                  title: Text('Tu as médité aujourd\'hui.'),
-                  subtitle: Text('Ta lampe brille. Reviens demain.'),
+                  leading: const Icon(Icons.check_circle),
+                  title: Text(context.tr('med.done.title')),
+                  subtitle: Text(context.tr('med.done.sub')),
                 ),
               )
             else
@@ -117,16 +109,16 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Ta lampe est rechargée.', style: theme.textTheme.titleMedium),
+            Text(context.tr('med.blessing'), style: theme.textTheme.titleMedium),
             const SizedBox(height: 8),
             if (result.goldVialEarned)
-              const Text('Sept jours de fidélité : une fiole d\'or t\'est offerte !'),
+              Text(context.tr('med.vial')),
             const SizedBox(height: 8),
-            const ScriptureBlock(
-              reference: 'Psaumes 119:105',
-              text: 'Ta parole est une lampe à mes pieds, Et une lumière sur mon sentier.',
+            ScriptureBlock(
+              reference: context.tr('med.psalm.ref'),
+              text: context.tr('med.psalm.text'),
             ),
-            const Text('Ta méditation a été ajoutée à ton Journal.'),
+            Text(context.tr('med.journal_added')),
           ],
         ),
       ),
@@ -134,17 +126,16 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
   }
 
   List<Widget> _form(ThemeData theme, Arc arc, Meditation m) {
-    final ref0 = BibleRef.tryParse(m.passage)?.label ?? m.passage;
+    final ref0 = BibleRef.tryParse(m.passage)?.labelIn(context.lang) ?? m.passage;
     return [
-      const InstructionBanner(
+      InstructionBanner(
         icon: Icons.local_fire_department,
-        title: 'Recharge ta lampe',
-        text: 'Médite en trois étapes : lis le passage, réponds à la question, '
-            'écris ta réflexion. Prends ton temps.',
+        title: context.tr('med.banner.title'),
+        text: context.tr('med.banner.text'),
       ),
-      const StepHeading(number: 1, text: 'Lis le passage du jour'),
+      StepHeading(number: 1, text: context.tr('med.step1')),
       ScriptureBlock(reference: ref0, text: arc.verseText(m.passage)),
-      const StepHeading(number: 2, text: 'Réponds à la question'),
+      StepHeading(number: 2, text: context.tr('med.step2')),
       Padding(
         padding: const EdgeInsets.only(bottom: 8),
         child: Text(m.question, style: theme.textTheme.titleSmall),
@@ -156,7 +147,7 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
           selected: _answer == i,
           onPressed: () => setState(() => _answer = i),
         ),
-      const StepHeading(number: 3, text: 'Écris ta réflexion'),
+      StepHeading(number: 3, text: context.tr('med.step3')),
       Padding(
         padding: const EdgeInsets.only(bottom: 8),
         child: Text(m.reflectionPrompt, style: theme.textTheme.titleSmall),
@@ -167,23 +158,23 @@ class _MeditationScreenState extends ConsumerState<MeditationScreen> {
         minLines: 3,
         maxLines: 8,
         textCapitalization: TextCapitalization.sentences,
-        decoration: const InputDecoration(
-          border: OutlineInputBorder(),
-          hintText: 'Ta réflexion reste privée, sur ton téléphone.',
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          hintText: context.tr('med.hint'),
         ),
       ),
-      if (_message != null)
+      if (_rejection != null)
         Padding(
           padding: const EdgeInsets.only(top: 12),
           child: InstructionBanner(
             icon: Icons.info_outline,
-            text: _message!,
+            text: context.tr('med.reject.${_rejection!.name}', {'n': minReflectionChars}),
           ),
         ),
       const SizedBox(height: 16),
       StoneButton(
         key: const ValueKey('meditate'),
-        label: 'RECHARGER MA LAMPE',
+        label: context.tr('med.button'),
         fontSize: 19,
         height: 60,
         style: StoneStyle.moss,

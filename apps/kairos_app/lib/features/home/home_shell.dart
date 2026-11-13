@@ -5,6 +5,7 @@ import '../../adventure/game_page.dart';
 import '../../adventure/guidance.dart';
 import '../../adventure/stone_button.dart';
 import '../../app/controllers.dart';
+import '../../app/l10n.dart';
 import '../../app/palette.dart';
 import '../../app/providers.dart';
 import '../../characters/cast.dart';
@@ -23,7 +24,7 @@ class AdventureScreen extends ConsumerWidget {
     final progress = ref.watch(progressProvider);
     final lumo = ref.watch(castProvider)['lumo'] ?? Cast.lumo;
     return GamePage(
-      title: 'Aventure',
+      title: context.tr('map.title'),
       setting: 'desert',
       character: lumo,
       action: CharacterAction.wave,
@@ -31,7 +32,7 @@ class AdventureScreen extends ConsumerWidget {
       panelFraction: 0.62,
       child: progress.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Text('Erreur : $e'),
+        error: (e, _) => Text(context.tr('error', {'e': e})),
         data: (p) {
           // Le prochain chapitre a jouer : premier debloque et pas encore termine.
           final next = [
@@ -49,16 +50,20 @@ class AdventureScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '${p.completed.length} chapitre${p.completed.length > 1 ? 's' : ''} sur ${arc.chapters.length} terminé${p.completed.length > 1 ? 's' : ''}',
+              context.tr('map.progress', {
+                'done': p.completed.length,
+                'total': arc.chapters.length,
+                's': p.completed.length > 1 ? 's' : '',
+              }),
               style: const TextStyle(fontWeight: FontWeight.w700, color: inkSoft),
             ),
             const SizedBox(height: 12),
             InstructionBanner(
               icon: Icons.flag,
-              title: next == null ? 'Arc terminé !' : 'Ton prochain pas',
+              title: context.tr(next == null ? 'map.done.title' : 'map.next.title'),
               text: next == null
-                  ? 'Rejoue un chapitre pour revoir ses versets et affermir tes Clés.'
-                  : 'Touche le chapitre ${next + 1} pour continuer ton histoire.',
+                  ? context.tr('map.done.text')
+                  : context.tr('map.next.text', {'n': next + 1}),
             ),
             const SizedBox(height: 14),
             for (var i = 0; i < arc.chapters.length; i++)
@@ -102,10 +107,13 @@ class _ChapterTile extends StatelessWidget {
   final bool isNext;
 
   /// Dit en clair l'etat du chapitre : fait, a jouer, ou ce qui le debloque.
-  String? get _subtitle {
-    if (done) return theme == null ? 'Terminé' : 'Terminé · $theme';
-    if (!unlocked) return 'Termine le chapitre $index pour l\'ouvrir';
-    return isNext ? (theme == null ? 'À jouer' : 'À jouer · $theme') : theme;
+  String? _subtitle(BuildContext context) {
+    if (done) {
+      return theme == null ? context.tr('ch.done') : context.tr('ch.done_theme', {'theme': theme!});
+    }
+    if (!unlocked) return context.tr('ch.locked', {'n': index});
+    if (!isNext) return theme;
+    return theme == null ? context.tr('ch.next') : context.tr('ch.next_theme', {'theme': theme!});
   }
 
   @override
@@ -119,7 +127,7 @@ class _ChapterTile extends StatelessWidget {
     return StoneButton(
       key: ValueKey('chapter-$chapterId'),
       label: title,
-      subtitle: _subtitle,
+      subtitle: _subtitle(context),
       style: style,
       fontSize: 18,
       height: 76,

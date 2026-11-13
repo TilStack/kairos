@@ -37,6 +37,7 @@ flutter:
         - asset: assets/fonts/Nunito.ttf
   assets:
     - assets/arcs/joseph/arc.json
+    - assets/arcs/joseph/arc.en.json
     - assets/audio/theme.wav
     - assets/audio/tap.wav
     - assets/audio/success.wav

@@ -42,16 +42,21 @@ void main() {
 
   test('l asset embarque est identique a l arc complet du depot', () {
     String norm(String s) => s.replaceAll('\r\n', '\n');
-    final asset = norm(File('assets/arcs/joseph/arc.json').readAsStringSync());
-    final source = norm(File('../../content/joseph/arc.json').readAsStringSync());
-    expect(asset, source);
+    for (final file in ['arc.json', 'arc.en.json']) {
+      final asset = norm(File('assets/arcs/joseph/$file').readAsStringSync());
+      final source = norm(File('../../content/joseph/$file').readAsStringSync());
+      expect(asset, source, reason: file);
+    }
   });
 
   testWidgets('l arc embarque se charge et se valide au demarrage', (tester) async {
     // Lecture reelle de l'asset : hors du temps simule du test.
-    final loaded = (await tester.runAsync(loadBundledArc))!;
-    expect(loaded.id, 'joseph');
-    expect(loaded.chapters, hasLength(10));
+    final arcs = (await tester.runAsync(loadBundledArcs))!;
+    expect(arcs.keys, ['fr', 'en']);
+    for (final arc in arcs.values) {
+      expect(arc.id, 'joseph');
+      expect(arc.chapters, hasLength(10));
+    }
   });
 
   testWidgets('parcours complet du chapitre 1, avec persistance', (tester) async {

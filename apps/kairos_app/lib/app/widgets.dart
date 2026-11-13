@@ -2,40 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:kairos_core/kairos_core.dart';
 
 import '../adventure/guidance.dart';
+import 'l10n.dart';
 import 'palette.dart';
 import 'theme.dart';
 
-/// Libelles francais des traits du coeur.
-const traitLabels = {
-  Trait.faith: 'Foi',
-  Trait.courage: 'Courage',
-  Trait.integrity: 'Intégrité',
-  Trait.compassion: 'Compassion',
-  Trait.humility: 'Humilité',
-  Trait.wisdom: 'Sagesse',
-};
+/// Libelle d'un trait du coeur, dans la langue de l'interface.
+String traitLabel(BuildContext context, Trait t) => context.tr('trait.${t.name}');
 
-/// Libelles francais des anomalies de discernement.
-const anomalyLabels = {
-  AnomalyType.distorted: 'Verset déformé',
-  AnomalyType.truncated: 'Verset tronqué',
-  AnomalyType.outOfContext: 'Sorti de son contexte',
-  AnomalyType.misattributed: 'Faussement attribué',
-};
+/// Libelle et explication d'une anomalie de discernement.
+String anomalyLabel(BuildContext context, AnomalyType t) => context.tr('anomaly.${t.id}');
+String anomalyHint(BuildContext context, AnomalyType t) => context.tr('anomaly.${t.id}.hint');
 
-/// Explication courte de chaque anomalie, affichee sous le bouton de reponse.
-const anomalyHints = {
-  AnomalyType.distorted: 'Des mots ont été changés ou ajoutés.',
-  AnomalyType.truncated: 'La phrase est coupée : la suite change le sens.',
-  AnomalyType.outOfContext: 'Le verset existe, mais on lui fait dire autre chose.',
-  AnomalyType.misattributed: 'La phrase vient d\'ailleurs, pas de la Bible.',
-};
-
-const levelLabels = {
-  1: 'Niveau 1 · Reconstitution',
-  2: 'Niveau 2 · Mots manquants',
-  3: 'Niveau 3 · De mémoire',
-};
+/// Libelle du niveau d'une Porte (1 a 3).
+String levelLabel(BuildContext context, int level) => context.tr('level.$level');
 
 /// Texte de l'Ecriture : typographie dediee (serif, filet dore), toujours
 /// distincte de la narration (CDC §9.5). Le texte est cite tel quel.
@@ -49,7 +28,7 @@ class ScriptureBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Semantics(
-      label: 'Écriture, $reference',
+      label: context.tr('scripture.semantic', {'ref': reference}),
       child: Container(
         width: double.infinity,
         margin: const EdgeInsets.symmetric(vertical: 8),
@@ -63,7 +42,9 @@ class ScriptureBlock extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              text == null ? 'Texte indisponible dans cette version.' : '« $text »',
+              text == null
+                  ? context.tr('scripture.missing')
+                  : '${context.tr('quote.open')}$text${context.tr('quote.close')}',
               style: theme.textTheme.bodyLarge?.copyWith(
                 fontFamily: 'serif',
                 fontStyle: FontStyle.italic,
@@ -93,8 +74,12 @@ class LampGauge extends StatelessWidget {
     final theme = Theme.of(context);
     final level = lamp.oil / maxOil;
     return Semantics(
-      label: 'Lampe : huile ${lamp.oil} sur $maxOil, série de ${lamp.streak} jours, '
-          '${lamp.goldVials} fioles d\'or',
+      label: context.tr('lamp.semantic', {
+        'oil': lamp.oil,
+        'max': maxOil,
+        'streak': lamp.streak,
+        'vials': lamp.goldVials,
+      }),
       child: StoneCard(
         child: Padding(
           padding: const EdgeInsets.all(4),
@@ -115,18 +100,18 @@ class LampGauge extends StatelessWidget {
                 child: LinearProgressIndicator(value: level, minHeight: 10, color: lampGold),
               ),
               const SizedBox(height: 8),
-              Text('Huile : ${lamp.oil} / $maxOil', style: theme.textTheme.titleMedium),
+              Text(context.tr('lamp.oil', {'oil': lamp.oil, 'max': maxOil}), style: theme.textTheme.titleMedium),
               const SizedBox(height: 4),
               Wrap(
                 spacing: 16,
                 children: [
-                  Text('Série : ${lamp.streak} j'),
-                  Text('Fioles d\'or : ${lamp.goldVials}'),
+                  Text(context.tr('lamp.streak', {'n': lamp.streak})),
+                  Text(context.tr('lamp.vials', {'n': lamp.goldVials})),
                 ],
               ),
               const SizedBox(height: 6),
               Text(
-                'L\'Huile baisse doucement chaque jour. Médite pour la recharger.',
+                context.tr('lamp.hint'),
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodySmall?.copyWith(color: inkSoft),
               ),

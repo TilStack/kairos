@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../app/l10n.dart';
 import '../app/providers.dart';
 import '../characters/character_spec.dart';
 import '../characters/pose.dart';
@@ -30,7 +31,7 @@ class GameHeader extends StatelessWidget {
           children: [
             StoneIconButton(
               icon: Icons.arrow_back,
-              semanticLabel: 'Retour',
+              semanticLabel: context.tr('back'),
               size: 54,
               onPressed: onBack ?? () => Navigator.of(context).maybePop(),
             ),

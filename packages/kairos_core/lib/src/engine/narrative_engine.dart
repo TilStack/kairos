@@ -106,7 +106,7 @@ class NarrativeEngine {
   }
 
   /// Description du noeud courant pour l'interface.
-  Step view(GameState state, {String? bible}) {
+  Step view(GameState state, {String? bible, String lang = 'fr'}) {
     final node = _node(state);
     return switch (node) {
       DialogueNode() => DialogueStep(node),
@@ -117,7 +117,7 @@ class NarrativeEngine {
           node,
           [
             for (final id in node.verses)
-              VerseText(id, _label(id), arc.verseText(id, bible: bible)),
+              VerseText(id, _label(id, lang), arc.verseText(id, bible: bible)),
           ],
           state.traits,
         ),
@@ -243,5 +243,5 @@ class NarrativeEngine {
     return state.copyWith(traits: traits, flags: flags);
   }
 
-  String _label(String verseId) => BibleRef.tryParse(verseId)?.label ?? verseId;
+  String _label(String verseId, String lang) => BibleRef.tryParse(verseId)?.labelIn(lang) ?? verseId;
 }

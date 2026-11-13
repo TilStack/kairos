@@ -6,6 +6,7 @@ import '../../adventure/game_page.dart';
 import '../../adventure/guidance.dart';
 import '../../adventure/stone_button.dart';
 import '../../app/controllers.dart';
+import '../../app/l10n.dart';
 import '../../app/palette.dart';
 import '../../app/providers.dart';
 import '../../app/secure_screen.dart';
@@ -13,13 +14,6 @@ import '../../app/widgets.dart';
 import '../../characters/cast.dart';
 import '../../characters/character_spec.dart';
 import '../../characters/pose.dart';
-
-const typeLabels = {
-  JournalEntryType.meditation: 'Méditations',
-  JournalEntryType.key: 'Clés',
-  JournalEntryType.discernment: 'Discernement',
-  JournalEntryType.note: 'Notes',
-};
 
 IconData _icon(JournalEntryType t) => switch (t) {
       JournalEntryType.meditation => Icons.local_fire_department,
@@ -55,7 +49,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
     final lumo = (ref.watch(castProvider)['lumo'] ?? Cast.lumo).withProp(Prop.scroll);
     return SecureScope(
       child: GamePage(
-        title: 'Mon journal',
+        title: context.tr('journal.title'),
         setting: 'memory',
         character: lumo,
         action: CharacterAction.think,
@@ -65,7 +59,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
         scrollable: false,
         child: entries.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('Erreur : $e')),
+          error: (e, _) => Center(child: Text(context.tr('error', {'e': e}))),
           data: (all) {
             final shown = filterEntries(all, type: _filter);
             return Column(
@@ -79,7 +73,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                       Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: ChoiceChip(
-                          label: const Text('Tout'),
+                          label: Text(context.tr('journal.all')),
                           selected: _filter == null,
                           onSelected: (_) => setState(() => _filter = null),
                         ),
@@ -89,7 +83,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                           padding: const EdgeInsets.only(right: 8),
                           child: ChoiceChip(
                             key: ValueKey('filter-${t.name}'),
-                            label: Text(typeLabels[t]!),
+                            label: Text(context.tr('jtype.${t.name}')),
                             selected: _filter == t,
                             onSelected: (_) => setState(() => _filter = t),
                           ),
@@ -99,14 +93,13 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                 ),
                 Expanded(
                   child: shown.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Padding(
-                            padding: EdgeInsets.all(24),
+                            padding: const EdgeInsets.all(24),
                             child: Text(
-                              'Ton journal est vide pour l\'instant. Tes méditations, tes Clés et '
-                              'tes notes apparaîtront ici. Rien ne quitte ton téléphone.',
+                              context.tr('journal.empty'),
                               textAlign: TextAlign.center,
-                              style: TextStyle(color: ink, fontWeight: FontWeight.w600, height: 1.4),
+                              style: const TextStyle(color: ink, fontWeight: FontWeight.w600, height: 1.4),
                             ),
                           ),
                         )
@@ -120,7 +113,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                   padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
                   child: StoneButton(
                     key: const ValueKey('add-note'),
-                    label: 'NOUVELLE NOTE',
+                    label: context.tr('journal.add'),
                     fontSize: 18,
                     height: 54,
                     leading: const Icon(Icons.edit_note, color: Color(0xFF5B3A1A)),
@@ -145,7 +138,9 @@ class _EntryCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final arc = ref.watch(arcProvider);
     final local = entry.createdAt.toLocal();
-    final date = '${local.day.toString().padLeft(2, '0')}/${local.month.toString().padLeft(2, '0')}/${local.year}';
+    final dd = local.day.toString().padLeft(2, '0');
+    final mm = local.month.toString().padLeft(2, '0');
+    final date = context.lang == 'en' ? '$mm/$dd/${local.year}' : '$dd/$mm/${local.year}';
     return StoneCard(
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,7 +157,7 @@ class _EntryCard extends ConsumerWidget {
             Text(entry.body),
             for (final r in entry.refs)
               if (entry.type != JournalEntryType.key)
-                ScriptureBlock(reference: BibleRef.tryParse(r)?.label ?? r, text: arc.verseText(r)),
+                ScriptureBlock(reference: BibleRef.tryParse(r)?.labelIn(context.lang) ?? r, text: arc.verseText(r)),
           ],
       ),
     );
@@ -188,7 +183,7 @@ class _NoteDialogState extends State<_NoteDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Nouvelle note'),
+      title: Text(context.tr('note.title')),
       content: TextField(
         key: const ValueKey('note-field'),
         controller: _controller,
@@ -196,15 +191,15 @@ class _NoteDialogState extends State<_NoteDialog> {
         minLines: 3,
         maxLines: 8,
         textCapitalization: TextCapitalization.sentences,
-        decoration: const InputDecoration(hintText: 'Prière, reconnaissance…'),
+        decoration: InputDecoration(hintText: context.tr('note.hint')),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Annuler')),
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(context.tr('cancel'))),
         FilledButton(
           key: const ValueKey('note-save'),
           style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
           onPressed: () => Navigator.pop(context, _controller.text),
-          child: const Text('Enregistrer'),
+          child: Text(context.tr('save')),
         ),
       ],
     );

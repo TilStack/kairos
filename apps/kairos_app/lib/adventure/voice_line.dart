@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../app/l10n.dart';
 import '../app/palette.dart';
 import '../app/voice.dart';
 
@@ -28,7 +29,7 @@ class _VoiceLineState extends ConsumerState<VoiceLine> {
     _voice = ref.read(voiceProvider);
     if (ref.read(voiceAutoProvider).value ?? false) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _voice.speak(widget.text, characterId: widget.characterId);
+        if (mounted) _voice.speak(widget.text, characterId: widget.characterId, lang: ref.read(langProvider));
       });
     }
   }
@@ -71,7 +72,7 @@ class ListenButton extends ConsumerWidget {
         final playing = current == text;
         return Semantics(
           button: true,
-          label: playing ? 'Arrêter la lecture' : 'Écouter cette réplique',
+          label: playing ? context.tr('stop.semantic') : context.tr('listen.semantic'),
           child: ExcludeSemantics(
             child: Material(
               color: hintBackground,
@@ -79,7 +80,9 @@ class ListenButton extends ConsumerWidget {
               child: InkWell(
                 key: const ValueKey('listen'),
                 customBorder: const StadiumBorder(),
-                onTap: () => playing ? voice.stop() : voice.speak(text, characterId: characterId),
+                onTap: () => playing
+                    ? voice.stop()
+                    : voice.speak(text, characterId: characterId, lang: ref.read(langProvider)),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(minHeight: 44, minWidth: 44),
                   child: Padding(
@@ -90,7 +93,7 @@ class ListenButton extends ConsumerWidget {
                         Icon(playing ? Icons.stop_circle_outlined : Icons.volume_up, color: ink, size: 22),
                         const SizedBox(width: 6),
                         Text(
-                          playing ? 'Arrêter' : 'Écouter',
+                          playing ? context.tr('stop') : context.tr('listen'),
                           style: const TextStyle(fontWeight: FontWeight.w900, color: ink, fontSize: 15),
                         ),
                       ],

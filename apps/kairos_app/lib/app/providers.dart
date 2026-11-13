@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kairos_core/kairos_core.dart';
+
+import 'l10n.dart';
 import 'package:uuid/uuid.dart';
 
 import '../characters/cast.dart';
@@ -14,9 +16,16 @@ final repositoryProvider = Provider<KairosRepository>(
 );
 
 /// Arc charge au demarrage (valide avant l'ouverture de l'interface).
-final arcProvider = Provider<Arc>(
-  (ref) => throw UnimplementedError('arcProvider doit etre surcharge'),
+final arcsProvider = Provider<Map<String, Arc>>(
+  (ref) => throw UnimplementedError('arcsProvider doit etre surcharge'),
 );
+
+/// Arc dans la langue du joueur (memes chapitres et memes noeuds dans chaque
+/// langue : la progression survit au changement de langue).
+final arcProvider = Provider<Arc>((ref) {
+  final arcs = ref.watch(arcsProvider);
+  return arcs[ref.watch(langProvider)] ?? arcs.values.first;
+});
 
 /// Heure locale du joueur. Surchargeable dans les tests.
 final clockProvider = Provider<DateTime Function()>((ref) => DateTime.now);

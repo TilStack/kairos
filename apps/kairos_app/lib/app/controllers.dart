@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kairos_core/kairos_core.dart';
 
 import '../data/repository.dart';
+import 'l10n.dart';
 import 'providers.dart';
 
 // ------------------------------------------------------------ progression
@@ -46,6 +47,7 @@ class JournalController extends AsyncNotifier<List<JournalEntry>> {
     final clean = text.trim();
     if (clean.isEmpty) return Future.value();
     return add(JournalEntry.note(
+      lang: ref.read(langProvider),
       id: ref.read(idProvider)(),
       at: ref.read(clockProvider)(),
       text: clean,
@@ -81,6 +83,7 @@ class LampController extends AsyncNotifier<LampState> {
     if (!result.accepted) return result;
 
     final entry = JournalEntry.meditation(
+      lang: ref.read(langProvider),
       id: ref.read(idProvider)(),
       at: ref.read(clockProvider)(),
       arcId: arc.id,
@@ -169,6 +172,7 @@ class ReaderController extends Notifier<ReaderState> {
     final result = _engine.answerDiscernment(game, answer);
     await _commit(result.state, journal: [
       JournalEntry.discernment(
+        lang: ref.read(langProvider),
         id: ref.read(idProvider)(),
         at: ref.read(clockProvider)(),
         arcId: _arc.id,
@@ -197,11 +201,12 @@ class ReaderController extends Notifier<ReaderState> {
       journal: [
         if (forged)
           JournalEntry.keyForged(
+            lang: ref.read(langProvider),
             id: ref.read(idProvider)(),
             at: now,
             arcId: _arc.id,
             verseId: challenge.verseId,
-            label: BibleRef.tryParse(challenge.verseId)?.label ?? challenge.verseId,
+            label: BibleRef.tryParse(challenge.verseId)?.labelIn(ref.read(langProvider)) ?? challenge.verseId,
             text: challenge.verse,
           ),
       ],

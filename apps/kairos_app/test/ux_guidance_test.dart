@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kairos_app/app/l10n_fr.dart';
 import 'package:kairos_app/data/repository.dart';
 import 'package:kairos_app/features/onboarding/how_to_play_screen.dart';
 import 'package:kairos_core/kairos_core.dart';
@@ -23,7 +24,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Comment jouer'), findsOneWidget);
       for (final rule in howToRules) {
-        expect(find.text(rule.title), findsOneWidget);
+        expect(find.text(frStrings['${rule.key}.title']!), findsOneWidget);
       }
 
       await tapKey(tester, 'howto-done');
